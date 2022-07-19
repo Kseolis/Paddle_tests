@@ -24,7 +24,8 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.InvokeScriptTransactionHandler.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.getTransactionVersion;
-import static im.mak.paddle.helpers.transaction_senders.InvokeScriptTransactionSender.*;
+import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.getDAppBalanceWavesAfterTransaction;
+import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender.*;
 import static im.mak.paddle.token.Waves.WAVES;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;

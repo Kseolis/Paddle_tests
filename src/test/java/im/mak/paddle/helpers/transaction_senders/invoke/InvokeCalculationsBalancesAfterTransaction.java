@@ -109,8 +109,8 @@ public class InvokeCalculationsBalancesAfterTransaction extends InvokeScriptTran
             amounts.forEach(
                     a -> {
                         if (a.assetId().isWaves()) {
-                            dAppBalanceIssuedAssetsAfterTransaction -= a.value();
-                            dApp2BalanceIssuedAssetsAfterTransaction += a.value();
+                            dAppBalanceWavesAfterTransaction += a.value();
+                            dApp2BalanceWavesAfterTransaction -= a.value();
                         } else if (a.assetId().equals(id)) {
                             dAppBalanceIssuedAssetsAfterTransaction -= a.value();
                             dApp2BalanceIssuedAssetsAfterTransaction += a.value();

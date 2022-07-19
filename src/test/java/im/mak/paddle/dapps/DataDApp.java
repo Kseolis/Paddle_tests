@@ -1,6 +1,5 @@
 package im.mak.paddle.dapps;
 
-import com.wavesplatform.transactions.account.Address;
 import com.wavesplatform.transactions.invocation.*;
 import im.mak.paddle.dapp.DApp;
 import im.mak.paddle.dapp.DAppCall;

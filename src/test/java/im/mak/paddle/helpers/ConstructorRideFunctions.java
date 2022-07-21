@@ -32,8 +32,6 @@ public class ConstructorRideFunctions {
                 .append("\t").append(functions).append("\n]\n")
                 .append("}");
 
-        System.out.println(sb);
-
         return sb.toString();
     }
 
@@ -47,7 +45,6 @@ public class ConstructorRideFunctions {
 
         sb.append(functions)
                 .append("}\n\n\n");
-        System.out.println(sb);
         return sb.toString();
     }
 }

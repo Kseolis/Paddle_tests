@@ -47,10 +47,6 @@ public class InvokeScriptTransactionSender extends BaseTransactionSender {
         return invokeScriptTx;
     }
 
-    public static DAppCall getDAppCall() {
-        return dAppCall;
-    }
-
     public static String getInvokeScriptId() {
         return invokeScriptTx.id().toString();
     }

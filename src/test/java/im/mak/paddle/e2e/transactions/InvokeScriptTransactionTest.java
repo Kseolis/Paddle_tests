@@ -76,7 +76,7 @@ public class InvokeScriptTransactionTest {
     }
 
     @Test
-    @DisplayName("invoke with Lease Transaction and WAVES payment")
+    @DisplayName("invoke with Lease and WAVES payment")
     void invokeScriptWithLease() {
         testsData.prepareDataForLeaseTests();
         for (int v = 1; v <= LATEST_VERSION; v++) {
@@ -102,7 +102,7 @@ public class InvokeScriptTransactionTest {
     }
 
     @Test
-    @DisplayName("invoke with SponsorFee Transaction")
+    @DisplayName("invoke with SponsorFee")
     void invokeScriptWithSponsorFee() {
         testsData.prepareDataForSponsorFeeTests();
         for (int v = 1; v <= LATEST_VERSION; v++) {

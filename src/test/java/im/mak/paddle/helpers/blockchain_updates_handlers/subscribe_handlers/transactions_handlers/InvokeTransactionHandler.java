@@ -4,7 +4,7 @@ import com.wavesplatform.crypto.base.Base58;
 
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.getTransactionAtIndex;
 
-public class InvokeScriptTransactionHandler {
+public class InvokeTransactionHandler {
     public static String getInvokeTransactionPublicKeyHash(int txIndex) {
         return Base58.encode(getTransactionAtIndex(txIndex)
                 .getInvokeScript()

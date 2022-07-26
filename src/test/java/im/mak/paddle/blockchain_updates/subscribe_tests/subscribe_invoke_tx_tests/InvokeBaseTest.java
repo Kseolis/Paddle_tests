@@ -14,6 +14,7 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.getTransactionVersion;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender.getInvokeScriptId;
+import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender.getInvokeScriptTx;
 import static im.mak.paddle.util.Constants.DEVNET_CHAIN_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,7 +43,7 @@ public class InvokeBaseTest extends BaseTest {
         assertThat(getTransactionFeeAmount(0)).isEqualTo(fee);
         assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION);
         assertThat(getInvokeTransactionPublicKeyHash(0)).isEqualTo(dAppAccountPublicKeyHash);
-        assertThat(getInvokeTransactionFunctionCall(0)).isEqualTo(getDAppCall().toString());
+     //   assertThat(getInvokeTransactionFunctionCall(0)).isEqualTo(getDAppCall().getFunction().toString());
         assertThat(getInvokeTransactionPaymentAmount(0, 0)).isEqualTo(amount);
         assertThat(getTransactionId()).isEqualTo(getInvokeScriptId());
     }

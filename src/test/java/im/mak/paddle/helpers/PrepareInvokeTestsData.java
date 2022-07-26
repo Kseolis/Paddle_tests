@@ -37,8 +37,8 @@ public class PrepareInvokeTestsData {
     private static boolean boolArg;
     private static String stringArg;
 
-    private final Amount wavesAmount;
-    private final Amount assetAmount;
+    private static Amount wavesAmount;
+    private static Amount assetAmount;
 
     private static final String args = "assetId:ByteVector";
     private static final List<Amount> amounts = new ArrayList<>();
@@ -328,5 +328,12 @@ public class PrepareInvokeTestsData {
         return assetDAppAccount;
     }
 
+    public static Amount getWavesAmount() {
+        return wavesAmount;
+    }
+
+    public static Amount getAssetAmount() {
+        return assetAmount;
+    }
 
 }

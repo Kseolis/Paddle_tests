@@ -26,6 +26,6 @@ public class SubscribeInvokeReissueTest extends InvokeBaseTest {
         subscribeResponseHandler(channel, getDAppAccount(), height, height);
         prepareInvoke(getDAppAccount());
         System.out.println(getAppend());
-        checkInvokeSubscribe(getAssetAmount().value(), "ByteVector", getAssetId().toString(), getFee());
+        checkInvokeSubscribe(getAssetAmount().value(), getFee());
     }
 }

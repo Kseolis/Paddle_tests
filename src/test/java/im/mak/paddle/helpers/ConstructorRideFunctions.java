@@ -3,11 +3,11 @@ package im.mak.paddle.helpers;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
 
 public class ConstructorRideFunctions {
-    private final static int decimals = getRandomInt(0, 8);
-    private final static int quantity = getRandomInt(10000, 100000);
-    private final static int nonce = getRandomInt(0, 10);
-    private final static String issuedAssetName = "\"issuedAsset\"";
-    private final static String issuedAssetDescription = "\"asset from ride script\"";
+    private static final int decimals = getRandomInt(0, 8);
+    private static final int quantity = getRandomInt(10000, 100000);
+    private static final int nonce = getRandomInt(0, 10);
+    private static final String issuedAssetName = "\"issuedAsset\"";
+    private static final String issuedAssetDescription = "\"asset from ride script\"";
 
     public static String assetsFunctionBuilder(int libVersion, String script, String functions, String args) {
         final StringBuilder sb = new StringBuilder();
@@ -47,4 +47,25 @@ public class ConstructorRideFunctions {
                 .append("}\n\n\n");
         return sb.toString();
     }
+
+    public static String getIssuedAssetName() {
+        return issuedAssetName;
+    }
+
+    public static String getIssuedAssetDescription() {
+        return issuedAssetDescription;
+    }
+
+    public static int getQuantity() {
+        return quantity;
+    }
+
+    public static int getDecimals() {
+        return decimals;
+    }
+
+    public static int getNonce() {
+        return nonce;
+    }
+
 }

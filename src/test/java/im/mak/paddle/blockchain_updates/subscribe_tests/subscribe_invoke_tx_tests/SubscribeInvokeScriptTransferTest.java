@@ -30,6 +30,6 @@ public class SubscribeInvokeScriptTransferTest extends InvokeBaseTest {
 
         System.out.println(getAppend());
 
-        checkInvokeSubscribe(getWavesAmount().value(), "ByteVector", getAssetId().toString(), SUM_FEE);
+        checkInvokeSubscribe(getWavesAmount().value(), SUM_FEE);
     }
 }

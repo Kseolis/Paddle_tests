@@ -28,6 +28,6 @@ public class SubscribeInvokeDataTest extends InvokeBaseTest {
         subscribeResponseHandler(channel, getDAppAccount(), height, height);
         prepareInvoke(getDAppAccount());
         System.out.println(getAppend());
-        checkInvokeSubscribe(getWavesAmount().value(), "ByteVector", getAssetId().toString(), SUM_FEE);
+        checkInvokeSubscribe(getWavesAmount().value(), SUM_FEE);
     }
 }

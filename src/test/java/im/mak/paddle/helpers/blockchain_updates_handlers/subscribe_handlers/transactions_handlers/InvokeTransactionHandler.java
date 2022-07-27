@@ -16,7 +16,8 @@ public class InvokeTransactionHandler {
     public static String getInvokeTransactionFunctionCall(int txIndex) {
         return Base58.encode(getTransactionAtIndex(txIndex)
                 .getInvokeScript()
-                .getFunctionCall().toByteArray());
+                .getFunctionCall()
+                .toByteArray());
     }
 
     public static long getInvokeTransactionPaymentAmount(int txIndex, int paymentIndex) {

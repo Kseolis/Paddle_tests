@@ -13,6 +13,7 @@ import io.grpc.StatusRuntimeException;
 import java.util.Iterator;
 
 import static com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdatesApiGrpc.newBlockingStub;
+import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getTxInfo;
 
 public class SubscribeHandler {
 
@@ -56,6 +57,8 @@ public class SubscribeHandler {
     }
 
     private static void subscribeEventHandler(Events.BlockchainUpdated subscribeEventUpdate, Account account) {
+        final String accPublicKey = account.publicKey().toString();
+        final String txId = getTxInfo().tx().id().toString();
         append = subscribeEventUpdate.getAppend();
         microBlockInfo = append
                 .getMicroBlock()
@@ -72,7 +75,7 @@ public class SubscribeHandler {
                     .toByteArray());
 
             transactionId = Base58.encode(append.getTransactionIds(0).toByteArray());
-            if (transactionSenderPublicKey.equalsIgnoreCase(account.publicKey().toString())) {
+            if (transactionSenderPublicKey.equalsIgnoreCase(accPublicKey) && transactionId.equals(txId)) {
                 firstTransaction = microBlockInfo.getTransactions(0).getTransaction();
             }
         }

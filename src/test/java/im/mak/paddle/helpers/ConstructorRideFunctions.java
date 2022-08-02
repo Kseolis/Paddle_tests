@@ -6,8 +6,8 @@ public class ConstructorRideFunctions {
     private static final int decimals = getRandomInt(0, 8);
     private static final int quantity = getRandomInt(10000, 100000);
     private static final int nonce = getRandomInt(0, 10);
-    private static final String issuedAssetName = "\"issuedAsset\"";
-    private static final String issuedAssetDescription = "\"asset from ride script\"";
+    private static final String issuedAssetName = "issuedAsset";
+    private static final String issuedAssetDescription = "asset from ride script";
 
     public static String assetsFunctionBuilder(int libVersion, String script, String functions, String args) {
         final StringBuilder sb = new StringBuilder();
@@ -17,8 +17,8 @@ public class ConstructorRideFunctions {
                 .append("@Callable(i)\n")
                 .append("func setData(").append(args).append(")={\n");
 
-        sb.append("let issueAsset = Issue(").append(issuedAssetName).append(",")
-                .append(issuedAssetDescription).append(",")
+        sb.append("let issueAsset = Issue(\"").append(issuedAssetName).append("\", \"")
+                .append(issuedAssetDescription).append("\",")
                 .append(quantity).append(",")
                 .append(decimals).append(",")
                 .append("true").append(",")

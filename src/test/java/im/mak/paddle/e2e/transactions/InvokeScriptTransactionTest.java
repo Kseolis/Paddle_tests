@@ -172,14 +172,14 @@ public class InvokeScriptTransactionTest {
         }
     }
 
-    private void checkBalancesAfterDAppToDAppInvoke(Account caller, Account dApp1, Account dApp2) {
+    private void checkBalancesAfterDAppToDAppInvoke(Account caller, Account dApp, Account acc) {
         assertThat(caller.getWavesBalance()).isEqualTo(getCallerBalanceWavesAfterTransaction());
-        assertThat(dApp1.getWavesBalance()).isEqualTo(getDAppBalanceWavesAfterTransaction());
-        assertThat(dApp2.getWavesBalance()).isEqualTo(getDApp2BalanceWavesAfterTransaction());
+        assertThat(dApp.getWavesBalance()).isEqualTo(getDAppBalanceWavesAfterTransaction());
+        assertThat(acc.getWavesBalance()).isEqualTo(getAccBalanceWavesAfterTransaction());
         if (getAssetId() != null) {
             assertThat(caller.getBalance(getAssetId())).isEqualTo(getCallerBalanceIssuedAssetsAfterTransaction());
-            assertThat(dApp1.getBalance(getAssetId())).isEqualTo(getDAppBalanceIssuedAssetsAfterTransaction());
-            assertThat(dApp2.getBalance(getAssetId())).isEqualTo(getDApp2BalanceIssuedAssetsAfterTransaction());
+            assertThat(dApp.getBalance(getAssetId())).isEqualTo(getDAppBalanceIssuedAssetsAfterTransaction());
+            assertThat(acc.getBalance(getAssetId())).isEqualTo(getAccBalanceIssuedAssetsAfterTransaction());
         }
     }
 }

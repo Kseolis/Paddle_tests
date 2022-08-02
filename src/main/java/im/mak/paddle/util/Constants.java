@@ -1,6 +1,7 @@
 package im.mak.paddle.util;
 
 public class Constants {
+    public static final String WAVES_STRING_ID = "";
     public static final int MAX_LIB_VERSION = 6;
 
     public static final byte ASSET_QUANTITY_MIN = 1;
@@ -26,8 +27,8 @@ public class Constants {
 
     public static final byte MIN_TRANSACTION_SUM = 1;
 
-    public static int MIN_NUM_ACCOUNT_FOR_MASS_TRANSFER = 1;
-    public static int MAX_NUM_ACCOUNT_FOR_MASS_TRANSFER = 100;
+    public static final int MIN_NUM_ACCOUNT_FOR_MASS_TRANSFER = 1;
+    public static final int MAX_NUM_ACCOUNT_FOR_MASS_TRANSFER = 100;
 
     public static final String ADDRESS = "Address";
     public static final String ALIAS = "Alias";
@@ -35,6 +36,7 @@ public class Constants {
     public static final String SCRIPT_PERMITTING_OPERATIONS = "{-# STDLIB_VERSION 5 #-} {-# SCRIPT_TYPE ASSET #-} true";
 
     public static final long DEVNET_CHAIN_ID = 68;
+    public static final long STAGENET_CHAIN_ID = 83;
     public static final String ACTIVE_STATUS_LEASE = "ACTIVE";
     public static final String INACTIVE_STATUS_LEASE = "INACTIVE";
     public static final byte ORDER_V_3 = 3;

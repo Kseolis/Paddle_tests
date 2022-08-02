@@ -5,19 +5,20 @@ import org.junit.jupiter.api.Test;
 
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
-import static im.mak.paddle.helpers.ConstructorRideFunctions.*;
+import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeTransactionAssertions.*;
+import static im.mak.paddle.helpers.ConstructorRideFunctions.getQuantity;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.BaseInvokeMetadata.getInvokeScriptResult;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultIssue.getInvokeMetadataResultIssueAssetId;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getTxInfo;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
-import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.balancesAfterBurnAssetInvoke;
-import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender.getInvokeScriptTx;
+import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.*;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender.invokeSender;
+import static im.mak.paddle.util.Constants.WAVES_STRING_ID;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeBurnTest extends InvokeBaseTest {
+    private static long amountAfterBurnDAppIssuedAsset;
+
     @Test
     @DisplayName("subscribe invoke with Burn")
     void subscribeInvokeWithBurn() {
@@ -26,18 +27,43 @@ public class SubscribeInvokeBurnTest extends InvokeBaseTest {
         setVersion(LATEST_VERSION);
         balancesAfterBurnAssetInvoke(getCallerAccount(), getAssetDAppAccount(), getAmounts(), getAssetId());
         invokeSender(getCallerAccount(), getAssetDAppAccount(), getDAppCall());
-        height = getTxInfo().height();
+
+        height = node().getHeight();
+        amountAfterBurnDAppIssuedAsset = getQuantity() - getIssueAssetBurned();
+
         subscribeResponseHandler(channel, getAssetDAppAccount(), height, height);
         prepareInvoke(getAssetDAppAccount());
 
-        System.out.println("\n\n\n" + getInvokeScriptTx().function());
+        System.out.println(getAppend());
+
         assertionsCheck();
     }
 
     private void assertionsCheck() {
-        checkInvokeSubscribe(getAssetAmount().value(), getFee());
-        checkMainMetadata(0);
-        checkIssueAssetMetadata(0,0, getIssuedAssetName(), getIssuedAssetDescription(),
-                getQuantity(), getDecimals(), true, getNonce());
+        assertAll(
+                () -> checkInvokeSubscribe(getAssetAmount().value(), getFee()),
+                () -> checkMainMetadata(0),
+                () -> checkIssueAssetMetadata(0, 0),
+                () -> checkBurnMetadata(0, 0, getAssetId().toString(), getAssetAmount().value()),
+                () -> checkBurnMetadata(0, 1, WAVES_STRING_ID, getIssueAssetBurned()),
+
+                () -> checkStateUpdateBalance(0,
+                        getCallerAddress(),
+                        WAVES_STRING_ID,
+                        getCallerBalanceWavesBeforeTransaction(),
+                        getCallerBalanceWavesAfterTransaction()),
+
+                () -> checkStateUpdateBalance(1,
+                        getAssetDAppAddress(),
+                        null,
+                        0,
+                        amountAfterBurnDAppIssuedAsset),
+
+                () -> checkStateUpdateBalance(2,
+                        getAssetDAppAddress(),
+                        getAssetId().toString(),
+                        getDAppBalanceIssuedAssetsBeforeTransaction(),
+                        getDAppBalanceIssuedAssetsAfterTransaction())
+        );
     }
 }

@@ -23,13 +23,16 @@ import static im.mak.paddle.util.Constants.ONE_WAVES;
 
 public class PrepareInvokeTestsData {
     private static Account callerAccount;
-    private static byte[] callerAddress;
+    private static String callerAddress;
+    private static byte[] callerAddressBase58;
 
     private static DataDApp dAppAccount;
-    private static byte[] dAppAddress;
+    private static String dAppAddress;
+    private static byte[] dAppAddressBase58;
 
     private static AssetDAppAccount assetDAppAccount;
-    private static byte[] assetDAppAddress;
+    private static String assetDAppAddress;
+    private static byte[] assetDAppAddressBase58;
     private static AssetId assetId;
 
     private static int intArg;
@@ -39,6 +42,7 @@ public class PrepareInvokeTestsData {
 
     private static Amount wavesAmount;
     private static Amount assetAmount;
+    private static long issueAssetBurned;
 
     private static final String args = "assetId:ByteVector";
     private static final List<Amount> amounts = new ArrayList<>();
@@ -49,29 +53,34 @@ public class PrepareInvokeTestsData {
         async(
                 () -> {
                     callerAccount = new Account(DEFAULT_FAUCET);
-                    callerAddress = Base58.decode(callerAccount.address().toString());
+                    callerAddress = callerAccount.address().toString();
+                    callerAddressBase58 = Base58.decode(callerAddress);
                 },
                 () -> binArg = randomNumAndLetterString(10),
                 () -> stringArg = randomNumAndLetterString(10),
                 () -> {
-                    intArg = getRandomInt(1, 999999);
+                    intArg = getRandomInt(1, 1000);
                     boolArg = intArg % 2 == 0;
                 },
                 () -> {
                     assetDAppAccount = new AssetDAppAccount(DEFAULT_FAUCET, "true");
-                    assetDAppAddress = Base58.decode(assetDAppAccount.address().toString());
-                    assetId = assetDAppAccount.issue(i -> i.name("outside Asset").quantity(900_000_000L))
+                    assetDAppAddress = assetDAppAccount.address().toString();
+                    assetDAppAddressBase58 = Base58.decode(assetDAppAddress);
+                    assetId = assetDAppAccount.issue(i -> i
+                                    .name("outside Asset").quantity(900_000_000L))
                             .tx().assetId();
                 },
                 () -> {
                     dAppAccount = new DataDApp(DEFAULT_FAUCET, "true");
-                    dAppAddress = Base58.decode(dAppAccount.address().toString());
+                    dAppAddress = dAppAccount.address().toString();
+                    dAppAddressBase58 = Base58.decode(dAppAddress);
                 }
         );
         assetDAppAccount.transfer(callerAccount, Amount.of(300_000_000L, assetId));
         assetDAppAccount.transfer(dAppAccount, Amount.of(300_000_000L, assetId));
         wavesAmount = Amount.of(getRandomInt(100, 100000));
         assetAmount = Amount.of(getRandomInt(100, 100000), assetId);
+        issueAssetBurned = getRandomInt(10, 1000);
     }
 
     public void prepareDataForDataDAppTests() {
@@ -120,7 +129,8 @@ public class PrepareInvokeTestsData {
         fee = ONE_WAVES + SUM_FEE;
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
 
-        final String functions = "Burn(assetId, " + assetAmount.value() + "),\nBurn(issueAssetId, 1)";
+        final String functions = "Burn(assetId, " + assetAmount.value() + ")," +
+                "\nBurn(issueAssetId, " + issueAssetBurned + ")";
         final String script = assetsFunctionBuilder(libVersion, "unit", functions, args);
         assetDAppAccount.setScript(script);
 
@@ -151,7 +161,6 @@ public class PrepareInvokeTestsData {
     }
 
     public void prepareDataForLeaseTests() {
-
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
 
         final String functionArgs = "address:ByteVector";
@@ -160,7 +169,7 @@ public class PrepareInvokeTestsData {
 
         dAppAccount.setScript(script);
 
-        dAppCall = dAppAccount.setData(callerAddress);
+        dAppCall = dAppAccount.setData(callerAddressBase58);
 
         amounts.clear();
         amounts.add(wavesAmount);
@@ -217,7 +226,7 @@ public class PrepareInvokeTestsData {
 
         assetDAppAccount.setScript(script);
 
-        dAppCall = assetDAppAccount.setDataAssetAndAddress(Base58.decode(assetId.toString()), dAppAddress);
+        dAppCall = assetDAppAccount.setDataAssetAndAddress(Base58.decode(assetId.toString()), dAppAddressBase58);
 
         amounts.clear();
         amounts.add(wavesAmount);
@@ -275,7 +284,7 @@ public class PrepareInvokeTestsData {
         dAppAccount.setScript(dApp1);
         assetDAppAccount.setScript(dApp2);
 
-        dAppCall = dAppAccount.setData(assetDAppAddress, 121, "bar", "balance", assetId.bytes());
+        dAppCall = dAppAccount.setData(assetDAppAddressBase58, 121, "bar", "balance", assetId.bytes());
 
         amounts.clear();
         amounts.add(wavesAmount);
@@ -320,6 +329,10 @@ public class PrepareInvokeTestsData {
         return callerAccount;
     }
 
+    public static long getIssueAssetBurned() {
+        return issueAssetBurned;
+    }
+
     public static DataDApp getDAppAccount() {
         return dAppAccount;
     }
@@ -334,6 +347,19 @@ public class PrepareInvokeTestsData {
 
     public static Amount getAssetAmount() {
         return assetAmount;
+    }
+
+
+    public static String getCallerAddress() {
+        return callerAddress;
+    }
+
+    public static String getDAppAddress() {
+        return dAppAddress;
+    }
+
+    public static String getAssetDAppAddress() {
+        return assetDAppAddress;
     }
 
 }

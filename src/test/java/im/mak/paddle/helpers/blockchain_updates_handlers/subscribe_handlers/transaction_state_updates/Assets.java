@@ -6,18 +6,6 @@ import com.wavesplatform.events.protobuf.Events;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.TransactionStateUpdates.getTransactionStateUpdate;
 
 public class Assets {
-    public static Events.StateUpdate.AssetDetails getAssetBefore(int txStateUpdIndex, int assetIndex) {
-        return getTransactionStateUpdate(txStateUpdIndex)
-                .getAssets(assetIndex)
-                .getBefore();
-    }
-
-    public static Events.StateUpdate.AssetDetails getAssetAfter(int txStateUpdIndex, int assetIndex) {
-        return getTransactionStateUpdate(txStateUpdIndex)
-                .getAssets(assetIndex)
-                .getAfter();
-    }
-
     public static String getAssetIdFromAssetBefore(int txStateUpdIndex, int assetIndex) {
         return Base58.encode(getAssetBefore(txStateUpdIndex, assetIndex).getAssetId().toByteArray());
     }
@@ -88,5 +76,17 @@ public class Assets {
 
     public static long getScriptComplexityAfter(int txStateUpdIndex, int assetIndex) {
         return getAssetAfter(txStateUpdIndex, assetIndex).getScriptInfo().getComplexity();
+    }
+
+    private static Events.StateUpdate.AssetDetails getAssetBefore(int txStateUpdIndex, int assetIndex) {
+        return getTransactionStateUpdate(txStateUpdIndex)
+                .getAssets(assetIndex)
+                .getBefore();
+    }
+
+    private static Events.StateUpdate.AssetDetails getAssetAfter(int txStateUpdIndex, int assetIndex) {
+        return getTransactionStateUpdate(txStateUpdIndex)
+                .getAssets(assetIndex)
+                .getAfter();
     }
 }

@@ -13,8 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static im.mak.paddle.helpers.ConstructorRideFunctions.assetsFunctionBuilder;
-import static im.mak.paddle.helpers.ConstructorRideFunctions.defaultFunctionBuilder;
+import static im.mak.paddle.helpers.ConstructorRideFunctions.*;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
 import static im.mak.paddle.helpers.Randomizer.randomNumAndLetterString;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setExtraFee;
@@ -47,7 +46,8 @@ public class PrepareInvokeTestsData {
 
     private static Amount wavesAmount;
     private static Amount assetAmount;
-
+    private static long amountAfterInvokeIssuedAsset;
+    private static long amountAfterInvokeDAppIssuedAsset;
 
     private static final String args = "assetId:ByteVector";
     private static DAppCall dAppCall;
@@ -159,6 +159,8 @@ public class PrepareInvokeTestsData {
         assetDAppAccount.setScript(script);
 
         dAppCall = assetDAppAccount.setDataAssetId(Base58.decode(assetId.toString()));
+        amountAfterInvokeIssuedAsset = getIssueAssetVolume() - assetAmount.value();
+        amountAfterInvokeDAppIssuedAsset = Integer.parseInt(assetData.get(VOLUME)) - assetAmount.value();
 
         amounts.clear();
         amounts.add(assetAmount);
@@ -177,6 +179,8 @@ public class PrepareInvokeTestsData {
         assetDAppAccount.setScript(script);
 
         dAppCall = assetDAppAccount.setDataAssetId(Base58.decode(assetId.toString()));
+        amountAfterInvokeIssuedAsset = getIssueAssetVolume() + assetAmount.value();
+        amountAfterInvokeDAppIssuedAsset = Integer.parseInt(assetData.get(VOLUME)) + assetAmount.value();
 
         amounts.clear();
         amounts.add(assetAmount);
@@ -368,6 +372,14 @@ public class PrepareInvokeTestsData {
 
     public static Amount getAssetAmount() {
         return assetAmount;
+    }
+
+    public static long getAmountAfterInvokeIssuedAsset() {
+        return amountAfterInvokeIssuedAsset;
+    }
+
+    public static long getAmountAfterInvokeDAppIssuedAsset() {
+        return amountAfterInvokeDAppIssuedAsset;
     }
 
     public static String getCallerAddress() {

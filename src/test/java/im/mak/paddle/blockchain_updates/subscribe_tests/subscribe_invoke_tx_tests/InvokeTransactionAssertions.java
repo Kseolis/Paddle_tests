@@ -84,9 +84,9 @@ public class InvokeTransactionAssertions extends InvokeBaseTest {
         );
     }
 
-    protected static void checkStateUpdateAssets(int txStateUpdIndex, int assetIndex, Map<String, String> assetData) {
+    protected static void checkStateUpdateAssets
+            (int txStateUpdIndex, int assetIndex, Map<String, String> assetData, long quantityAfter) {
         String assetId = assetData.get(ASSET_ID);
-        String quantityAfter = String.valueOf(Integer.parseInt(assetData.get(VOLUME)) - getAssetAmount().value());
         if (!getAssetIdFromAssetBefore(txStateUpdIndex, assetIndex).isBlank()) {
             if (assetId != null) {
                 assertThat(getAssetIdFromAssetBefore(txStateUpdIndex, assetIndex)).isEqualTo(assetId);
@@ -106,7 +106,7 @@ public class InvokeTransactionAssertions extends InvokeBaseTest {
             assertThat(getDecimalsAfter(txStateUpdIndex, assetIndex)).isEqualTo(assetData.get(DECIMALS));
             assertThat(getNameAfter(txStateUpdIndex, assetIndex)).isEqualTo(assetData.get(NAME));
             assertThat(getDescriptionAfter(txStateUpdIndex, assetIndex)).isEqualTo(assetData.get(DESCRIPTION));
-            assertThat(getQuantityAfter(txStateUpdIndex, assetIndex)).isEqualTo(quantityAfter);
+            assertThat(getQuantityAfter(txStateUpdIndex, assetIndex)).isEqualTo(String.valueOf(quantityAfter));
         }
     }
 }

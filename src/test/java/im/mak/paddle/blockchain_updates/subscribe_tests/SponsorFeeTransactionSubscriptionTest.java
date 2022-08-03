@@ -161,7 +161,7 @@ public class SponsorFeeTransactionSubscriptionTest extends BaseTest {
                 () -> assertThat(getDecimalsBefore(0, 0)).isEqualTo(assetDecimals),
                 () -> assertThat(getNameBefore(0, 0)).isEqualTo(assetName),
                 () -> assertThat(getDescriptionBefore(0, 0)).isEqualTo(assetDescription),
-                () -> assertThat(getReissuableBefore(0, 0)).isEqualTo(true),
+                () -> assertThat(getReissueBefore(0, 0)).isEqualTo(true),
                 () -> assertThat(getQuantityBefore(0, 0)).isEqualTo(assetQuantity),
                 () -> assertThat(getScriptComplexityBefore(0, 0)).isEqualTo(0),
                 // check asset after sponsor fee transaction
@@ -170,7 +170,7 @@ public class SponsorFeeTransactionSubscriptionTest extends BaseTest {
                 () -> assertThat(getDecimalsAfter(0, 0)).isEqualTo(assetDecimals),
                 () -> assertThat(getNameAfter(0, 0)).isEqualTo(assetName),
                 () -> assertThat(getDescriptionAfter(0, 0)).isEqualTo(assetDescription),
-                () -> assertThat(getReissuableAfter(0, 0)).isEqualTo(true),
+                () -> assertThat(getReissueAfter(0, 0)).isEqualTo(true),
                 () -> assertThat(getQuantityAfter(0, 0)).isEqualTo(assetQuantity),
                 () -> assertThat(getScriptComplexityAfter(0, 0)).isEqualTo(0)
         );

@@ -127,20 +127,20 @@ public class ReissueTransactionSubscriptionTest extends BaseTest {
                 // check asset before reissue
                 () -> assertThat(getAssetIdFromAssetBefore(0, 0)).isEqualTo(assetId),
                 () -> assertThat(getIssuerBefore(0, 0)).isEqualTo(publicKey),
-                () -> assertThat(getQuantityBefore(0, 0)).isEqualTo(assetQuantity),
-                () -> assertThat(getReissuableBefore(0, 0)).isEqualTo(true),
+                () -> assertThat(getQuantityBefore(0, 0)).isEqualTo(String.valueOf(assetQuantity)),
+                () -> assertThat(getReissueBefore(0, 0)).isEqualTo(String.valueOf(true)),
                 () -> assertThat(getNameBefore(0, 0)).isEqualTo(assetName),
                 () -> assertThat(getDescriptionBefore(0, 0)).isEqualTo(assetDescription),
-                () -> assertThat(getDecimalsBefore(0, 0)).isEqualTo(assetDecimals),
+                () -> assertThat(getDecimalsBefore(0, 0)).isEqualTo(String.valueOf(assetDecimals)),
                 () -> assertThat(getScriptBefore(0, 0)).isEqualTo(compileScript),
                 // check asset after reissue
                 () -> assertThat(getAssetIdFromAssetAfter(0, 0)).isEqualTo(assetId),
                 () -> assertThat(getIssuerAfter(0, 0)).isEqualTo(publicKey),
-                () -> assertThat(getQuantityAfter(0, 0)).isEqualTo(quantityAfterReissue),
-                () -> assertThat(getReissuableAfter(0, 0)).isEqualTo(true),
+                () -> assertThat(getQuantityAfter(0, 0)).isEqualTo(String.valueOf(quantityAfterReissue)),
+                () -> assertThat(getReissueAfter(0, 0)).isEqualTo(String.valueOf(true)),
                 () -> assertThat(getNameAfter(0, 0)).isEqualTo(assetName),
                 () -> assertThat(getDescriptionAfter(0, 0)).isEqualTo(assetDescription),
-                () -> assertThat(getDecimalsAfter(0, 0)).isEqualTo(assetDecimals),
+                () -> assertThat(getDecimalsAfter(0, 0)).isEqualTo(String.valueOf(assetDecimals)),
                 () -> assertThat(getScriptAfter(0, 0)).isEqualTo(compileScript)
         );
     }

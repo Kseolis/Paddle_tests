@@ -127,7 +127,7 @@ public class IssueTransactionSubscriptionTest extends BaseTest {
                 () -> assertThat(getDescriptionAfter(0, 0)).isEqualTo(assetDescription),
                 () -> assertThat(getQuantityAfter(0, 0)).isEqualTo(quantity),
                 () -> assertThat(getDecimalsAfter(0, 0)).isEqualTo(assetDecimals),
-                () -> assertThat(getReissuableAfter(0, 0)).isEqualTo(reissue),
+                () -> assertThat(getReissueAfter(0, 0)).isEqualTo(reissue),
                 () -> assertThat(getScriptAfter(0, 0)).isEqualTo(compileScript)
         );
     }

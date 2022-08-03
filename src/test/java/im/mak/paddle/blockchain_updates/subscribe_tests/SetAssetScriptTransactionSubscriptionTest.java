@@ -93,21 +93,21 @@ public class SetAssetScriptTransactionSubscriptionTest extends BaseTest {
                 // check asset before set asset script
                 () -> assertThat(getAssetIdFromAssetBefore(0, 0)).isEqualTo(assetIdToString),
                 () -> assertThat(getIssuerBefore(0, 0)).isEqualTo(publicKey),
-                () -> assertThat(getQuantityBefore(0, 0)).isEqualTo(assetQuantity),
-                () -> assertThat(getReissuableBefore(0, 0)).isEqualTo(true),
-                () -> assertThat(getNameBefore(0, 0)).isEqualTo(assetName),
+                () -> assertThat(getQuantityBefore(0, 0)).isEqualTo(String.valueOf(assetQuantity)),
+                () -> assertThat(getReissueBefore(0, 0)).isEqualTo(String.valueOf(true)),
+                () -> assertThat(getNameBefore(0, 0)).isEqualTo(String.valueOf(assetName)),
                 () -> assertThat(getDescriptionBefore(0, 0)).isEqualTo(assetDescription),
-                () -> assertThat(getDecimalsBefore(0, 0)).isEqualTo(assetDecimals),
+                () -> assertThat(getDecimalsBefore(0, 0)).isEqualTo(String.valueOf(assetDecimals)),
                 () -> assertThat(getScriptBefore(0, 0)).isEqualTo(firstScript),
                 () -> assertThat(getScriptComplexityBefore(0, 0)).isEqualTo(0),
                 // check asset after set asset script
                 () -> assertThat(getAssetIdFromAssetAfter(0, 0)).isEqualTo(assetIdToString),
                 () -> assertThat(getIssuerAfter(0, 0)).isEqualTo(publicKey),
-                () -> assertThat(getQuantityAfter(0, 0)).isEqualTo(assetQuantity),
-                () -> assertThat(getReissuableAfter(0, 0)).isEqualTo(true),
+                () -> assertThat(getQuantityAfter(0, 0)).isEqualTo(String.valueOf(assetQuantity)),
+                () -> assertThat(getReissueAfter(0, 0)).isEqualTo(String.valueOf(true)),
                 () -> assertThat(getNameAfter(0, 0)).isEqualTo(assetName),
                 () -> assertThat(getDescriptionAfter(0, 0)).isEqualTo(assetDescription),
-                () -> assertThat(getDecimalsAfter(0, 0)).isEqualTo(assetDecimals),
+                () -> assertThat(getDecimalsAfter(0, 0)).isEqualTo(String.valueOf(assetDecimals)),
                 () -> assertThat(getScriptAfter(0, 0)).isEqualTo(newScript.bytes()),
                 () -> assertThat(getScriptComplexityAfter(0, 0)).isEqualTo(15)
         );

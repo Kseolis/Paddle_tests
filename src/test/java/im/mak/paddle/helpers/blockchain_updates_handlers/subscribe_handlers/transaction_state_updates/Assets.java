@@ -22,12 +22,12 @@ public class Assets {
         return Base58.encode(getAssetAfter(txStateUpdIndex, assetIndex).getIssuer().toByteArray());
     }
 
-    public static int getDecimalsBefore(int txStateUpdIndex, int assetIndex) {
-        return getAssetBefore(txStateUpdIndex, assetIndex).getDecimals();
+    public static String getDecimalsBefore(int txStateUpdIndex, int assetIndex) {
+        return String.valueOf(getAssetBefore(txStateUpdIndex, assetIndex).getDecimals());
     }
 
-    public static int getDecimalsAfter(int txStateUpdIndex, int assetIndex) {
-        return getAssetAfter(txStateUpdIndex, assetIndex).getDecimals();
+    public static String getDecimalsAfter(int txStateUpdIndex, int assetIndex) {
+        return String.valueOf(getAssetAfter(txStateUpdIndex, assetIndex).getDecimals());
     }
 
     public static String getNameBefore(int txStateUpdIndex, int assetIndex) {
@@ -46,20 +46,20 @@ public class Assets {
         return getAssetAfter(txStateUpdIndex, assetIndex).getDescription();
     }
 
-    public static boolean getReissuableBefore(int txStateUpdIndex, int assetIndex) {
-        return getAssetBefore(txStateUpdIndex, assetIndex).getReissuable();
+    public static String getReissueBefore(int txStateUpdIndex, int assetIndex) {
+        return String.valueOf(getAssetBefore(txStateUpdIndex, assetIndex).getReissuable());
     }
 
-    public static boolean getReissuableAfter(int txStateUpdIndex, int assetIndex) {
-        return getAssetAfter(txStateUpdIndex, assetIndex).getReissuable();
+    public static String getReissueAfter(int txStateUpdIndex, int assetIndex) {
+        return String.valueOf(getAssetAfter(txStateUpdIndex, assetIndex).getReissuable());
     }
 
-    public static long getQuantityBefore(int txStateUpdIndex, int assetIndex) {
-        return getAssetBefore(txStateUpdIndex, assetIndex).getVolume();
+    public static String getQuantityBefore(int txStateUpdIndex, int assetIndex) {
+        return String.valueOf(getAssetBefore(txStateUpdIndex, assetIndex).getVolume());
     }
 
-    public static long getQuantityAfter(int txStateUpdIndex, int assetIndex) {
-        return getAssetAfter(txStateUpdIndex, assetIndex).getVolume();
+    public static String getQuantityAfter(int txStateUpdIndex, int assetIndex) {
+        return String.valueOf(getAssetAfter(txStateUpdIndex, assetIndex).getVolume());
     }
 
     public static byte[] getScriptBefore(int txStateUpdIndex, int assetIndex) {
@@ -76,6 +76,14 @@ public class Assets {
 
     public static long getScriptComplexityAfter(int txStateUpdIndex, int assetIndex) {
         return getAssetAfter(txStateUpdIndex, assetIndex).getScriptInfo().getComplexity();
+    }
+
+    public static String getAssetSafeVolumeBefore(int txStateUpdIndex, int assetIndex) {
+        return Base58.encode(getAssetBefore(txStateUpdIndex, assetIndex).getSafeVolume().toByteArray());
+    }
+
+    public static String getAssetSafeVolumeAfter(int txStateUpdIndex, int assetIndex) {
+        return Base58.encode(getAssetAfter(txStateUpdIndex, assetIndex).getSafeVolume().toByteArray());
     }
 
     private static Events.StateUpdate.AssetDetails getAssetBefore(int txStateUpdIndex, int assetIndex) {

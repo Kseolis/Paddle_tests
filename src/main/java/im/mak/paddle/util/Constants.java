@@ -37,8 +37,19 @@ public class Constants {
 
     public static final long DEVNET_CHAIN_ID = 68;
     public static final long STAGENET_CHAIN_ID = 83;
-    public static final String ACTIVE_STATUS_LEASE = "ACTIVE";
-    public static final String INACTIVE_STATUS_LEASE = "INACTIVE";
     public static final byte ORDER_V_3 = 3;
     public static final byte ORDER_V_4 = 4;
+
+    public static final String ACTIVE_STATUS_LEASE = "ACTIVE";
+    public static final String INACTIVE_STATUS_LEASE = "INACTIVE";
+
+    // asset data keys
+
+    public static final String ASSET_ID = "asset_id";
+    public static final String ISSUER = "issuer";
+    public static final String DECIMALS = "decimals";
+    public static final String DESCRIPTION = "description";
+    public static final String NAME = "name";
+    public static final String REISSUE = "reissue";
+    public static final String VOLUME = "volume";
 }

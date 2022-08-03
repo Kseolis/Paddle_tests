@@ -1,15 +1,31 @@
 package im.mak.paddle.helpers;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static im.mak.paddle.helpers.PrepareInvokeTestsData.getAssetDAppPublicKey;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
+import static im.mak.paddle.util.Constants.*;
 
 public class ConstructorRideFunctions {
-    private static final int decimals = getRandomInt(0, 8);
-    private static final int quantity = getRandomInt(10000, 100000);
-    private static final int nonce = getRandomInt(0, 10);
-    private static final String issuedAssetName = "issuedAsset";
-    private static final String issuedAssetDescription = "asset from ride script";
+    private static final Map<String, String> issuedAssetData =  new HashMap<>();
+
+    private static final int issueAssetDecimals = getRandomInt(0, 8);
+    private static final String issuedAssetName = "issuedAsset" + getRandomInt(1, 99);
+    private static final String issuedAssetDescription = "asset ride script " + getRandomInt(1, 9999999);
+    private static final int issueAssetVolume = getRandomInt(700_000, 900_000_000);
+    private static final boolean issueAssetReissuable = true;
+    private static final int issueAssetNonce = getRandomInt(0, 10);
 
     public static String assetsFunctionBuilder(int libVersion, String script, String functions, String args) {
+        issuedAssetData.put(ASSET_ID, null);
+        issuedAssetData.put(ISSUER, getAssetDAppPublicKey());
+        issuedAssetData.put(DECIMALS, String.valueOf(issueAssetDecimals));
+        issuedAssetData.put(DESCRIPTION, issuedAssetDescription);
+        issuedAssetData.put(NAME, issuedAssetName);
+        issuedAssetData.put(REISSUE, String.valueOf(issueAssetReissuable));
+        issuedAssetData.put(VOLUME, String.valueOf(issueAssetVolume));
+
         final StringBuilder sb = new StringBuilder();
         sb.append("{-# STDLIB_VERSION ").append(libVersion).append(" #-}\n")
                 .append("{-# CONTENT_TYPE DAPP #-}\n")
@@ -19,11 +35,11 @@ public class ConstructorRideFunctions {
 
         sb.append("let issueAsset = Issue(\"").append(issuedAssetName).append("\", \"")
                 .append(issuedAssetDescription).append("\",")
-                .append(quantity).append(",")
-                .append(decimals).append(",")
-                .append("true").append(",")
+                .append(issueAssetVolume).append(",")
+                .append(issueAssetDecimals).append(",")
+                .append(issueAssetReissuable).append(",")
                 .append(script).append(",")
-                .append(nonce).append(")");
+                .append(issueAssetNonce).append(")");
 
         sb.append("\nlet issueAssetId = issueAsset.calculateAssetId()\n");
 
@@ -31,7 +47,7 @@ public class ConstructorRideFunctions {
                 .append("\tissueAsset,\n")
                 .append("\t").append(functions).append("\n]\n")
                 .append("}");
-
+        System.out.println(sb);
         return sb.toString();
     }
 
@@ -56,16 +72,24 @@ public class ConstructorRideFunctions {
         return issuedAssetDescription;
     }
 
-    public static int getQuantity() {
-        return quantity;
+    public static int getIssueAssetVolume() {
+        return issueAssetVolume;
     }
 
-    public static int getDecimals() {
-        return decimals;
+    public static int getIssueAssetDecimals() {
+        return issueAssetDecimals;
     }
 
-    public static int getNonce() {
-        return nonce;
+    public static boolean getIssueAssetReissuable() {
+        return issueAssetReissuable;
+    }
+
+    public static int getIssueAssetNonce() {
+        return issueAssetNonce;
+    }
+
+    public static Map<String, String> getIssueAssetData() {
+        return issuedAssetData;
     }
 
 }

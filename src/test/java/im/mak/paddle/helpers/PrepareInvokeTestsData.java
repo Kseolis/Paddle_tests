@@ -9,7 +9,9 @@ import im.mak.paddle.dapps.AssetDAppAccount;
 import im.mak.paddle.dapps.DataDApp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static im.mak.paddle.helpers.ConstructorRideFunctions.assetsFunctionBuilder;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.defaultFunctionBuilder;
@@ -24,14 +26,17 @@ import static im.mak.paddle.util.Constants.ONE_WAVES;
 public class PrepareInvokeTestsData {
     private static Account callerAccount;
     private static String callerAddress;
+    private static String callerPublicKey;
     private static byte[] callerAddressBase58;
 
     private static DataDApp dAppAccount;
     private static String dAppAddress;
+    private static String dAppPublicKey;
     private static byte[] dAppAddressBase58;
 
     private static AssetDAppAccount assetDAppAccount;
     private static String assetDAppAddress;
+    private static String assetDAppPublicKey;
     private static byte[] assetDAppAddressBase58;
     private static AssetId assetId;
 
@@ -42,18 +47,29 @@ public class PrepareInvokeTestsData {
 
     private static Amount wavesAmount;
     private static Amount assetAmount;
-    private static long issueAssetBurned;
+
 
     private static final String args = "assetId:ByteVector";
-    private static final List<Amount> amounts = new ArrayList<>();
     private static DAppCall dAppCall;
     private static long fee;
 
+    private static final Map<String, String> assetData =  new HashMap<>();
+    private static final List<Amount> amounts = new ArrayList<>();
+
     public PrepareInvokeTestsData() {
+        String name = randomNumAndLetterString(3) + "_asset";
+        String description = name + "_dscrpt";
+        assetData.put(DECIMALS, String.valueOf(getRandomInt(0, 8)));
+        assetData.put(DESCRIPTION, description);
+        assetData.put(NAME, name);
+        assetData.put(REISSUE, "true");
+        assetData.put(VOLUME, String.valueOf(getRandomInt(700_000_000, 900_000_000)));
+
         async(
                 () -> {
                     callerAccount = new Account(DEFAULT_FAUCET);
                     callerAddress = callerAccount.address().toString();
+                    callerPublicKey = callerAccount.publicKey().toString();
                     callerAddressBase58 = Base58.decode(callerAddress);
                 },
                 () -> binArg = randomNumAndLetterString(10),
@@ -65,14 +81,23 @@ public class PrepareInvokeTestsData {
                 () -> {
                     assetDAppAccount = new AssetDAppAccount(DEFAULT_FAUCET, "true");
                     assetDAppAddress = assetDAppAccount.address().toString();
+                    assetDAppPublicKey = assetDAppAccount.publicKey().toString();
                     assetDAppAddressBase58 = Base58.decode(assetDAppAddress);
                     assetId = assetDAppAccount.issue(i -> i
-                                    .name("outside Asset").quantity(900_000_000L))
-                            .tx().assetId();
+                                    .decimals(Integer.parseInt(assetData.get(DECIMALS)))
+                                    .description(description)
+                                    .name(assetData.get(NAME))
+                                    .quantity(Integer.parseInt(assetData.get(VOLUME)))
+                                    .reissuable(Boolean.parseBoolean(assetData.get(REISSUE)))
+                            ).tx().assetId();
+
+                    assetData.put(ISSUER, assetDAppPublicKey);
+                    assetData.put(ASSET_ID, assetId.toString());
                 },
                 () -> {
                     dAppAccount = new DataDApp(DEFAULT_FAUCET, "true");
                     dAppAddress = dAppAccount.address().toString();
+                    dAppPublicKey = dAppAccount.publicKey().toString();
                     dAppAddressBase58 = Base58.decode(dAppAddress);
                 }
         );
@@ -80,7 +105,6 @@ public class PrepareInvokeTestsData {
         assetDAppAccount.transfer(dAppAccount, Amount.of(300_000_000L, assetId));
         wavesAmount = Amount.of(getRandomInt(100, 100000));
         assetAmount = Amount.of(getRandomInt(100, 100000), assetId);
-        issueAssetBurned = getRandomInt(10, 1000);
     }
 
     public void prepareDataForDataDAppTests() {
@@ -130,7 +154,7 @@ public class PrepareInvokeTestsData {
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
 
         final String functions = "Burn(assetId, " + assetAmount.value() + ")," +
-                "\nBurn(issueAssetId, " + issueAssetBurned + ")";
+                "\nBurn(issueAssetId, " + assetAmount.value() + ")";
         final String script = assetsFunctionBuilder(libVersion, "unit", functions, args);
         assetDAppAccount.setScript(script);
 
@@ -147,7 +171,8 @@ public class PrepareInvokeTestsData {
         fee = ONE_WAVES + SUM_FEE;
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
 
-        final String functions = "Reissue(assetId," + assetAmount.value() + ",true),\nReissue(issueAssetId,1,true)";
+        final String functions = "Reissue(assetId," + assetAmount.value() + ",true),\n" +
+                "Reissue(issueAssetId," + assetAmount.value() + ",true)";
         final String script = assetsFunctionBuilder(libVersion, "unit", functions, args);
         assetDAppAccount.setScript(script);
 
@@ -329,10 +354,6 @@ public class PrepareInvokeTestsData {
         return callerAccount;
     }
 
-    public static long getIssueAssetBurned() {
-        return issueAssetBurned;
-    }
-
     public static DataDApp getDAppAccount() {
         return dAppAccount;
     }
@@ -349,7 +370,6 @@ public class PrepareInvokeTestsData {
         return assetAmount;
     }
 
-
     public static String getCallerAddress() {
         return callerAddress;
     }
@@ -362,4 +382,19 @@ public class PrepareInvokeTestsData {
         return assetDAppAddress;
     }
 
+    public static String getCallerPublicKey() {
+        return callerPublicKey;
+    }
+
+    public static String getDAppPublicKey() {
+        return dAppPublicKey;
+    }
+
+    public static String getAssetDAppPublicKey() {
+        return assetDAppPublicKey;
+    }
+
+    public static Map<String, String> getAssetData() {
+        return assetData;
+    }
 }

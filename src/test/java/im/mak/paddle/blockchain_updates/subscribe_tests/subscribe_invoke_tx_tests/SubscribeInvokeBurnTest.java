@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeTransactionAssertions.*;
-import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetQuantity;
+import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
+import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetVolume;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
@@ -29,7 +30,7 @@ public class SubscribeInvokeBurnTest extends InvokeBaseTest {
         invokeSender(getCallerAccount(), getAssetDAppAccount(), getDAppCall());
 
         height = node().getHeight();
-        amountAfterBurnDAppIssuedAsset = getIssueAssetQuantity() - getIssueAssetBurned();
+        amountAfterBurnDAppIssuedAsset = getIssueAssetVolume() - getAssetAmount().value();
 
         subscribeResponseHandler(channel, getAssetDAppAccount(), height, height);
         prepareInvoke(getAssetDAppAccount());
@@ -45,7 +46,7 @@ public class SubscribeInvokeBurnTest extends InvokeBaseTest {
                 () -> checkMainMetadata(0),
                 () -> checkIssueAssetMetadata(0, 0),
                 () -> checkBurnMetadata(0, 0, getAssetId().toString(), getAssetAmount().value()),
-                () -> checkBurnMetadata(0, 1, WAVES_STRING_ID, getIssueAssetBurned()),
+                () -> checkBurnMetadata(0, 1, WAVES_STRING_ID, getAssetAmount().value()),
 
                 () -> checkStateUpdateBalance(0,
                         getCallerAddress(),
@@ -65,5 +66,8 @@ public class SubscribeInvokeBurnTest extends InvokeBaseTest {
                         getDAppBalanceIssuedAssetsBeforeTransaction(),
                         getDAppBalanceIssuedAssetsAfterTransaction())
         );
+
+        checkStateUpdateAssets(0, 0, getIssueAssetData());
+        checkStateUpdateAssets(0, 1, getAssetData());
     }
 }

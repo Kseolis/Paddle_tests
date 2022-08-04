@@ -9,7 +9,6 @@ import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeTransactionAssertions.checkStateUpdateAssets;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.*;
@@ -34,14 +33,14 @@ public class SubscribeInvokeReissueTest extends InvokeBaseTest {
         subscribeResponseHandler(channel, getAssetDAppAccount(), height, height);
         prepareInvoke(getAssetDAppAccount());
 
-        checkInvokeSubscribe(getAssetAmount().value(), getFee());
+        checkInvokeSubscribeTransaction(getFee());
         assertionsCheck();
     }
 
     private void assertionsCheck() {
 
         assertAll(
-                () -> checkInvokeSubscribe(getAssetAmount().value(), getFee()),
+                () -> checkInvokeSubscribeTransaction(getFee()),
                 () -> checkMainMetadata(0),
                 () -> checkIssueAssetMetadata(0, 0),
                 () -> checkReissueMetadata(0, 0,
@@ -50,7 +49,7 @@ public class SubscribeInvokeReissueTest extends InvokeBaseTest {
                         true),
 
                 () -> checkReissueMetadata(0, 1,
-                        "",
+                        null,
                         getAssetAmount().value(),
                         true),
 

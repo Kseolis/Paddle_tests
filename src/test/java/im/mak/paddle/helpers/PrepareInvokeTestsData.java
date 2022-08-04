@@ -8,10 +8,7 @@ import im.mak.paddle.dapp.DAppCall;
 import im.mak.paddle.dapps.AssetDAppAccount;
 import im.mak.paddle.dapps.DataDApp;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static im.mak.paddle.helpers.ConstructorRideFunctions.*;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
@@ -26,6 +23,7 @@ public class PrepareInvokeTestsData {
     private static Account callerAccount;
     private static String callerAddress;
     private static String callerPublicKey;
+    private static String callerPublicKeyHash;
     private static byte[] callerAddressBase58;
 
     private static DataDApp dAppAccount;
@@ -70,6 +68,7 @@ public class PrepareInvokeTestsData {
                     callerAccount = new Account(DEFAULT_FAUCET);
                     callerAddress = callerAccount.address().toString();
                     callerPublicKey = callerAccount.publicKey().toString();
+                    callerPublicKeyHash = Base58.encode(callerAccount.address().publicKeyHash());
                     callerAddressBase58 = Base58.decode(callerAddress);
                 },
                 () -> binArg = randomNumAndLetterString(10),
@@ -202,9 +201,7 @@ public class PrepareInvokeTestsData {
 
         amounts.clear();
         amounts.add(wavesAmount);
-
         setFee(SUM_FEE);
-        setExtraFee(0);
     }
 
     public void prepareDataForLeaseCancelTests() {
@@ -396,6 +393,10 @@ public class PrepareInvokeTestsData {
 
     public static String getCallerPublicKey() {
         return callerPublicKey;
+    }
+
+    public static String getCallerPublicKeyHash() {
+        return callerPublicKeyHash;
     }
 
     public static String getDAppPublicKey() {

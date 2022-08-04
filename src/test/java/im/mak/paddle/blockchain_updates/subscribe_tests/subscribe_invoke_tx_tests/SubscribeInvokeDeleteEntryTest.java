@@ -30,6 +30,6 @@ public class SubscribeInvokeDeleteEntryTest extends InvokeBaseTest {
         prepareInvoke(getDAppAccount());
         System.out.println(getAppend());
 
-        checkInvokeSubscribe(getWavesAmount().value(), SUM_FEE);
+        checkInvokeSubscribe(SUM_FEE);
     }
 }

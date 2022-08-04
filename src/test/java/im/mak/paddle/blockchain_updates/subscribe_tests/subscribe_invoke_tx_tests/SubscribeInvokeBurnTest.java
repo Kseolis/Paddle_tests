@@ -36,7 +36,7 @@ public class SubscribeInvokeBurnTest extends InvokeBaseTest {
 
     private void assertionsCheck() {
         assertAll(
-                () -> checkInvokeSubscribe(getAssetAmount().value(), getFee()),
+                () -> checkInvokeSubscribe(getFee()),
                 () -> checkMainMetadata(0),
                 () -> checkIssueAssetMetadata(0, 0),
                 () -> checkBurnMetadata(0, 0, getAssetId().toString(), getAssetAmount().value()),

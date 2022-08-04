@@ -31,6 +31,6 @@ public class SubscribeInvokeSponsorFeeTest extends InvokeBaseTest {
 
         System.out.println(getAppend());
 
-        checkInvokeSubscribe(getWavesAmount().value(), SUM_FEE);
+        checkInvokeSubscribe(SUM_FEE);
     }
 }

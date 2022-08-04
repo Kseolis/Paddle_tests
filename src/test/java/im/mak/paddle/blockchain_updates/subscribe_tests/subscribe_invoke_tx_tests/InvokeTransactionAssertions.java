@@ -12,6 +12,7 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultBurn.getInvokeMetadataResultBurnAssetId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultIssue.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultIssue.getInvokeMetadataResultIssueNonce;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultReissue.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.getAmountAfter;
@@ -30,7 +31,7 @@ public class InvokeTransactionAssertions extends InvokeBaseTest {
         assertAll(
                 () -> assertThat(getChainId(0)).isEqualTo(STAGENET_CHAIN_ID),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(getCallerAccount().publicKey().toString()),
-                () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(fee),
+                () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(getFee()),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),
                 () -> assertThat(getInvokeTransactionPublicKeyHash(0)).isEqualTo(dAppAccountPublicKeyHash),
                 //  () -> assertThat(getInvokeTransactionFunctionCall(0)).isEqualTo(getDAppCall().getFunction().toString());
@@ -70,6 +71,15 @@ public class InvokeTransactionAssertions extends InvokeBaseTest {
             assertThat(getInvokeMetadataResultBurnAssetId(metadataIndex, dataIndex)).isEqualTo(assetId);
         }
         assertThat(getInvokeMetadataResultBurnAmount(metadataIndex, dataIndex)).isEqualTo(amount);
+    }
+
+    protected static void checkReissueMetadata
+            (int metadataIndex, int dataIndex, String assetId, long amount, boolean reissue) {
+        if (!assetId.equals("")) {
+            assertThat(getInvokeMetadataResultReissueAssetId(metadataIndex, dataIndex)).isEqualTo(assetId);
+        }
+        assertThat(getInvokeMetadataResultReissueAmount(metadataIndex, dataIndex)).isEqualTo(amount);
+        assertThat(getInvokeMetadataResultReissueIsReissuable(metadataIndex, dataIndex)).isEqualTo(reissue);
     }
 
     protected static void checkStateUpdateBalance

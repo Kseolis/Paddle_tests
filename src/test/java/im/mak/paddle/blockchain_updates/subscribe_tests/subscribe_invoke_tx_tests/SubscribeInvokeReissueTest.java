@@ -34,8 +34,6 @@ public class SubscribeInvokeReissueTest extends InvokeBaseTest {
         subscribeResponseHandler(channel, getAssetDAppAccount(), height, height);
         prepareInvoke(getAssetDAppAccount());
 
-        System.out.println(getAppend());
-
         checkInvokeSubscribe(getAssetAmount().value(), getFee());
         assertionsCheck();
     }
@@ -46,6 +44,15 @@ public class SubscribeInvokeReissueTest extends InvokeBaseTest {
                 () -> checkInvokeSubscribe(getAssetAmount().value(), getFee()),
                 () -> checkMainMetadata(0),
                 () -> checkIssueAssetMetadata(0, 0),
+                () -> checkReissueMetadata(0, 0,
+                        getAssetId().toString(),
+                        getAssetAmount().value(),
+                        true),
+
+                () -> checkReissueMetadata(0, 1,
+                        "",
+                        getAssetAmount().value(),
+                        true),
 
                 () -> checkStateUpdateBalance(0,
                         getCallerAddress(),

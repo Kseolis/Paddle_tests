@@ -28,30 +28,3 @@ public class InvokeBaseTest extends BaseTest {
     }
 
 }
-
-/* assertAll(
-                () -> assertThat(getChainId(0)).isEqualTo(DEVNET_CHAIN_ID),
-                () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(publicKey),
-                () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(SUM_FEE),
-                () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),
-                () -> assertThat(getTransactionId()).isEqualTo(getInvokeScriptId()),
-                () -> assertThat(getInvokeTransactionAmount(0, 0)).isEqualTo(amount),
-                () -> assertThat(getInvokeTransactionPublicKeyHash(0)).isEqualTo(accWithDAppPublicKeyHash),
-
-
-                () -> assertThat(getInvokeMetadataArgStringValue(0, 0)).isEqualTo(dAppValue),
-                // check waves account balance
-                () -> assertThat(getAddress(0, 0)).isEqualTo(address),
-                () -> assertThat(getAmountBefore(0, 0)).isEqualTo(getAccountWavesBalance()),
-                () -> assertThat(getAmountAfter(0, 0)).isEqualTo(getBalanceAfterTransaction()),
-                // check waves dAppAccount balance
-                () -> assertThat(getAddress(0, 1)).isEqualTo(accWithDAppAddress),
-                () -> assertThat(getAmountBefore(0, 1)).isEqualTo(getDAppAccountBalance()),
-                () -> assertThat(getAmountAfter(0, 1)).isEqualTo(getDAppAccountBalanceAfterTransaction()),
-                // data entries
-                () -> assertThat(getSenderAddress(0, 0)).isEqualTo(accWithDAppAddress),
-                () -> assertThat(getTxKeyForStateUpdates(0, 0)).isEqualTo(dAppKey),
-                () -> assertThat(getTxStringValueForStateUpdates(0, 0)).isEqualTo(dAppValue),
-                () -> assertThat(getBeforeDataEntriesKey(0, 0)).isEqualTo(dAppKey),
-                () -> assertThat(getBeforeDataEntriesStringValue(0, 0)).isEqualTo(dAppBeforeValue)
-        );*/

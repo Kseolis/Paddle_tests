@@ -8,7 +8,7 @@ public class BaseTransactionSender {
     protected static TransactionInfo txInfo;
     protected static int version;
     protected static long fee;
-    protected static long extraFee;
+    protected static long extraFee = 0;
 
     public static long getBalanceAfterTransaction() {
         return balanceAfterTransaction;

@@ -111,7 +111,16 @@ public class InvokeTransactionAssertions extends InvokeBaseTest {
         );
     }
 
-    protected static void checkStateUpdateLeasingForAddress
+    protected static void checkStateUpdateBeforeLeasingForAddress
+            (int metadataIndex, int dataIndex, String address, long sumIn, long sumOut) {
+        assertAll(
+                () -> assertThat(getAddressFromLeasingForAddress(metadataIndex, dataIndex)).isEqualTo(address),
+                () -> assertThat(getInBeforeFromLeasingForAddress(metadataIndex, dataIndex)).isEqualTo(sumIn),
+                () -> assertThat(getOutBeforeFromLeasingForAddress(metadataIndex, dataIndex)).isEqualTo(sumOut)
+        );
+    }
+
+    protected static void checkStateUpdateAfterLeasingForAddress
             (int metadataIndex, int dataIndex, String address, long sumIn, long sumOut) {
         assertAll(
                 () -> assertThat(getAddressFromLeasingForAddress(metadataIndex, dataIndex)).isEqualTo(address),
@@ -121,11 +130,11 @@ public class InvokeTransactionAssertions extends InvokeBaseTest {
     }
 
     protected static void checkStateUpdateIndividualLeases
-            (int metadataIndex, int dataIndex, long leaseSum, String senderPublicKey, String recipientAddress) {
+            (int metadataIndex, int dataIndex, long sum, String senderPK, String recipientAddress, String status) {
         assertAll(
-                () -> assertThat(getStatusAfterFromIndividualLeases(metadataIndex, dataIndex)).isEqualTo(ACTIVE_STATUS_LEASE),
-                () -> assertThat(getAmountFromIndividualLeases(metadataIndex, dataIndex)).isEqualTo(leaseSum),
-                () -> assertThat(getSenderFromIndividualLeases(metadataIndex, dataIndex)).isEqualTo(senderPublicKey),
+                () -> assertThat(getStatusAfterFromIndividualLeases(metadataIndex, dataIndex)).isEqualTo(status),
+                () -> assertThat(getAmountFromIndividualLeases(metadataIndex, dataIndex)).isEqualTo(sum),
+                () -> assertThat(getSenderFromIndividualLeases(metadataIndex, dataIndex)).isEqualTo(senderPK),
                 () -> assertThat(getRecipientFromIndividualLeases(metadataIndex, dataIndex)).isEqualTo(recipientAddress)
         );
     }

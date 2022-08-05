@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static com.wavesplatform.wavesj.ApplicationStatus.SUCCEEDED;
+import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeBaseTest.getTestsData;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getTxInfo;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.*;
@@ -26,7 +27,7 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke with DataDApp and issue asset payment")
     void invokeScriptWithDataDAppTest() {
-        testsData.prepareDataForDataDAppTests();
+        getTestsData().prepareDataForDataDAppTests();
         for (int v = 1; v <= LATEST_VERSION; v++) {
             setVersion(v);
             balancesAfterPaymentInvoke(getCallerAccount(), getDAppAccount(), getAmounts(), getAssetId());
@@ -39,7 +40,7 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke with DeleteEntry")
     void invokeScriptDeleteEntryTest() {
-        testsData.prepareDataForDeleteEntryTests();
+        getTestsData().prepareDataForDeleteEntryTests();
         for (int v = 1; v <= LATEST_VERSION; v++) {
             setVersion(v);
             balancesAfterPaymentInvoke(getCallerAccount(), getDAppAccount(), getAmounts(), getAssetId());
@@ -52,7 +53,7 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke with Burn transaction")
     void invokeScriptWithBurn() {
-        testsData.prepareDataForBurnTests();
+        getTestsData().prepareDataForBurnTests();
         for (int v = 1; v <= LATEST_VERSION; v++) {
             setVersion(v);
             balancesAfterBurnAssetInvoke(getCallerAccount(), getAssetDAppAccount(), getAmounts(), getAssetId());
@@ -65,7 +66,7 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke with Reissue Transaction")
     void invokeScriptWithReissue() {
-        testsData.prepareDataForReissueTests();
+        getTestsData().prepareDataForReissueTests();
         for (int v = 1; v <= LATEST_VERSION; v++) {
             setVersion(v);
             balancesAfterReissueAssetInvoke(getCallerAccount(), getAssetDAppAccount(), getAmounts(), getAssetId());
@@ -78,7 +79,7 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke with Lease and WAVES payment")
     void invokeScriptWithLease() {
-        testsData.prepareDataForLeaseTests();
+        getTestsData().prepareDataForLeaseTests();
         for (int v = 1; v <= LATEST_VERSION; v++) {
             setVersion(v);
             balancesAfterPaymentInvoke(getCallerAccount(), getDAppAccount(), getAmounts(), getAssetId());
@@ -92,7 +93,7 @@ public class InvokeScriptTransactionTest {
     @DisplayName("invoke with LeaseCancel and WAVES payment")
     void invokeScriptWithLeaseCancel() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            testsData.prepareDataForLeaseCancelTests();
+            getTestsData().prepareDataForLeaseCancelTests();
             setVersion(v);
             balancesAfterPaymentInvoke(getCallerAccount(), getDAppAccount(), getAmounts(), getAssetId());
             invokeSenderWithPayment(getCallerAccount(), getDAppAccount(), getDAppCall(), getAmounts());
@@ -104,7 +105,7 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke with SponsorFee")
     void invokeScriptWithSponsorFee() {
-        testsData.prepareDataForSponsorFeeTests();
+        getTestsData().prepareDataForSponsorFeeTests();
         for (int v = 1; v <= LATEST_VERSION; v++) {
             setVersion(v);
             balancesAfterPaymentInvoke(getCallerAccount(), getAssetDAppAccount(), getAmounts(), getAssetId());
@@ -117,7 +118,7 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke with ScriptTransfer")
     void invokeScriptWithScriptTransfer() {
-        testsData.prepareDataForScriptTransferTests();
+        getTestsData().prepareDataForScriptTransferTests();
         for (int v = 1; v <= LATEST_VERSION; v++) {
             setVersion(v);
             balancesAfterCallerInvokeAsset(getAssetDAppAccount(), getDAppAccount(), getAmounts(), getAssetId());
@@ -130,7 +131,7 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke with payments")
     void invokeScriptPayments() {
-        testsData.prepareDataForPaymentsTests();
+        getTestsData().prepareDataForPaymentsTests();
         for (int v = 1; v <= LATEST_VERSION; v++) {
             setVersion(v);
             balancesAfterCallerInvokeAsset(getCallerAccount(), getDAppAccount(), getAmounts(), getAssetId());
@@ -143,7 +144,7 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke dApp to dApp")
     void invokeDAppToDApp() {
-        testsData.prepareDataForDAppToDAppTests();
+        getTestsData().prepareDataForDAppToDAppTests();
         for (int v = 1; v <= LATEST_VERSION; v++) {
             setVersion(v);
             balancesAfterDAppToDApp(getCallerAccount(), getDAppAccount(), getAssetDAppAccount(), getAmounts(), getAssetId());

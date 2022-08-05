@@ -229,7 +229,8 @@ public class PrepareInvokeTestsData {
         fee = ONE_WAVES + SUM_FEE;
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
 
-        final String functions = "SponsorFee(assetId, " + assetAmount.value() + "),\nSponsorFee(issueAssetId, 500)";
+        final String functions = "SponsorFee(assetId, " + assetAmount.value() + ")," +
+                "\nSponsorFee(issueAssetId, " + assetAmount.value() + ")";
         final String script = assetsFunctionBuilder(libVersion, "unit", functions, args);
         assetDAppAccount.setScript(script);
 

@@ -9,11 +9,11 @@ import org.junit.jupiter.api.BeforeAll;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
 
 public class InvokeBaseTest extends BaseTest {
-    static PrepareInvokeTestsData testsData;
-    static String dAppAccountPublicKey;
-    static String dAppAccountPublicKeyHash;
-    static String dAppAccountAddress;
-    static String dAppFunctionName;
+    private static PrepareInvokeTestsData testsData;
+    private static String dAppAccountPublicKey;
+    private static String dAppAccountPublicKeyHash;
+    private static String dAppAccountAddress;
+    private static String dAppFunctionName;
 
     @BeforeAll
     static void before() {
@@ -27,4 +27,23 @@ public class InvokeBaseTest extends BaseTest {
         dAppFunctionName = getDAppCall().getFunction().name();
     }
 
+    public static PrepareInvokeTestsData getTestsData() {
+        return testsData;
+    }
+
+    public static String getDAppAccountPublicKey() {
+        return dAppAccountPublicKey;
+    }
+
+    public static String getDAppAccountPublicKeyHash() {
+        return dAppAccountPublicKeyHash;
+    }
+
+    public static String getDAppAccountAddress() {
+        return dAppAccountAddress;
+    }
+
+    public static String getDAppFunctionName() {
+        return dAppFunctionName;
+    }
 }

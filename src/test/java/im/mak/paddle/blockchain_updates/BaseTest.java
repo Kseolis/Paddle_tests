@@ -7,7 +7,7 @@ public class BaseTest {
     protected int height;
 
     protected final Channel channel = ManagedChannelBuilder
-            .forAddress("stagenet-grpc.wavesnodes.com", 6881)
+            .forAddress("devnet1-htz-nbg1-3.wavesnodes.com", 6881)
             .usePlaintext()
             .build();
 }

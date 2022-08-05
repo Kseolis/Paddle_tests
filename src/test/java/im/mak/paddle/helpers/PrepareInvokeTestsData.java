@@ -41,6 +41,7 @@ public class PrepareInvokeTestsData {
     private static String binArg;
     private static boolean boolArg;
     private static String stringArg;
+    private static byte[] leaseId;
 
     private static Amount wavesAmount;
     private static Amount assetAmount;
@@ -220,7 +221,7 @@ public class PrepareInvokeTestsData {
         setFee(SUM_FEE);
         setExtraFee(0);
 
-        byte[] leaseId = Base58.decode(dAppAccount.lease(callerAccount, wavesAmount.value()).tx().id().toString());
+        leaseId = Base58.decode(dAppAccount.lease(callerAccount, wavesAmount.value()).tx().id().toString());
         dAppCall = dAppAccount.setData(leaseId);
     }
 
@@ -349,6 +350,10 @@ public class PrepareInvokeTestsData {
 
     public static String getStringArg() {
         return stringArg;
+    }
+
+    public static byte[] getLeaseId() {
+        return leaseId;
     }
 
     public static Account getCallerAccount() {

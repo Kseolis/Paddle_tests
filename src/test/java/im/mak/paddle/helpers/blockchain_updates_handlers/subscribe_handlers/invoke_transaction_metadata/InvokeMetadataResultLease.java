@@ -23,6 +23,13 @@ public class InvokeMetadataResultLease extends BaseInvokeMetadata {
         );
     }
 
+    public static byte[] getInvokeMetadataCancelLeaseId(int metadataIndex, int argIndex) {
+        return getInvokeScriptResult(metadataIndex)
+                .getLeaseCancels(argIndex)
+                .getLeaseId()
+                .toByteArray();
+    }
+
     private static Lease getInvokeMetadataLeases(int metadataIndex, int argIndex) {
         return getInvokeScriptResult(metadataIndex)
                 .getLeases(argIndex);

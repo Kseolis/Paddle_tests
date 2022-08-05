@@ -44,7 +44,6 @@ public class Constants {
     public static final String INACTIVE_STATUS_LEASE = "INACTIVE";
 
     // asset data keys
-
     public static final String ASSET_ID = "asset_id";
     public static final String ISSUER = "issuer";
     public static final String DECIMALS = "decimals";
@@ -52,4 +51,10 @@ public class Constants {
     public static final String NAME = "name";
     public static final String REISSUE = "reissue";
     public static final String VOLUME = "volume";
+
+    // arg types
+    public static final String INTEGER = "integer";
+    public static final String STRING = "string";
+    public static final String BOOLEAN = "boolean";
+    public static final String BINARY = "binary_value";
 }

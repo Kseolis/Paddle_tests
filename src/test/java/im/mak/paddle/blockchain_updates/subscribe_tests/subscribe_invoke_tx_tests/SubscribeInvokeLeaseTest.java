@@ -8,13 +8,11 @@ import static im.mak.paddle.Node.node;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeTransactionAssertions.*;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.getAssetId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.*;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender.invokeSenderWithPayment;
-import static im.mak.paddle.util.Constants.SUM_FEE;
-import static im.mak.paddle.util.Constants.WAVES_STRING_ID;
+import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeLeaseTest extends InvokeBaseTest {
@@ -31,8 +29,6 @@ public class SubscribeInvokeLeaseTest extends InvokeBaseTest {
         height = node().getHeight();
         subscribeResponseHandler(channel, getDAppAccount(), height, height);
         prepareInvoke(getDAppAccount());
-
-        System.out.println(getAppend());
 
         assertionsCheck(amountValue);
     }
@@ -57,9 +53,17 @@ public class SubscribeInvokeLeaseTest extends InvokeBaseTest {
                         getDAppBalanceWavesBeforeTransaction(),
                         getDAppBalanceWavesAfterTransaction()),
 
-                () -> checkStateUpdateLeasingForAddress(0, 0, getCallerAddress(), amountValue, 0),
-                () -> checkStateUpdateLeasingForAddress(0, 1, getDAppAddress(), 0, amountValue),
-                () -> checkStateUpdateIndividualLeases(0, 0, amountValue, getDAppPublicKey(), getCallerAddress())
+                () -> checkStateUpdateBeforeLeasingForAddress(0, 0, getCallerAddress(), 0, 0),
+                () -> checkStateUpdateBeforeLeasingForAddress(0, 1, getDAppAddress(), 0, 0),
+
+                () -> checkStateUpdateAfterLeasingForAddress(0, 0, getCallerAddress(), amountValue, 0),
+                () -> checkStateUpdateAfterLeasingForAddress(0, 1, getDAppAddress(), 0, amountValue),
+
+                () -> checkStateUpdateIndividualLeases(0, 0,
+                        amountValue,
+                        getDAppPublicKey(),
+                        getCallerAddress(),
+                        ACTIVE_STATUS_LEASE)
         );
     }
 }

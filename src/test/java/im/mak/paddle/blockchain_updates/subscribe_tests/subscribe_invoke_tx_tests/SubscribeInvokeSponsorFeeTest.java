@@ -5,12 +5,13 @@ import org.junit.jupiter.api.Test;
 
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
-import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeMetadataAssertions.checkMainMetadata;
-import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
+import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeMetadataAssertions.*;
+import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeStateUpdateAssertions.*;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.*;
+import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
+import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetVolume;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.getAssetId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.*;
@@ -32,23 +33,17 @@ public class SubscribeInvokeSponsorFeeTest extends InvokeBaseTest {
         subscribeResponseHandler(channel, getAssetDAppAccount(), height, height);
         prepareInvoke(getAssetDAppAccount());
 
-        System.out.println(getAppend());
-
-        checkInvokeSubscribeTransaction(getFee());
-
         assertionsCheck(getAssetAmount().value());
     }
 
-    private void assertionsCheck(long amountValue) {
-        checkStateUpdateBalance(1,
-                getAssetDAppAddress(),
-                null,
-                getDAppBalanceIssuedAssetsBeforeTransaction(),
-                getDAppBalanceIssuedAssetsAfterTransaction());
-
+    private void assertionsCheck(long sponsorship) {
         assertAll(
                 () -> checkInvokeSubscribeTransaction(getFee()),
                 () -> checkMainMetadata(0),
+                () -> checkArgumentsMetadata(0, 0, BINARY, getAssetId().toString()),
+                () -> checkIssueAssetMetadata(0, 0),
+                () -> checkSponsorFeeMetadata(0, 0, getAssetId().toString(), getAssetAmount().value()),
+                () -> checkSponsorFeeMetadata(0, 1, null, getAssetAmount().value()),
 
                 () -> checkStateUpdateBalance(0,
                         getCallerAddress(),
@@ -59,8 +54,16 @@ public class SubscribeInvokeSponsorFeeTest extends InvokeBaseTest {
                 () -> checkStateUpdateBalance(1,
                         getAssetDAppAddress(),
                         null,
-                        getDAppBalanceWavesBeforeTransaction(),
-                        getDAppBalanceWavesAfterTransaction())
+                        0,
+                        Long.parseLong(getIssueAssetData().get(VOLUME))),
+
+                () -> checkStateUpdateAssets(0, 0, getIssueAssetData(), getIssueAssetVolume()),
+                () -> checkStateUpdateAssets(0, 1,
+                        getAssetData(),
+                        Long.parseLong(getAssetData().get(VOLUME))),
+
+                () -> checkStateUpdateAssetsSponsorship(0, 0, sponsorship),
+                () -> checkStateUpdateAssetsSponsorship(0, 1, sponsorship)
         );
     }
 }

@@ -86,6 +86,14 @@ public class Assets {
         return Base58.encode(getAssetAfter(txStateUpdIndex, assetIndex).getSafeVolume().toByteArray());
     }
 
+    public static long getAssetSponsorshipBefore(int txStateUpdIndex, int assetIndex) {
+        return getAssetBefore(txStateUpdIndex, assetIndex).getSponsorship();
+    }
+
+    public static long getAssetSponsorshipAfter(int txStateUpdIndex, int assetIndex) {
+        return getAssetAfter(txStateUpdIndex, assetIndex).getSponsorship();
+    }
+
     private static Events.StateUpdate.AssetDetails getAssetBefore(int txStateUpdIndex, int assetIndex) {
         return getTransactionStateUpdate(txStateUpdIndex)
                 .getAssets(assetIndex)

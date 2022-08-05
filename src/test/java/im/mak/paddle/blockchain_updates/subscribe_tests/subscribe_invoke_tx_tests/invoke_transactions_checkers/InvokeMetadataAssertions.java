@@ -6,6 +6,7 @@ import static im.mak.paddle.helpers.ConstructorRideFunctions.*;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetNonce;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.BaseInvokeMetadata.getInvokeMetadataDAppAddress;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.BaseInvokeMetadata.getInvokeMetadataFunctionName;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataArgs.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataPayment.getInvokeMetadataPaymentsAmount;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultBurn.getInvokeMetadataResultBurnAmount;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultBurn.getInvokeMetadataResultBurnAssetId;
@@ -14,16 +15,37 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultLease.getInvokeMetadataLeasesAmount;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultLease.getInvokeMetadataLeasesRecipientPublicKey;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultReissue.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultSponsorFee.getInvokeMetadataResultSponsorFeeAmount;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultSponsorFee.getInvokeMetadataResultSponsorFeeAssetId;
+import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class InvokeMetadataAssertions {
-
     public static void checkMainMetadata(int index) {
         assertAll(
                 () -> assertThat(getInvokeMetadataDAppAddress(index)).isEqualTo(getDAppAccountAddress()),
                 () -> assertThat(getInvokeMetadataFunctionName(index)).isEqualTo(getDAppFunctionName())
         );
+    }
+
+    public static void checkArgumentsMetadata(int metadataIndex, int dataIndex, String argType, String argValue) {
+        switch (argType) {
+            case BINARY:
+                assertThat(getInvokeMetadataArgBinaryValue(metadataIndex, dataIndex)).isEqualTo(argValue);
+                break;
+            case INTEGER:
+                assertThat(getInvokeMetadataArgIntegerValue(metadataIndex, dataIndex)).isEqualTo(argValue);
+                break;
+            case STRING:
+                assertThat(getInvokeMetadataArgStringValue(metadataIndex, dataIndex)).isEqualTo(argValue);
+                break;
+            case BOOLEAN:
+                assertThat(getInvokeMetadataArgBooleanValue(metadataIndex, dataIndex)).isEqualTo(argValue);
+                break;
+            default:
+                break;
+        }
     }
 
     public static void checkIssueAssetMetadata(int metadataIndex, int dataIndex) {
@@ -52,6 +74,13 @@ public class InvokeMetadataAssertions {
             assertThat(getInvokeMetadataResultBurnAssetId(metadataIndex, dataIndex)).isEqualTo(assetId);
         }
         assertThat(getInvokeMetadataResultBurnAmount(metadataIndex, dataIndex)).isEqualTo(amount);
+    }
+
+    public static void checkSponsorFeeMetadata(int metadataIndex, int dataIndex, String assetId, long amount) {
+        if (assetId != null) {
+            assertThat(getInvokeMetadataResultSponsorFeeAssetId(metadataIndex, dataIndex)).isEqualTo(assetId);
+        }
+        assertThat(getInvokeMetadataResultSponsorFeeAmount(metadataIndex, dataIndex)).isEqualTo(amount);
     }
 
     public static void checkReissueMetadata

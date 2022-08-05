@@ -82,4 +82,8 @@ public class InvokeStateUpdateAssertions {
             );
         }
     }
+
+    public static void checkStateUpdateAssetsSponsorship(int txStateUpdIndex, int assetIndex, long sponsorship) {
+        assertThat(getAssetSponsorshipAfter(txStateUpdIndex, assetIndex)).isEqualTo(sponsorship);
+    }
 }

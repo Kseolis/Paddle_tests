@@ -1,11 +1,9 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests;
 
-import com.wavesplatform.transactions.DataTransaction;
 import com.wavesplatform.transactions.common.Base64String;
 import com.wavesplatform.transactions.data.*;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseTest;
-import im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.DataEntries;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

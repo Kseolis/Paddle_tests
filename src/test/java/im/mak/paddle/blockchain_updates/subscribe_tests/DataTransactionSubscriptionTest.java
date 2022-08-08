@@ -100,13 +100,13 @@ public class DataTransactionSubscriptionTest extends BaseTest {
                 ),
                 () -> getDataTx().data().forEach(
                         data -> assertThat(
-                                (getTxKeyForStateUpdates(0, getDataTx().data().indexOf(data))))
+                                (getAfterKeyForStateUpdates(0, getDataTx().data().indexOf(data))))
                                 .isEqualTo(data.key())
                 ),
-                () -> assertThat(getTxIntValueForStateUpdates(0, 0)).isEqualTo(integerEntry.value()),
-                () -> assertThat(getTxByteValueForStateUpdates(0, 1)).isEqualTo(binaryEntry.value().toString()),
-                () -> assertThat(getTxBoolValueForStateUpdates(0, 2)).isEqualTo(booleanEntry.value()),
-                () -> assertThat(getTxStringValueForStateUpdates(0, 3)).isEqualTo(stringEntry.value())
+                () -> assertThat(getAfterIntValueForStateUpdates(0, 0)).isEqualTo(integerEntry.value()),
+                () -> assertThat(getAfterByteValueForStateUpdates(0, 1)).isEqualTo(binaryEntry.value().toString()),
+                () -> assertThat(getAfterBoolValueForStateUpdates(0, 2)).isEqualTo(booleanEntry.value()),
+                () -> assertThat(getAfterStringValueForStateUpdates(0, 3)).isEqualTo(stringEntry.value())
         );
     }
 }

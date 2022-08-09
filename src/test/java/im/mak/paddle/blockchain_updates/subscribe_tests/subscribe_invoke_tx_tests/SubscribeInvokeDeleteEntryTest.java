@@ -42,7 +42,7 @@ public class SubscribeInvokeDeleteEntryTest extends InvokeBaseTest {
     private void assertionsCheck(long payment, String intVal, String valAfter) {
         assertAll(
                 () -> checkInvokeSubscribeTransaction(getFee()),
-                () -> checkPaymentsSubscribe(payment),
+                () -> checkPaymentsSubscribe(payment, ""),
 
                 () -> checkMainMetadata(0),
                 () -> checkArgumentsMetadata(0, 0, INTEGER, intVal),

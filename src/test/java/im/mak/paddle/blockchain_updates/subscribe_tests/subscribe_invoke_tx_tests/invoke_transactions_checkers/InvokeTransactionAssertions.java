@@ -6,8 +6,7 @@ import im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_test
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.InvokeTransactionHandler.getInvokeTransactionPaymentAmount;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.InvokeTransactionHandler.getInvokeTransactionPublicKeyHash;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.InvokeTransactionHandler.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.getTransactionVersion;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender.getInvokeScriptId;
@@ -28,7 +27,10 @@ public class InvokeTransactionAssertions extends InvokeBaseTest {
         );
     }
 
-    public static void checkPaymentsSubscribe(long amount) {
+    public static void checkPaymentsSubscribe(long amount, String assetId) {
+        if (assetId.isEmpty()) {
+            assertThat(getInvokeTransactionPaymentAssetId(0, 0)).isEqualTo(assetId);
+        }
         assertThat(getInvokeTransactionPaymentAmount(0, 0)).isEqualTo(amount);
     }
 }

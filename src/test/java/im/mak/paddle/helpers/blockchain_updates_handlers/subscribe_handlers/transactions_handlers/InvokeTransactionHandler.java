@@ -32,4 +32,12 @@ public class InvokeTransactionHandler {
         }
         return amount;
     }
+
+    public static String getInvokeTransactionPaymentAssetId(int txIndex, int paymentIndex) {
+        return Base58.encode(getTransactionAtIndex(txIndex)
+                .getInvokeScript()
+                .getPayments(paymentIndex)
+                .getAssetId()
+                .toByteArray());
+    }
 }

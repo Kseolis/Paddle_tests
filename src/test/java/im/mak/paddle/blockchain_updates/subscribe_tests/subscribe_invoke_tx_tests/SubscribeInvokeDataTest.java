@@ -45,7 +45,7 @@ public class SubscribeInvokeDataTest extends InvokeBaseTest {
     private void assertionsCheck(long payment, String intVal, String binVal, String boolArg, String strVal) {
         assertAll(
                 () -> checkInvokeSubscribeTransaction(getFee()),
-                () -> checkPaymentsSubscribe(payment, ""),
+                () -> checkPaymentsSubscribe(0, 0, payment, ""),
                 () -> checkMainMetadata(0),
                 () -> checkArgumentsMetadata(0, 0, INTEGER, intVal),
                 () -> checkArgumentsMetadata(0, 1, BINARY_BASE64, binVal),

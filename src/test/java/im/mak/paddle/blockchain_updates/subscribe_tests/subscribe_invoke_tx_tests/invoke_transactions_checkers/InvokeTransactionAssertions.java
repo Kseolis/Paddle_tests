@@ -27,10 +27,10 @@ public class InvokeTransactionAssertions extends InvokeBaseTest {
         );
     }
 
-    public static void checkPaymentsSubscribe(long amount, String assetId) {
+    public static void checkPaymentsSubscribe(int txIndex, int paymentIndex, long amount, String assetId) {
         if (assetId.isEmpty()) {
-            assertThat(getInvokeTransactionPaymentAssetId(0, 0)).isEqualTo(assetId);
+            assertThat(getInvokeTransactionPaymentAssetId(txIndex, paymentIndex)).isEqualTo(assetId);
         }
-        assertThat(getInvokeTransactionPaymentAmount(0, 0)).isEqualTo(amount);
+        assertThat(getInvokeTransactionPaymentAmount(txIndex, paymentIndex)).isEqualTo(amount);
     }
 }

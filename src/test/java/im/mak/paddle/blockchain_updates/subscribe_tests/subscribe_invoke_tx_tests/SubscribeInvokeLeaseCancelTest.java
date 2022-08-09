@@ -46,7 +46,7 @@ public class SubscribeInvokeLeaseCancelTest extends InvokeBaseTest {
         assertAll(
                 () -> checkInvokeSubscribeTransaction(SUM_FEE),
                 () -> checkMainMetadata(0),
-                () -> checkPaymentsSubscribe(amountValue, ""),
+                () -> checkPaymentsSubscribe(0, 0, amountValue, ""),
                 () -> checkPaymentMetadata(0, 0, amountValue),
                 () -> assertThat(getInvokeMetadataCancelLeaseId(0, 0)).isEqualTo(getLeaseId()),
 

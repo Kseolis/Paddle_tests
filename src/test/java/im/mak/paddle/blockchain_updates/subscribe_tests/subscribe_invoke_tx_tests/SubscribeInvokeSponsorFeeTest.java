@@ -46,16 +46,16 @@ public class SubscribeInvokeSponsorFeeTest extends InvokeBaseTest {
                 () -> checkSponsorFeeMetadata(0, 1, null, getAssetAmount().value()),
 
                 () -> checkStateUpdateBalance(0,
+                        0,
                         getCallerAddress(),
                         WAVES_STRING_ID,
-                        getCallerBalanceWavesBeforeTransaction(),
-                        getCallerBalanceWavesAfterTransaction()),
+                        getCallerBalanceWavesBeforeTransaction(), getCallerBalanceWavesAfterTransaction()),
 
-                () -> checkStateUpdateBalance(1,
+                () -> checkStateUpdateBalance(0,
+                        1,
                         getAssetDAppAddress(),
                         null,
-                        0,
-                        Long.parseLong(getIssueAssetData().get(VOLUME))),
+                        0, Long.parseLong(getIssueAssetData().get(VOLUME))),
 
                 () -> checkStateUpdateAssets(0, 0, getIssueAssetData(), getIssueAssetVolume()),
                 () -> checkStateUpdateAssets(0, 1,

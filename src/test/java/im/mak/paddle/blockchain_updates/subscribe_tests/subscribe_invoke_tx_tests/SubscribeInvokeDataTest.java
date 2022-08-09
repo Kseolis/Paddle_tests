@@ -69,16 +69,16 @@ public class SubscribeInvokeDataTest extends InvokeBaseTest {
 
 
                 () -> checkStateUpdateBalance(0,
+                        0,
                         getCallerAddress(),
                         WAVES_STRING_ID,
-                        getCallerBalanceWavesBeforeTransaction(),
-                        getCallerBalanceWavesAfterTransaction()),
+                        getCallerBalanceWavesBeforeTransaction(), getCallerBalanceWavesAfterTransaction()),
 
-                () -> checkStateUpdateBalance(1,
+                () -> checkStateUpdateBalance(0,
+                        1,
                         getDAppAccountAddress(),
                         "",
-                        getDAppBalanceWavesBeforeTransaction(),
-                        getDAppBalanceWavesAfterTransaction())
+                        getDAppBalanceWavesBeforeTransaction(), getDAppBalanceWavesAfterTransaction())
 
         );
     }

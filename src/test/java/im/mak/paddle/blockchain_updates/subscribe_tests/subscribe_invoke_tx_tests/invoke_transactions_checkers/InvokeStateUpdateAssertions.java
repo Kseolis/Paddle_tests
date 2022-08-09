@@ -2,7 +2,6 @@ package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tes
 
 import java.util.Map;
 
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataArgs.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.getAmountAfter;
@@ -16,39 +15,33 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class InvokeStateUpdateAssertions {
     public static void checkStateUpdateBalance
-            (int balanceIndex, String address, String assetId, long amountBefore, long amountAfter) {
+            (int stateUpdIndex, int balanceIndex, String address, String assetId, long before, long after) {
         if (assetId != null) {
-            assertThat(getAssetIdAmountAfter(0, balanceIndex)).isEqualTo(assetId);
+            assertThat(getAssetIdAmountAfter(stateUpdIndex, balanceIndex)).isEqualTo(assetId);
         }
         assertAll(
-                () -> assertThat(getAddress(0, balanceIndex)).isEqualTo(address),
-                () -> assertThat(getAmountBefore(0, balanceIndex)).isEqualTo(amountBefore),
-                () -> assertThat(getAmountAfter(0, balanceIndex)).isEqualTo(amountAfter)
+                () -> assertThat(getAddress(stateUpdIndex, balanceIndex)).isEqualTo(address),
+                () -> assertThat(getAmountBefore(stateUpdIndex, balanceIndex)).isEqualTo(before),
+                () -> assertThat(getAmountAfter(stateUpdIndex, balanceIndex)).isEqualTo(after)
         );
     }
 
     public static void checkStateUpdateIndividualLeases
-            (int metadataIndex, int dataIndex, long sum, String senderPK, String recipientAddress, String status) {
+            (int index, int dataIndex, long sum, String senderPK, String recipientAddress, String status) {
         assertAll(
-                () -> assertThat(getStatusAfterFromIndividualLeases(metadataIndex, dataIndex)).isEqualTo(status),
-                () -> assertThat(getAmountFromIndividualLeases(metadataIndex, dataIndex)).isEqualTo(sum),
-                () -> assertThat(getSenderFromIndividualLeases(metadataIndex, dataIndex)).isEqualTo(senderPK),
-                () -> assertThat(getRecipientFromIndividualLeases(metadataIndex, dataIndex)).isEqualTo(recipientAddress)
+                () -> assertThat(getStatusAfterFromIndividualLeases(index, dataIndex)).isEqualTo(status),
+                () -> assertThat(getAmountFromIndividualLeases(index, dataIndex)).isEqualTo(sum),
+                () -> assertThat(getSenderFromIndividualLeases(index, dataIndex)).isEqualTo(senderPK),
+                () -> assertThat(getRecipientFromIndividualLeases(index, dataIndex)).isEqualTo(recipientAddress)
         );
     }
 
     public static void checkStateUpdateDataEntries(int index, int dataIndex, String address, String key, String val) {
-        System.out.println(
-                getBeforeDataEntriesKey(index, dataIndex)
-                + " "
-                + key
-                + " index: "
-                + index
-                + " dataIndex: "
-                + dataIndex);
-        assertThat(getSenderAddress(index, dataIndex)).isEqualTo(address);
-        assertThat(getAfterKeyForStateUpdates(index, dataIndex)).isEqualTo(key);
-        assertThat(getBeforeDataEntriesKey(index, dataIndex)).isEqualTo(key);
+        assertAll(
+                () -> assertThat(getSenderAddress(index, dataIndex)).isEqualTo(address),
+                () -> assertThat(getAfterKeyForStateUpdates(index, dataIndex)).isEqualTo(key),
+                () -> assertThat(getBeforeDataEntriesKey(index, dataIndex)).isEqualTo(key)
+        );
 
         switch (key) {
             case DATA_ENTRY_INT:
@@ -102,21 +95,19 @@ public class InvokeStateUpdateAssertions {
         assertThat(getAssetSponsorshipAfter(txIndex, assetIndex)).isEqualTo(sponsorship);
     }
 
-    public static void checkStateUpdateBeforeLeasingForAddress
-            (int metadataIndex, int dataIndex, String address, long sumIn, long sumOut) {
+    public static void checkStateUpdateBeforeLeasing(int index, int dataIndex, String address, long sumIn, long sumOut) {
         assertAll(
-                () -> assertThat(getAddressFromLeasingForAddress(metadataIndex, dataIndex)).isEqualTo(address),
-                () -> assertThat(getInBeforeFromLeasingForAddress(metadataIndex, dataIndex)).isEqualTo(sumIn),
-                () -> assertThat(getOutBeforeFromLeasingForAddress(metadataIndex, dataIndex)).isEqualTo(sumOut)
+                () -> assertThat(getAddressFromLeasingForAddress(index, dataIndex)).isEqualTo(address),
+                () -> assertThat(getInBeforeFromLeasingForAddress(index, dataIndex)).isEqualTo(sumIn),
+                () -> assertThat(getOutBeforeFromLeasingForAddress(index, dataIndex)).isEqualTo(sumOut)
         );
     }
 
-    public static void checkStateUpdateAfterLeasingForAddress
-            (int metadataIndex, int dataIndex, String address, long sumIn, long sumOut) {
+    public static void checkStateUpdateAfterLeasing(int index, int dataIndex, String address, long sumIn, long sumOut) {
         assertAll(
-                () -> assertThat(getAddressFromLeasingForAddress(metadataIndex, dataIndex)).isEqualTo(address),
-                () -> assertThat(getInAfterFromLeasingForAddress(metadataIndex, dataIndex)).isEqualTo(sumIn),
-                () -> assertThat(getOutAfterFromLeasingForAddress(metadataIndex, dataIndex)).isEqualTo(sumOut)
+                () -> assertThat(getAddressFromLeasingForAddress(index, dataIndex)).isEqualTo(address),
+                () -> assertThat(getInAfterFromLeasingForAddress(index, dataIndex)).isEqualTo(sumIn),
+                () -> assertThat(getOutAfterFromLeasingForAddress(index, dataIndex)).isEqualTo(sumOut)
         );
     }
 }

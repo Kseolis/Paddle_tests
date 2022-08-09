@@ -46,22 +46,22 @@ public class SubscribeInvokeBurnTest extends InvokeBaseTest {
                 () -> checkBurnMetadata(0, 1, null, getAssetAmount().value()),
 
                 () -> checkStateUpdateBalance(0,
+                        0,
                         getCallerAddress(),
                         WAVES_STRING_ID,
-                        getCallerBalanceWavesBeforeTransaction(),
-                        getCallerBalanceWavesAfterTransaction()),
+                        getCallerBalanceWavesBeforeTransaction(), getCallerBalanceWavesAfterTransaction()),
 
-                () -> checkStateUpdateBalance(1,
+                () -> checkStateUpdateBalance(0,
+                        1,
                         getAssetDAppAddress(),
                         null,
-                        0,
-                        getAmountAfterInvokeIssuedAsset()),
+                        0, getAmountAfterInvokeIssuedAsset()),
 
-                () -> checkStateUpdateBalance(2,
+                () -> checkStateUpdateBalance(0,
+                        2,
                         getAssetDAppAddress(),
                         getAssetId().toString(),
-                        getDAppBalanceIssuedAssetsBeforeTransaction(),
-                        getDAppBalanceIssuedAssetsAfterTransaction())
+                        getDAppBalanceIssuedAssetsBeforeTransaction(), getDAppBalanceIssuedAssetsAfterTransaction())
         );
 
         checkStateUpdateAssets(0, 0, getIssueAssetData(), getAmountAfterInvokeIssuedAsset());

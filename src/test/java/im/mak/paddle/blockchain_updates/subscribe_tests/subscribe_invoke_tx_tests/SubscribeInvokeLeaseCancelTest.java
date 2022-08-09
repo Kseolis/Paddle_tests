@@ -51,22 +51,22 @@ public class SubscribeInvokeLeaseCancelTest extends InvokeBaseTest {
                 () -> assertThat(getInvokeMetadataCancelLeaseId(0, 0)).isEqualTo(getLeaseId()),
 
                 () -> checkStateUpdateBalance(0,
+                        0,
                         getCallerAddress(),
                         WAVES_STRING_ID,
-                        getCallerBalanceWavesBeforeTransaction(),
-                        getCallerBalanceWavesAfterTransaction()),
+                        getCallerBalanceWavesBeforeTransaction(), getCallerBalanceWavesAfterTransaction()),
 
-                () -> checkStateUpdateBalance(1,
+                () -> checkStateUpdateBalance(0,
+                        1,
                         getDAppAddress(),
                         null,
-                        getDAppBalanceWavesBeforeTransaction(),
-                        getDAppBalanceWavesAfterTransaction()),
+                        getDAppBalanceWavesBeforeTransaction(), getDAppBalanceWavesAfterTransaction()),
 
-                () -> checkStateUpdateBeforeLeasingForAddress(0, 0, getCallerAddress(), amountValue, 0),
-                () -> checkStateUpdateBeforeLeasingForAddress(0, 1, getDAppAddress(), 0, amountValue),
+                () -> checkStateUpdateBeforeLeasing(0, 0, getCallerAddress(), amountValue, 0),
+                () -> checkStateUpdateBeforeLeasing(0, 1, getDAppAddress(), 0, amountValue),
 
-                () -> checkStateUpdateAfterLeasingForAddress(0, 0, getCallerAddress(), 0, 0),
-                () -> checkStateUpdateAfterLeasingForAddress(0, 1, getDAppAddress(), 0, 0),
+                () -> checkStateUpdateAfterLeasing(0, 0, getCallerAddress(), 0, 0),
+                () -> checkStateUpdateAfterLeasing(0, 1, getDAppAddress(), 0, 0),
 
                 () -> checkStateUpdateIndividualLeases(0, 0,
                         amountValue,

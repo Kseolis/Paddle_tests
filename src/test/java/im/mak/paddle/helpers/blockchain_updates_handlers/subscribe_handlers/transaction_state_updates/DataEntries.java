@@ -33,17 +33,16 @@ public class DataEntries {
     }
 
     public static long getBeforeDataEntriesIntegerValue(int txStateUpdIndex, int index) {
-        return getBeforeDataEntries(0, 0).getIntValue();
+        return getBeforeDataEntries(txStateUpdIndex, index).getIntValue();
     }
 
     public static String getBeforeDataEntriesStringValue(int txStateUpdIndex, int index) {
-        return getBeforeDataEntries(0, 0).getStringValue();
+        return getBeforeDataEntries(txStateUpdIndex, index).getStringValue();
     }
 
     public static String getBeforeDataEntriesKey(int txStateUpdIndex, int index) {
-        return getBeforeDataEntries(0, 0).getKey();
+        return getBeforeDataEntries(txStateUpdIndex, index).getKey();
     }
-
 
     public static TransactionOuterClass.DataTransactionData.DataEntry getBeforeDataEntries(int txStateUpdIndex, int index) {
         return getDataEntries(txStateUpdIndex, index).getDataEntryBefore();

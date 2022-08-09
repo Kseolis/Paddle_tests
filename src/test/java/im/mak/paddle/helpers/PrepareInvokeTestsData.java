@@ -130,6 +130,7 @@ public class PrepareInvokeTestsData {
     }
 
     public void prepareDataForDeleteEntryTests() {
+        fee = SUM_FEE;
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
 
         final String functionArgs = "intVal:Int";
@@ -142,7 +143,7 @@ public class PrepareInvokeTestsData {
         amounts.clear();
         amounts.add(wavesAmount);
 
-        setFee(SUM_FEE);
+        setFee(fee);
         setExtraFee(0);
     }
 

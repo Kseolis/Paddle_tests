@@ -3,6 +3,7 @@ package im.mak.paddle.helpers;
 import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
+import com.wavesplatform.transactions.common.Base64String;
 import im.mak.paddle.Account;
 import im.mak.paddle.dapp.DAppCall;
 import im.mak.paddle.dapps.AssetDAppAccount;
@@ -38,7 +39,7 @@ public class PrepareInvokeTestsData {
     private static AssetId assetId;
 
     private static int intArg;
-    private static String binArg;
+    private static Base64String base64String;
     private static boolean boolArg;
     private static String stringArg;
     private static byte[] leaseId;
@@ -72,7 +73,7 @@ public class PrepareInvokeTestsData {
                     callerPublicKeyHash = Base58.encode(callerAccount.address().publicKeyHash());
                     callerAddressBase58 = Base58.decode(callerAddress);
                 },
-                () -> binArg = randomNumAndLetterString(10),
+                () -> base64String = new Base64String(randomNumAndLetterString(6)),
                 () -> stringArg = randomNumAndLetterString(10),
                 () -> {
                     intArg = getRandomInt(1, 1000);
@@ -108,11 +109,7 @@ public class PrepareInvokeTestsData {
     }
 
     public void prepareDataForDataDAppTests() {
-        binArg = randomNumAndLetterString(10);
-        stringArg = randomNumAndLetterString(10);
-        intArg = getRandomInt(1, 999999);
-        boolArg = intArg % 2 == 0;
-
+        fee = SUM_FEE;
 
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
 
@@ -123,12 +120,12 @@ public class PrepareInvokeTestsData {
 
         dAppAccount.setScript(script);
 
-        dAppCall = dAppAccount.setData(intArg, binArg, boolArg, stringArg);
+        dAppCall = dAppAccount.setData(intArg, base64String, boolArg, stringArg);
 
         amounts.clear();
         amounts.add(wavesAmount);
 
-        setFee(SUM_FEE);
+        setFee(fee);
         setExtraFee(0);
     }
 
@@ -341,11 +338,11 @@ public class PrepareInvokeTestsData {
         return intArg;
     }
 
-    public static String getBinArg() {
-        return binArg;
+    public static Base64String getBase64String() {
+        return base64String;
     }
 
-    public static boolean isBoolArg() {
+    public static boolean getBoolArg() {
         return boolArg;
     }
 

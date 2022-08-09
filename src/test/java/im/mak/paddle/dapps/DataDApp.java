@@ -1,5 +1,6 @@
 package im.mak.paddle.dapps;
 
+import com.wavesplatform.transactions.common.Base64String;
 import com.wavesplatform.transactions.invocation.*;
 import im.mak.paddle.dapp.DApp;
 import im.mak.paddle.dapp.DAppCall;
@@ -10,7 +11,7 @@ public class DataDApp extends DApp {
         super(initialBalance, script);
     }
 
-    public DAppCall setData(int intArg, String binArg, boolean boolArg, String strArg) {
+    public DAppCall setData(int intArg, Base64String binArg, boolean boolArg, String strArg) {
         Function function = Function.as(
                 "setData",
                 IntegerArg.as(intArg),

@@ -40,7 +40,7 @@ public class SubscribeInvokeLeaseTest extends InvokeBaseTest {
                 () -> checkInvokeSubscribeTransaction(SUM_FEE),
                 () -> checkMainMetadata(0),
                 () -> checkPaymentsSubscribe(0, 0, amountValue, ""),
-                () -> checkPaymentMetadata(0, 0, amountValue),
+                () -> checkPaymentMetadata(0, 0, null, amountValue),
                 () -> checkLeaseMetadata(0, 0, getCallerPublicKeyHash(), amountValue),
 
                 () -> checkStateUpdateBalance(0,

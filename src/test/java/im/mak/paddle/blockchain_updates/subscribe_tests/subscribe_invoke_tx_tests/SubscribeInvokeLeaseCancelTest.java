@@ -11,7 +11,6 @@ import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.*;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.getAssetId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultLease.getInvokeMetadataCancelLeaseId;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
@@ -37,8 +36,6 @@ public class SubscribeInvokeLeaseCancelTest extends InvokeBaseTest {
         subscribeResponseHandler(channel, getDAppAccount(), height, height);
         prepareInvoke(getDAppAccount());
 
-        System.out.println(getAppend());
-
         assertionsCheck(amountValue);
     }
 
@@ -47,7 +44,7 @@ public class SubscribeInvokeLeaseCancelTest extends InvokeBaseTest {
                 () -> checkInvokeSubscribeTransaction(SUM_FEE),
                 () -> checkMainMetadata(0),
                 () -> checkPaymentsSubscribe(0, 0, amountValue, ""),
-                () -> checkPaymentMetadata(0, 0, amountValue),
+                () -> checkPaymentMetadata(0, 0, null, amountValue),
                 () -> assertThat(getInvokeMetadataCancelLeaseId(0, 0)).isEqualTo(getLeaseId()),
 
                 () -> checkStateUpdateBalance(0,

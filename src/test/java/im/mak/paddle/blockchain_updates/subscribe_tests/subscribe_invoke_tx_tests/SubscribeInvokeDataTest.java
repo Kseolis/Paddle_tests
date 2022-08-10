@@ -52,7 +52,7 @@ public class SubscribeInvokeDataTest extends InvokeBaseTest {
                 () -> checkArgumentsMetadata(0, 2, BOOLEAN, boolArg),
                 () -> checkArgumentsMetadata(0, 3, STRING, strVal),
 
-                () -> checkPaymentMetadata(0, 0, payment),
+                () -> checkPaymentMetadata(0, 0, null, payment),
 
                 () -> checkDataMetadata(0, 0, INTEGER, DATA_ENTRY_INT, intVal),
                 () -> checkDataMetadata(0, 1, BINARY_BASE64, DATA_ENTRY_BYTE, binVal),

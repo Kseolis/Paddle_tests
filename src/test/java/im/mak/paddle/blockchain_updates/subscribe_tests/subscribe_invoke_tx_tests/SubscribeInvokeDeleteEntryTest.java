@@ -46,7 +46,7 @@ public class SubscribeInvokeDeleteEntryTest extends InvokeBaseTest {
 
                 () -> checkMainMetadata(0),
                 () -> checkArgumentsMetadata(0, 0, INTEGER, intVal),
-                () -> checkPaymentMetadata(0, 0, payment),
+                () -> checkPaymentMetadata(0, 0, null, payment),
                 () -> checkDataMetadata(0, 0, INTEGER, DATA_ENTRY_INT, intVal),
 
                 () -> checkStateUpdateBalance(0,

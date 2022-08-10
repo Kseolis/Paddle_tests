@@ -2,6 +2,7 @@ package im.mak.paddle.e2e.transactions;
 
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
+import im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeBaseTest;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -9,20 +10,13 @@ import org.junit.jupiter.api.Test;
 
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static com.wavesplatform.wavesj.ApplicationStatus.SUCCEEDED;
-import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeBaseTest.getTestsData;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getTxInfo;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.*;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InvokeScriptTransactionTest {
-    private static PrepareInvokeTestsData testsData;
-
-    @BeforeAll
-    static void before() {
-        testsData = new PrepareInvokeTestsData();
-    }
+public class InvokeScriptTransactionTest extends InvokeBaseTest {
 
     @Test
     @DisplayName("invoke with DataDApp and issue asset payment")

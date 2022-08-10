@@ -3,7 +3,6 @@ package im.mak.paddle.helpers;
 import java.util.HashMap;
 import java.util.Map;
 
-import static im.mak.paddle.helpers.PrepareInvokeTestsData.getAssetDAppPublicKey;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
 import static im.mak.paddle.util.Constants.*;
 
@@ -17,9 +16,9 @@ public class ConstructorRideFunctions {
     private static final boolean issueAssetReissuable = true;
     private static final int issueAssetNonce = getRandomInt(0, 10);
 
-    public static String assetsFunctionBuilder(int libVersion, String script, String functions, String args) {
+    public static String assetsFunctionBuilder(int libVersion, String script, String functions, String args, String pk) {
         issuedAssetData.put(ASSET_ID, null);
-        issuedAssetData.put(ISSUER, getAssetDAppPublicKey());
+        issuedAssetData.put(ISSUER, pk);
         issuedAssetData.put(DECIMALS, String.valueOf(issueAssetDecimals));
         issuedAssetData.put(DESCRIPTION, issuedAssetDescription);
         issuedAssetData.put(NAME, issuedAssetName);
@@ -47,7 +46,6 @@ public class ConstructorRideFunctions {
                 .append("\tissueAsset,\n")
                 .append("\t").append(functions).append("\n]\n")
                 .append("}");
-        System.out.println(sb);
         return sb.toString();
     }
 

@@ -1,7 +1,5 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers;
 
-import org.bouncycastle.util.encoders.Base64;
-
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeBaseTest.getDAppAccountAddress;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeBaseTest.getDAppFunctionName;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.*;
@@ -10,6 +8,7 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.BaseInvokeMetadata.getInvokeMetadataFunctionName;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataArgs.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataPayment.getInvokeMetadataPaymentsAmount;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataPayment.getInvokeMetadataPaymentsAssetId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultBurn.getInvokeMetadataResultBurnAmount;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultBurn.getInvokeMetadataResultBurnAssetId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultData.*;
@@ -71,7 +70,10 @@ public class InvokeMetadataAssertions {
         );
     }
 
-    public static void checkPaymentMetadata(int metadataIndex, int dataIndex, long amount) {
+    public static void checkPaymentMetadata(int metadataIndex, int dataIndex, String assetId, long amount) {
+        if (assetId != null) {
+            assertThat(getInvokeMetadataPaymentsAssetId(metadataIndex, dataIndex)).isEqualTo(assetId);
+        }
         assertThat(getInvokeMetadataPaymentsAmount(metadataIndex, dataIndex)).isEqualTo(amount);
     }
 

@@ -153,7 +153,7 @@ public class PrepareInvokeTestsData {
 
         final String functions = "Burn(assetId, " + assetAmount.value() + ")," +
                 "\nBurn(issueAssetId, " + assetAmount.value() + ")";
-        final String script = assetsFunctionBuilder(libVersion, "unit", functions, args);
+        final String script = assetsFunctionBuilder(libVersion, "unit", functions, args, getAssetDAppPublicKey());
         assetDAppAccount.setScript(script);
 
         dAppCall = assetDAppAccount.setDataAssetId(Base58.decode(assetId.toString()));
@@ -173,7 +173,7 @@ public class PrepareInvokeTestsData {
 
         final String functions = "Reissue(assetId," + assetAmount.value() + ",true),\n" +
                 "Reissue(issueAssetId," + assetAmount.value() + ",true)";
-        final String script = assetsFunctionBuilder(libVersion, "unit", functions, args);
+        final String script = assetsFunctionBuilder(libVersion, "unit", functions, args, getAssetDAppPublicKey());
         assetDAppAccount.setScript(script);
 
         dAppCall = assetDAppAccount.setDataAssetId(Base58.decode(assetId.toString()));
@@ -204,7 +204,6 @@ public class PrepareInvokeTestsData {
     }
 
     public void prepareDataForLeaseCancelTests() {
-
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
 
         final String functionArgs = "leaseId:ByteVector";
@@ -229,7 +228,7 @@ public class PrepareInvokeTestsData {
 
         final String functions = "SponsorFee(assetId, " + assetAmount.value() + ")," +
                 "\n\tSponsorFee(issueAssetId, " + assetAmount.value() + ")";
-        final String script = assetsFunctionBuilder(libVersion, "unit", functions, args);
+        final String script = assetsFunctionBuilder(libVersion, "unit", functions, args, getAssetDAppPublicKey());
         assetDAppAccount.setScript(script);
 
         dAppCall = assetDAppAccount.setDataAssetId(Base58.decode(assetId.toString()));
@@ -248,7 +247,7 @@ public class PrepareInvokeTestsData {
         final String functions = "ScriptTransfer(Address(address), " + assetAmount.value() + ", assetId),\n" +
                 "ScriptTransfer(Address(address), 500, issueAssetId),\n" +
                 "ScriptTransfer(Address(address), " + wavesAmount.value() + ", unit)";
-        final String script = assetsFunctionBuilder(libVersion, "unit", functions, currentArgs);
+        final String script = assetsFunctionBuilder(libVersion, "unit", functions, currentArgs, getAssetDAppPublicKey());
 
         assetDAppAccount.setScript(script);
 
@@ -268,10 +267,10 @@ public class PrepareInvokeTestsData {
 
         final String arg = "intVal:Int";
         final String functions = "IntegerEntry(\"int\", intVal)";
-        final String script = assetsFunctionBuilder(libVersion, "unit", functions, arg);
+        final String script = assetsFunctionBuilder(libVersion, "unit", functions, arg, getDAppPublicKey());
         dAppAccount.setScript(script);
 
-        dAppCall = dAppAccount.setData(getRandomInt(1, 1000));
+        dAppCall = dAppAccount.setData(intArg);
 
         amounts.clear();
         amounts.add(wavesAmount);

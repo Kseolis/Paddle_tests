@@ -19,6 +19,7 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultReissue.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultSponsorFee.getInvokeMetadataResultSponsorFeeAmount;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultSponsorFee.getInvokeMetadataResultSponsorFeeAssetId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultTransfers.*;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -133,6 +134,14 @@ public class InvokeMetadataAssertions {
         assertAll(
                 () -> assertThat(getInvokeMetadataLeasesRecipientPublicKey(metadataIndex, dataIndex)).isEqualTo(publicKeyHash),
                 () -> assertThat(getInvokeMetadataLeasesAmount(metadataIndex, dataIndex)).isEqualTo(amount)
+        );
+    }
+
+    public static void checkTransfersMetadata(int metadataIndex, int dataIndex, String address, String assetId, long amount) {
+        assertAll(
+                () -> assertThat(getInvokeMetadataResultTransfersAssetId(metadataIndex, dataIndex)).isEqualTo(assetId),
+                () -> assertThat(getInvokeMetadataResultTransfersAddress(metadataIndex, dataIndex)).isEqualTo(address),
+                () -> assertThat(getInvokeMetadataResultTransfersAmount(metadataIndex, dataIndex)).isEqualTo(amount)
         );
     }
 }

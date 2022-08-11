@@ -4,7 +4,6 @@ import im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_test
 
 
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
-import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.InvokeTransactionHandler.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
@@ -15,11 +14,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class InvokeTransactionAssertions extends InvokeBaseTest {
-    public static void checkInvokeSubscribeTransaction(long fee) {
+    public static void checkInvokeSubscribeTransaction(long fee, String senderPublicKey) {
         assertAll(
                 () -> assertThat(getChainId(0)).isEqualTo(DEVNET_CHAIN_ID),
                 () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(fee),
-                () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(getCallerAccount().publicKey().toString()),
+                () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(senderPublicKey),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),
                 () -> assertThat(getInvokeTransactionPublicKeyHash(0)).isEqualTo(getDAppAccountPublicKeyHash()),
                 //  () -> assertThat(getInvokeTransactionFunctionCall(0)).isEqualTo(getDAppCall().getFunction().toString());

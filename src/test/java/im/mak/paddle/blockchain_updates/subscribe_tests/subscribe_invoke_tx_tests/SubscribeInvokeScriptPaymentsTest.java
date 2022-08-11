@@ -42,7 +42,7 @@ public class SubscribeInvokeScriptPaymentsTest extends InvokeBaseTest {
 
     private void assertionsCheck(long paymentWaves, long paymentAsset, String assetId, String intArg) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(getFee()),
+                () -> checkInvokeSubscribeTransaction(getFee(), getCallerPublicKey()),
                 () -> checkPaymentsSubscribe(0, 0, paymentWaves, ""),
                 () -> checkPaymentsSubscribe(0, 1, paymentAsset, assetId),
 

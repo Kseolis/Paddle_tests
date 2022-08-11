@@ -31,6 +31,6 @@ public class SubscribeInvokeDAppToDAppTest extends InvokeBaseTest {
 
         System.out.println(getAppend());
 
-        checkInvokeSubscribeTransaction(SUM_FEE);
+        checkInvokeSubscribeTransaction(SUM_FEE, getCallerPublicKey());
     }
 }

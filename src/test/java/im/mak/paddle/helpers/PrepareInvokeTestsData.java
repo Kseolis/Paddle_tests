@@ -248,7 +248,6 @@ public class PrepareInvokeTestsData {
                 "ScriptTransfer(Address(address), 500, issueAssetId),\n" +
                 "ScriptTransfer(Address(address), " + wavesAmount.value() + ", unit)";
         final String script = assetsFunctionBuilder(libVersion, "unit", functions, currentArgs, getAssetDAppPublicKey());
-
         assetDAppAccount.setScript(script);
 
         dAppCall = assetDAppAccount.setDataAssetAndAddress(Base58.decode(assetId.toString()), dAppAddressBase58);
@@ -412,5 +411,9 @@ public class PrepareInvokeTestsData {
 
     public static Map<String, String> getAssetData() {
         return assetData;
+    }
+
+    public static byte[] getDAppAddressBase58() {
+        return dAppAddressBase58;
     }
 }

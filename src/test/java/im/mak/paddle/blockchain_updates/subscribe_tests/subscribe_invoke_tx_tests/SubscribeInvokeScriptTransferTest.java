@@ -55,23 +55,6 @@ public class SubscribeInvokeScriptTransferTest extends InvokeBaseTest {
                 () -> checkArgumentsMetadata(0, 0, BINARY_BASE58, assetId),
                 () -> checkArgumentsMetadata(0, 1, BINARY_BASE58, getDAppAddress()),
                 () -> checkIssueAssetMetadata(0, 0)
-/*
-                () -> checkStateUpdateBalance(0,
-                        0,
-                        getCallerAddress(),
-                        WAVES_STRING_ID,
-                        getCallerBalanceWavesBeforeTransaction(), getCallerBalanceWavesAfterTransaction()),
-                () -> checkStateUpdateBalance(0,
-                        2,
-                        getDAppAddress(),
-                        WAVES_STRING_ID,
-                        getDAppBalanceWavesBeforeTransaction(), getDAppBalanceWavesAfterTransaction()),
-                () -> checkStateUpdateBalance(0,
-                        4,
-                        getDAppAddress(),
-                        null,
-                        0, getIssueAssetVolume()),
-                () -> checkStateUpdateAssets(0, 0, getIssueAssetData(), getIssueAssetVolume())*/
         );
     }
 }

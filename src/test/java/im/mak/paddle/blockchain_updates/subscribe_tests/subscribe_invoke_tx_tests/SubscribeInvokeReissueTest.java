@@ -35,14 +35,14 @@ public class SubscribeInvokeReissueTest extends InvokeBaseTest {
         subscribeResponseHandler(channel, getAssetDAppAccount(), height, height);
         prepareInvoke(getAssetDAppAccount());
 
-        checkInvokeSubscribeTransaction(getFee());
+        checkInvokeSubscribeTransaction(getFee(), getCallerPublicKey());
         assertionsCheck();
     }
 
     private void assertionsCheck() {
 
         assertAll(
-                () -> checkInvokeSubscribeTransaction(getFee()),
+                () -> checkInvokeSubscribeTransaction(getFee(), getCallerPublicKey()),
                 () -> checkMainMetadata(0),
                 () -> checkIssueAssetMetadata(0, 0),
                 () -> checkReissueMetadata(0, 0,

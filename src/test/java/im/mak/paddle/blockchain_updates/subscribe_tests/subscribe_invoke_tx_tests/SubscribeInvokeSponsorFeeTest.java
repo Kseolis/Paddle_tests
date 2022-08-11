@@ -38,7 +38,7 @@ public class SubscribeInvokeSponsorFeeTest extends InvokeBaseTest {
 
     private void assertionsCheck(long sponsorship) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(getFee()),
+                () -> checkInvokeSubscribeTransaction(getFee(), getCallerPublicKey()),
                 () -> checkMainMetadata(0),
                 () -> checkArgumentsMetadata(0, 0, BINARY_BASE58, getAssetId().toString()),
                 () -> checkIssueAssetMetadata(0, 0),

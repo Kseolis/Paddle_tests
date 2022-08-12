@@ -16,10 +16,26 @@ public class InvokeMetadataResultTransfers extends BaseInvokeMetadata {
         return getInvokeScriptResult(metadataIndex).getTransfers(dataIndex).getAmount().getAmount();
     }
 
-    public static String getInvokeMetadataResultTransfersAddress(int metadataIndex, int dataIndex) {
-        return Base58.encode(getInvokeScriptResult(metadataIndex)
+    public static byte[] getInvokeMetadataResultTransfersAddress(int metadataIndex, int dataIndex) {
+        return getInvokeScriptResult(metadataIndex)
                 .getTransfers(dataIndex)
                 .getAddress()
-                .toByteArray());
+                .toByteArray();
     }
 }
+/*
+*         ByteBuffer buf = ByteBuffer.allocate(26);
+
+        byte[] hash = getInvokeScriptResult(metadataIndex)
+                .getTransfers(dataIndex)
+                .getAddress()
+                .toByteArray();
+
+        buf.put((byte) 1).put(node().chainId()).put(hash, 0, 20);
+
+        byte[] checksum = Hash.secureHash(buf.array());
+
+        buf.put(checksum, 0, 4);
+
+        return Base58.encode(buf.array());
+        * */

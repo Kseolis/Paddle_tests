@@ -1,5 +1,7 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers;
 
+import java.util.Arrays;
+
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeBaseTest.getDAppAccountAddress;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeBaseTest.getDAppFunctionName;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.*;
@@ -137,10 +139,15 @@ public class InvokeMetadataAssertions {
         );
     }
 
-    public static void checkTransfersMetadata(int metadataIndex, int dataIndex, String address, String assetId, long amount) {
+    public static void checkTransfersMetadata(int metadataIndex, int dataIndex, byte[] address, String assetId, long amount) {
+        byte[] hash = new byte[address.length - 6];
+        System.arraycopy(address, 2, hash, 0, 20);
+
+        if (assetId != null) {
+            assertThat(getInvokeMetadataResultTransfersAssetId(metadataIndex, dataIndex)).isEqualTo(assetId);
+        }
         assertAll(
-                () -> assertThat(getInvokeMetadataResultTransfersAssetId(metadataIndex, dataIndex)).isEqualTo(assetId),
-                () -> assertThat(getInvokeMetadataResultTransfersAddress(metadataIndex, dataIndex)).isEqualTo(address),
+                () -> assertThat(getInvokeMetadataResultTransfersAddress(metadataIndex, dataIndex)).isEqualTo(hash),
                 () -> assertThat(getInvokeMetadataResultTransfersAmount(metadataIndex, dataIndex)).isEqualTo(amount)
         );
     }

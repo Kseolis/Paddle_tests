@@ -13,6 +13,7 @@ import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetVolume;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.getAssetId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.*;
@@ -37,6 +38,7 @@ public class SubscribeInvokeScriptTransferTest extends InvokeBaseTest {
         subscribeResponseHandler(channel, getCallerAccount(), height, height);
         prepareInvoke(getAssetDAppAccount());
 
+        System.out.println(getAppend());
         long dAppAssetAmountAfter = Long.parseLong(getIssueAssetData().get(VOLUME)) - assetAmountValue;
         assertionsCheck(getAssetId().toString(), dAppAssetAmountAfter, assetAmountValue);
     }
@@ -49,6 +51,19 @@ public class SubscribeInvokeScriptTransferTest extends InvokeBaseTest {
                 () -> checkArgumentsMetadata(0, 0, BINARY_BASE58, assetId),
                 () -> checkArgumentsMetadata(0, 1, BINARY_BASE58, getDAppAddress()),
                 () -> checkIssueAssetMetadata(0, 0),
+
+                () -> checkTransfersMetadata(0, 0,
+                        getDAppAddressBase58(),
+                        assetId,
+                        getAssetAmount().value()),
+                () -> checkTransfersMetadata(0, 1,
+                        getDAppAddressBase58(),
+                        null,
+                        getAssetAmount().value()),
+                () -> checkTransfersMetadata(0, 2,
+                        getDAppAddressBase58(),
+                        WAVES_STRING_ID,
+                        getWavesAmount().value()),
 
                 () -> checkStateUpdateBalance(0,
                         0,

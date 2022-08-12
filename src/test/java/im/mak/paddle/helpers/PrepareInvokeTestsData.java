@@ -245,7 +245,7 @@ public class PrepareInvokeTestsData {
 
         final String currentArgs = args + ", " + "address:ByteVector";
         final String functions = "ScriptTransfer(Address(address), " + assetAmount.value() + ", assetId),\n" +
-                "ScriptTransfer(Address(address), 500, issueAssetId),\n" +
+                "ScriptTransfer(Address(address)," + assetAmount.value() + ", issueAssetId),\n" +
                 "ScriptTransfer(Address(address), " + wavesAmount.value() + ", unit)";
         final String script = assetsFunctionBuilder(libVersion, "unit", functions, currentArgs, getAssetDAppPublicKey());
         assetDAppAccount.setScript(script);

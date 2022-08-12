@@ -6,6 +6,10 @@ import im.mak.paddle.Account;
 
 import java.util.List;
 
+import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
+import static im.mak.paddle.helpers.PrepareInvokeTestsData.getAssetAmount;
+import static im.mak.paddle.util.Constants.VOLUME;
+
 public class InvokeCalculationsBalancesAfterTransaction extends InvokeScriptTransactionSender {
     private static long callerBalanceWavesBeforeTransaction;
     private static long callerBalanceIssuedAssetsBeforeTransaction;
@@ -86,6 +90,27 @@ public class InvokeCalculationsBalancesAfterTransaction extends InvokeScriptTran
                         } else if (a.assetId().equals(id)) {
                             callerBalanceIssuedAssetsAfterTransaction -= a.value();
                             dAppBalanceIssuedAssetsAfterTransaction += a.value();
+                        }
+                    }
+            );
+        }
+    }
+
+
+    public static void balancesAfterCallerScriptTransfer
+            (Account caller, Account dApp, Account acc, List<Amount> amounts, AssetId id) {
+        prepareThreeAccBalances(caller, dApp, acc, id);
+
+        if (!amounts.isEmpty()) {
+            amounts.forEach(
+                    a -> {
+                        if (a.assetId().isWaves()) {
+                            dAppBalanceWavesAfterTransaction -= a.value();
+                            accBalanceWavesAfterTransaction += a.value();
+                        } else if (a.assetId().equals(id)) {
+                            callerBalanceIssuedAssetsAfterTransaction -= a.value();
+                            dAppBalanceIssuedAssetsAfterTransaction -= a.value();
+                            accBalanceIssuedAssetsAfterTransaction += a.value();
                         }
                     }
             );

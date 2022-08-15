@@ -198,7 +198,6 @@ public class PrepareInvokeTestsData {
 
         final String script = assetsFunctionBuilder(libVersion, "unit", functions, args, getAssetDAppPublicKey());
 
-        System.out.println(script);
         assetDAppAccount.setScript(script);
 
         dAppCall = assetDAppAccount.setDataAssetId(Base58.decode(assetId.toString()));
@@ -219,7 +218,7 @@ public class PrepareInvokeTestsData {
         final String functions = "Reissue(assetId," + assetAmount.value() + ",true),\n" +
                 "Reissue(issueAssetId," + assetAmount.value() + ",true)";
         final String script = assetsFunctionBuilder(libVersion, "unit", functions, args, getAssetDAppPublicKey());
-        System.out.println(script);
+
         assetDAppAccount.setScript(script);
 
         dAppCall = assetDAppAccount.setDataAssetId(Base58.decode(assetId.toString()));

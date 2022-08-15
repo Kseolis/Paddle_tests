@@ -12,7 +12,6 @@ public class CreateAliasTransactionSender extends BaseTransactionSender {
     public static void createAliasTransactionSender(Account account, String alias, long fee, int version) {
         accountWavesBalance = account.getWavesBalance();
         balanceAfterTransaction = accountWavesBalance - fee;
-        System.out.println(accountWavesBalance);
         createAliasTx = CreateAliasTransaction
                 .builder(alias)
                 .fee(fee)

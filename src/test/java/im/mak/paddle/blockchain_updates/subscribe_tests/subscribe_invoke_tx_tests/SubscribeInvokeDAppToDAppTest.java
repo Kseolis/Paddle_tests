@@ -29,8 +29,6 @@ public class SubscribeInvokeDAppToDAppTest extends InvokeBaseTest {
         subscribeResponseHandler(channel, getDAppAccount(), height, height);
         prepareInvoke(getDAppAccount());
 
-        System.out.println(getAppend());
-
         checkInvokeSubscribeTransaction(SUM_FEE, getCallerPublicKey());
     }
 }

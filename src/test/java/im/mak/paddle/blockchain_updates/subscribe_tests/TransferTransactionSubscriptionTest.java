@@ -67,7 +67,6 @@ public class TransferTransactionSubscriptionTest extends BaseTest {
         transferTransactionSender(amountTransfer, senderAccount, recipient, ADDRESS, MIN_FEE, LATEST_VERSION);
         height = node().getHeight();
         subscribeResponseHandler(channel, senderAccount, height, height);
-        System.out.println(getAppend());
         checkTransferSubscribe("", DEFAULT_FAUCET, 0, MIN_FEE);
     }
 

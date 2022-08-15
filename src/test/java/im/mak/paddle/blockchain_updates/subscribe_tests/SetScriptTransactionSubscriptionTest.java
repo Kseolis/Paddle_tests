@@ -88,7 +88,6 @@ public class SetScriptTransactionSubscriptionTest extends BaseTest {
     }
 
     private void checkSetScriptSubscribe() {
-        System.out.println(getAppend());
         assertAll(
                 () -> assertThat(getChainId(0)).isEqualTo(DEVNET_CHAIN_ID),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(publicKey),

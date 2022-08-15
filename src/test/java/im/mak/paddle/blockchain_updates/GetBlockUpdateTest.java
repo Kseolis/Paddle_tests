@@ -22,8 +22,6 @@ class GetBlockUpdateTest extends BaseTest {
 
         GetBlockUpdateResponse response = stub.getBlockUpdate(request);
 
-        System.out.println(response);
-
         assertThat(response).isNotNull();
     }
 }

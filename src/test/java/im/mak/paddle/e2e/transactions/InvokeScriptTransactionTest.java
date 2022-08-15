@@ -70,12 +70,13 @@ public class InvokeScriptTransactionTest extends InvokeBaseTest {
     @Test
     @DisplayName("invoke with Lease and WAVES payment")
     void invokeScriptWithLease() {
+        long fee = ONE_WAVES + SUM_FEE;
         getTestsData().prepareDataForLeaseTests();
         for (int v = 1; v <= LATEST_VERSION; v++) {
             setVersion(v);
             balancesAfterPaymentInvoke(getCallerAccount(), getDAppAccount(), getAmounts(), getAssetId());
             invokeSenderWithPayment(getCallerAccount(), getDAppAccount(), getDAppCall(), getAmounts());
-            checkInvokeTransaction(getCallerAccount(), SUM_FEE);
+            checkInvokeTransaction(getCallerAccount(), fee);
             checkBalancesAfterInvoke(getCallerAccount(), getDAppAccount());
         }
     }

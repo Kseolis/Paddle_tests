@@ -177,16 +177,14 @@ public class PrepareInvokeTestsData {
         final String assetDesc = randomNumAndLetterString(3) + "assetDescription";
         final int vol = getRandomInt(700_000_000, 900_000_000);
         final String reissue = String.valueOf(getRandomInt(700_000_000, 900_000_000) % 2 == 0);
-        final Base64String scriptAsset = node().compileScript(
-                fromFile("ride_scripts/defaultAssetExpression.ride")).script();
 
+        assetDataForIssue.put(ASSET_ID, null);
+        assetDataForIssue.put(ISSUER, getAssetDAppPublicKey());
         assetDataForIssue.put(NAME, assetName);
         assetDataForIssue.put(DESCRIPTION, assetDesc);
         assetDataForIssue.put(VOLUME, String.valueOf(vol));
         assetDataForIssue.put(DECIMALS, String.valueOf(getRandomInt(0, 8)));
         assetDataForIssue.put(REISSUE, reissue);
-        assetDataForIssue.put(SCRIPT, scriptAsset.toString());
-        assetDataForIssue.put(NONCE, String.valueOf(getRandomInt(0, 8)));
 
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
         final String functions = "Issue(" +
@@ -196,16 +194,13 @@ public class PrepareInvokeTestsData {
                 assetDataForIssue.get(DECIMALS) + ", " +
                 reissue + ")";
 
-        final String script = assetsFunctionBuilder(libVersion, "unit", functions, args, getAssetDAppPublicKey());
+        final String script = assetsFunctionBuilder(libVersion, "unit", functions, "", getAssetDAppPublicKey());
 
         assetDAppAccount.setScript(script);
 
-        dAppCall = assetDAppAccount.setDataAssetId(Base58.decode(assetId.toString()));
-        amountAfterInvokeIssuedAsset = getIssueAssetVolume() + assetAmount.value();
-        amountAfterInvokeDAppIssuedAsset = Integer.parseInt(assetData.get(VOLUME)) + assetAmount.value();
+        dAppCall = assetDAppAccount.setDataAssetId();
 
         amounts.clear();
-        amounts.add(assetAmount);
 
         setFee(SUM_FEE);
         setExtraFee(extraFee);
@@ -456,6 +451,10 @@ public class PrepareInvokeTestsData {
 
     public static Map<String, String> getAssetData() {
         return assetData;
+    }
+
+    public static Map<String, String> getAssetDataForIssue() {
+        return assetDataForIssue;
     }
 
     public static byte[] getDAppAddressBase58() {

@@ -11,7 +11,7 @@ import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.*;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
-import static im.mak.paddle.helpers.PrepareInvokeTestsData.getCallerPublicKey;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.*;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.*;
@@ -35,17 +35,20 @@ public class SubscribeInvokeIssueTest extends InvokeBaseTest {
         subscribeResponseHandler(channel, getAssetDAppAccount(), height, height);
         prepareInvoke(getAssetDAppAccount());
 
+        System.out.println(getAppend());
 
-        checkInvokeSubscribeTransaction(getFee(), getCallerPublicKey());
-        assertionsCheck();
+        assertionsCheck(
+                Long.parseLong(getIssueAssetData().get(VOLUME)),
+                Long.parseLong(getAssetDataForIssue().get(VOLUME))
+        );
     }
 
-    private void assertionsCheck() {
+    private void assertionsCheck(long issueAssetDataVolume, long assetDataForIssueVolume) {
         assertAll(
                 () -> checkInvokeSubscribeTransaction(getFee(), getCallerPublicKey()),
                 () -> checkMainMetadata(0),
-                () -> checkIssueAssetMetadata(0, 0),
-
+                () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
+                () -> checkIssueAssetMetadata(0, 1, getAssetDataForIssue()),
 
                 () -> checkStateUpdateBalance(0,
                         0,
@@ -57,16 +60,15 @@ public class SubscribeInvokeIssueTest extends InvokeBaseTest {
                         1,
                         getAssetDAppAddress(),
                         null,
-                        0, getAmountAfterInvokeIssuedAsset()),
-
+                        0, issueAssetDataVolume),
                 () -> checkStateUpdateBalance(0,
                         2,
                         getAssetDAppAddress(),
-                        getAssetId().toString(),
-                        getDAppBalanceIssuedAssetsBeforeTransaction(), getDAppBalanceIssuedAssetsAfterTransaction())
-        );
+                        null,
+                        0, assetDataForIssueVolume),
 
-        checkStateUpdateAssets(0, 0, getIssueAssetData(), getAmountAfterInvokeIssuedAsset());
-        checkStateUpdateAssets(0, 1, getAssetData(), getAmountAfterInvokeDAppIssuedAsset());
+                () -> checkStateUpdateAssets(0, 0, getIssueAssetData(), issueAssetDataVolume),
+                () -> checkStateUpdateAssets(0, 1, getAssetDataForIssue(), assetDataForIssueVolume)
+        );
     }
 }

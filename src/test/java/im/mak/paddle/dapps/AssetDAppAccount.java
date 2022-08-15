@@ -15,6 +15,10 @@ public class AssetDAppAccount extends DApp {
         return new DAppCall(address(), Function.as("setData", BinaryArg.as(arg)));
     }
 
+    public DAppCall setDataAssetId() {
+        return new DAppCall(address(), Function.as("setData", Function.asDefault().args()));
+    }
+
     public DAppCall setDataAssetAndAddress(byte[] asset, byte[] address) {
         return new DAppCall(address(), Function.as(
                 "setData",

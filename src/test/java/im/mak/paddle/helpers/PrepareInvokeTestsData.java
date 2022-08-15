@@ -11,6 +11,7 @@ import im.mak.paddle.dapps.DataDApp;
 
 import java.util.*;
 
+import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.*;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
 import static im.mak.paddle.helpers.Randomizer.randomNumAndLetterString;
@@ -19,6 +20,7 @@ import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.se
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.ONE_WAVES;
+import static im.mak.paddle.util.ScriptUtil.fromFile;
 
 public class PrepareInvokeTestsData {
     private static Account callerAccount;
@@ -54,6 +56,7 @@ public class PrepareInvokeTestsData {
     private static long fee;
 
     private static final Map<String, String> assetData =  new HashMap<>();
+    private static final Map<String, String> assetDataForIssue =  new HashMap<>();
     private static final List<Amount> amounts = new ArrayList<>();
 
     public PrepareInvokeTestsData() {
@@ -167,6 +170,48 @@ public class PrepareInvokeTestsData {
         setExtraFee(ONE_WAVES);
     }
 
+    public void prepareDataForIssueTests() {
+        final long extraFee = ONE_WAVES * 2;
+        fee = SUM_FEE + extraFee;
+        final String assetName = randomNumAndLetterString(3) + "assetName";
+        final String assetDesc = randomNumAndLetterString(3) + "assetDescription";
+        final int vol = getRandomInt(700_000_000, 900_000_000);
+        final String reissue = String.valueOf(getRandomInt(700_000_000, 900_000_000) % 2 == 0);
+        final Base64String scriptAsset = node().compileScript(
+                fromFile("ride_scripts/defaultAssetExpression.ride")).script();
+
+        assetDataForIssue.put(NAME, assetName);
+        assetDataForIssue.put(DESCRIPTION, assetDesc);
+        assetDataForIssue.put(VOLUME, String.valueOf(vol));
+        assetDataForIssue.put(DECIMALS, String.valueOf(getRandomInt(0, 8)));
+        assetDataForIssue.put(REISSUE, reissue);
+        assetDataForIssue.put(SCRIPT, scriptAsset.toString());
+        assetDataForIssue.put(NONCE, String.valueOf(getRandomInt(0, 8)));
+
+        final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
+        final String functions = "Issue(" +
+                "\"" + assetName + "\"" + ", " +
+                "\"" + assetDesc + "\"" + ", " +
+                assetDataForIssue.get(VOLUME) + ", " +
+                assetDataForIssue.get(DECIMALS) + ", " +
+                reissue + ")";
+
+        final String script = assetsFunctionBuilder(libVersion, "unit", functions, args, getAssetDAppPublicKey());
+
+        System.out.println(script);
+        assetDAppAccount.setScript(script);
+
+        dAppCall = assetDAppAccount.setDataAssetId(Base58.decode(assetId.toString()));
+        amountAfterInvokeIssuedAsset = getIssueAssetVolume() + assetAmount.value();
+        amountAfterInvokeDAppIssuedAsset = Integer.parseInt(assetData.get(VOLUME)) + assetAmount.value();
+
+        amounts.clear();
+        amounts.add(assetAmount);
+
+        setFee(SUM_FEE);
+        setExtraFee(extraFee);
+    }
+
     public void prepareDataForReissueTests() {
         fee = ONE_WAVES + SUM_FEE;
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
@@ -174,6 +219,7 @@ public class PrepareInvokeTestsData {
         final String functions = "Reissue(assetId," + assetAmount.value() + ",true),\n" +
                 "Reissue(issueAssetId," + assetAmount.value() + ",true)";
         final String script = assetsFunctionBuilder(libVersion, "unit", functions, args, getAssetDAppPublicKey());
+        System.out.println(script);
         assetDAppAccount.setScript(script);
 
         dAppCall = assetDAppAccount.setDataAssetId(Base58.decode(assetId.toString()));

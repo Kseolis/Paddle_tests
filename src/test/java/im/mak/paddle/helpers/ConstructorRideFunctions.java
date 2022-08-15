@@ -12,7 +12,7 @@ public class ConstructorRideFunctions {
     private static final int issueAssetDecimals = getRandomInt(0, 8);
     private static final String issuedAssetName = "issuedAsset" + getRandomInt(1, 99);
     private static final String issuedAssetDescription = "asset ride script " + getRandomInt(1, 9999999);
-    private static final int issueAssetVolume = getRandomInt(700_000, 900_000_000);
+    private static final long issueAssetVolume = getRandomInt(700_000, 900_000_000);
     private static final boolean issueAssetReissuable = true;
     private static final int issueAssetNonce = getRandomInt(0, 10);
 
@@ -24,6 +24,7 @@ public class ConstructorRideFunctions {
         issuedAssetData.put(NAME, issuedAssetName);
         issuedAssetData.put(REISSUE, String.valueOf(issueAssetReissuable));
         issuedAssetData.put(VOLUME, String.valueOf(issueAssetVolume));
+        issuedAssetData.put(NONCE, String.valueOf(issueAssetNonce));
 
         final StringBuilder sb = new StringBuilder();
         sb.append("{-# STDLIB_VERSION ").append(libVersion).append(" #-}\n")
@@ -70,7 +71,7 @@ public class ConstructorRideFunctions {
         return issuedAssetDescription;
     }
 
-    public static int getIssueAssetVolume() {
+    public static long getIssueAssetVolume() {
         return issueAssetVolume;
     }
 

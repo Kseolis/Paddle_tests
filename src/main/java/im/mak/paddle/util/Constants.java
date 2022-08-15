@@ -48,8 +48,10 @@ public class Constants {
     public static final String ISSUER = "issuer";
     public static final String DECIMALS = "decimals";
     public static final String DESCRIPTION = "description";
+    public static final String NONCE = "nonce";
     public static final String NAME = "name";
     public static final String REISSUE = "reissue";
+    public static final String SCRIPT = "script";
     public static final String VOLUME = "volume";
 
     // arg types

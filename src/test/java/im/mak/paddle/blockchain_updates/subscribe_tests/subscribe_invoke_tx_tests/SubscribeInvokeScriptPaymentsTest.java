@@ -51,7 +51,7 @@ public class SubscribeInvokeScriptPaymentsTest extends InvokeBaseTest {
                 () -> checkPaymentMetadata(0, 0, null, paymentWaves),
                 () -> checkPaymentMetadata(0, 1, assetId, paymentAsset),
                 () -> checkDataMetadata(0, 0, INTEGER, DATA_ENTRY_INT, intArg),
-                () -> checkIssueAssetMetadata(0, 0),
+                () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
 
                 () -> checkStateUpdateBalance(0,
                         0,

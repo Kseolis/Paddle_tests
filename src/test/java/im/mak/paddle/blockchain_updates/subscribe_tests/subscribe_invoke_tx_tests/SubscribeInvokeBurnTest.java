@@ -19,7 +19,6 @@ import static im.mak.paddle.util.Constants.WAVES_STRING_ID;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeBurnTest extends InvokeBaseTest {
-
     @Test
     @DisplayName("subscribe invoke with Burn")
     void subscribeInvokeWithBurn() {
@@ -41,7 +40,7 @@ public class SubscribeInvokeBurnTest extends InvokeBaseTest {
         assertAll(
                 () -> checkInvokeSubscribeTransaction(getFee(), getCallerPublicKey()),
                 () -> checkMainMetadata(0),
-                () -> checkIssueAssetMetadata(0, 0),
+                () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
                 () -> checkBurnMetadata(0, 0, getAssetId().toString(), getAssetAmount().value()),
                 () -> checkBurnMetadata(0, 1, null, getAssetAmount().value()),
 

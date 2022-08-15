@@ -13,7 +13,6 @@ import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetVolume;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.getAssetId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.*;
@@ -49,7 +48,7 @@ public class SubscribeInvokeScriptTransferTest extends InvokeBaseTest {
                 () -> checkMainMetadata(0),
                 () -> checkArgumentsMetadata(0, 0, BINARY_BASE58, assetId),
                 () -> checkArgumentsMetadata(0, 1, BINARY_BASE58, getDAppAddress()),
-                () -> checkIssueAssetMetadata(0, 0),
+                () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
 
                 () -> checkTransfersMetadata(0, 0,
                         getDAppAddressBase58(),

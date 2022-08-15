@@ -42,7 +42,7 @@ public class SubscribeInvokeReissueTest extends InvokeBaseTest {
         assertAll(
                 () -> checkInvokeSubscribeTransaction(getFee(), getCallerPublicKey()),
                 () -> checkMainMetadata(0),
-                () -> checkIssueAssetMetadata(0, 0),
+                () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
                 () -> checkReissueMetadata(0, 0,
                         getAssetId().toString(),
                         getAssetAmount().value(),

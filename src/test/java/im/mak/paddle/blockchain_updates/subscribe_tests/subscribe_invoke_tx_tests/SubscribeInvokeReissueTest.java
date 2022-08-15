@@ -19,7 +19,6 @@ import static im.mak.paddle.util.Constants.WAVES_STRING_ID;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeReissueTest extends InvokeBaseTest {
-
     @Test
     @DisplayName("subscribe invoke with Reissue")
     void subscribeInvokeWithReissue() {
@@ -40,7 +39,6 @@ public class SubscribeInvokeReissueTest extends InvokeBaseTest {
     }
 
     private void assertionsCheck() {
-
         assertAll(
                 () -> checkInvokeSubscribeTransaction(getFee(), getCallerPublicKey()),
                 () -> checkMainMetadata(0),

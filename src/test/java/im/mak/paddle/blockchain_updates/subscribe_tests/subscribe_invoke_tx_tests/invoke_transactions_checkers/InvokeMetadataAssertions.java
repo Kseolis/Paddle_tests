@@ -1,11 +1,9 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers;
 
-import java.util.Arrays;
+import java.util.Map;
 
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeBaseTest.getDAppAccountAddress;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeBaseTest.getDAppFunctionName;
-import static im.mak.paddle.helpers.ConstructorRideFunctions.*;
-import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetNonce;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.BaseInvokeMetadata.getInvokeMetadataDAppAddress;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.BaseInvokeMetadata.getInvokeMetadataFunctionName;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataArgs.*;
@@ -56,21 +54,23 @@ public class InvokeMetadataAssertions {
         }
     }
 
-    public static void checkIssueAssetMetadata(int metadataIndex, int dataIndex) {
+    public static void checkIssueAssetMetadata(int metadataIndex, int dataIndex, Map<String, String> assetData) {
         assertAll(
                 () -> assertThat(getInvokeMetadataResultIssueName(metadataIndex, dataIndex))
-                        .isEqualTo(getIssuedAssetName()),
+                        .isEqualTo(assetData.get(NAME)),
                 () -> assertThat(getInvokeMetadataResultIssueDescription(metadataIndex, dataIndex))
-                        .isEqualTo(getIssuedAssetDescription()),
+                        .isEqualTo(assetData.get(DESCRIPTION)),
                 () -> assertThat(getInvokeMetadataResultIssueAmount(metadataIndex, dataIndex))
-                        .isEqualTo(getIssueAssetVolume()),
+                        .isEqualTo(Long.valueOf(assetData.get(VOLUME))),
                 () -> assertThat(getInvokeMetadataResultIssueDecimals(metadataIndex, dataIndex))
-                        .isEqualTo(getIssueAssetDecimals()),
+                        .isEqualTo(Long.parseLong(assetData.get(DECIMALS))),
                 () -> assertThat(getInvokeMetadataResultIssueReissuable(metadataIndex, dataIndex))
-                        .isEqualTo(getIssueAssetReissuable()),
-                () -> assertThat(getInvokeMetadataResultIssueNonce(metadataIndex, dataIndex))
-                        .isEqualTo(getIssueAssetNonce())
+                        .isEqualTo(Boolean.parseBoolean(assetData.get(REISSUE)))
         );
+        if (assetData.get(NONCE) != null) {
+            assertThat(getInvokeMetadataResultIssueNonce(metadataIndex, dataIndex))
+                    .isEqualTo(Long.parseLong(assetData.get(NONCE)));
+        }
     }
 
     public static void checkPaymentMetadata(int metadataIndex, int dataIndex, String assetId, long amount) {

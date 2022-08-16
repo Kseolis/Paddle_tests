@@ -11,7 +11,6 @@ import im.mak.paddle.dapps.DataDApp;
 
 import java.util.*;
 
-import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.*;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
 import static im.mak.paddle.helpers.Randomizer.randomNumAndLetterString;
@@ -20,7 +19,6 @@ import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.se
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.ONE_WAVES;
-import static im.mak.paddle.util.ScriptUtil.fromFile;
 
 public class PrepareInvokeTestsData {
     private static Account callerAccount;
@@ -52,6 +50,8 @@ public class PrepareInvokeTestsData {
     private static long amountAfterInvokeDAppIssuedAsset;
 
     private static final String args = "assetId:ByteVector";
+    private static final String key1ForDAppEqualBar = "bar";
+    private static final String key2ForDAppEqualBalance = "balance";
     private static DAppCall dAppCall;
     private static long fee;
 
@@ -322,11 +322,9 @@ public class PrepareInvokeTestsData {
     public void prepareDataForDAppToDAppTests() {
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
 
-        final Amount attachAmount = Amount.of(100000000, assetId);
-
         final String functionArgsDApp1 = "dapp2:ByteVector, a:Int, key1:String, key2:String, assetId:ByteVector";
         final String dApp1Body =
-                "strict res = invoke(Address(dapp2),\"bar\",[a, assetId],[AttachedPayment(assetId," + attachAmount.value() + ")])\n" +
+                "strict res = invoke(Address(dapp2),\"bar\",[a, assetId],[AttachedPayment(assetId," + assetAmount.value() + ")])\n" +
                         "match res {\ncase r : Int => \n(\n[\n" +
                         "IntegerEntry(key1, r),\n" +
                         "IntegerEntry(key2, wavesBalance(Address(dapp2)).regular)\n" +
@@ -348,11 +346,11 @@ public class PrepareInvokeTestsData {
         dAppAccount.setScript(dApp1);
         assetDAppAccount.setScript(dApp2);
 
-        dAppCall = dAppAccount.setData(assetDAppAddressBase58, 121, "bar", "balance", assetId.bytes());
+        dAppCall = dAppAccount.setData(assetDAppAddressBase58, intArg, key1ForDAppEqualBar, key2ForDAppEqualBalance, assetId.bytes());
 
         amounts.clear();
         amounts.add(wavesAmount);
-        amounts.add(attachAmount);
+        amounts.add(assetAmount);
 
         setFee(SUM_FEE);
     }
@@ -460,4 +458,13 @@ public class PrepareInvokeTestsData {
     public static byte[] getDAppAddressBase58() {
         return dAppAddressBase58;
     }
+
+    public static String getKey1ForDAppEqualBar() {
+        return key1ForDAppEqualBar;
+    }
+
+    public static String getKey2ForDAppEqualBalance() {
+        return key2ForDAppEqualBalance;
+    }
+
 }

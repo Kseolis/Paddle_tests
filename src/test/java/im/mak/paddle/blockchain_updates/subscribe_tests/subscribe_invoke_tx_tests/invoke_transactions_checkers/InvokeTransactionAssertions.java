@@ -9,14 +9,13 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.getTransactionVersion;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender.getInvokeScriptId;
-import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class InvokeTransactionAssertions extends InvokeBaseTest {
     public static void checkInvokeSubscribeTransaction(long fee, String senderPublicKey) {
         assertAll(
-                () -> assertThat(getChainId(0)).isEqualTo(DEVNET_CHAIN_ID),
+                () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(fee),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(senderPublicKey),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),

@@ -34,7 +34,7 @@ public class SubscribeInvokeScriptTransferTest extends InvokeBaseTest {
         invokeSender(getCallerAccount(), getAssetDAppAccount(), getDAppCall());
 
         height = node().getHeight();
-        subscribeResponseHandler(channel, getCallerAccount(), height, height);
+        subscribeResponseHandler(CHANNEL, getCallerAccount(), height, height);
         prepareInvoke(getAssetDAppAccount());
 
         long dAppAssetAmountAfter = Long.parseLong(getIssueAssetData().get(VOLUME)) - assetAmountValue;

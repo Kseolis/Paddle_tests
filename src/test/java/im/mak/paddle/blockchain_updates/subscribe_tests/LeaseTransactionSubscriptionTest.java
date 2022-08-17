@@ -63,7 +63,7 @@ public class LeaseTransactionSubscriptionTest extends BaseTest {
         leaseTransactionSender(MIN_TRANSACTION_SUM, sender, recipient, MIN_FEE, LATEST_VERSION);
         String leaseId = getLeaseTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(channel, sender, height, height);
+        subscribeResponseHandler(CHANNEL, sender, height, height);
         checkLeaseSubscribe(leaseId, MIN_TRANSACTION_SUM, DEFAULT_FAUCET, MIN_FEE);
     }
 
@@ -78,14 +78,14 @@ public class LeaseTransactionSubscriptionTest extends BaseTest {
         leaseTransactionSender(amountLease, accWithDApp, recipient, SUM_FEE, LATEST_VERSION);
         String leaseId = getLeaseTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(channel, accWithDApp, height, height);
+        subscribeResponseHandler(CHANNEL, accWithDApp, height, height);
         checkLeaseSubscribe(leaseId, amountLease, balance, SUM_FEE);
     }
 
     private void checkLeaseSubscribe(String leaseId, long leaseSum, long balanceBefore, long fee) {
         assertAll(
                 // transaction
-                () -> assertThat(getChainId(0)).isEqualTo(DEVNET_CHAIN_ID),
+                () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(senderPublicKey),
                 () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(fee),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),

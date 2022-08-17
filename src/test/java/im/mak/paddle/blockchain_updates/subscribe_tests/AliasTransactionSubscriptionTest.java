@@ -55,7 +55,7 @@ public class AliasTransactionSubscriptionTest extends BaseTest {
         newAlias = randomNumAndLetterString(15);
         createAliasTransactionSender(account, newAlias, MIN_FEE, LATEST_VERSION);
         height = node().getHeight();
-        subscribeResponseHandler(channel, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height);
         checkAliasSubscribe(amountBefore, amountAfter, accountAddress, accountPublicKey, MIN_FEE);
     }
 
@@ -67,13 +67,13 @@ public class AliasTransactionSubscriptionTest extends BaseTest {
         newAlias = randomNumAndLetterString(4);
         createAliasTransactionSender(dAppAccount, newAlias, SUM_FEE, LATEST_VERSION);
         height = node().getHeight();
-        subscribeResponseHandler(channel, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height);
         checkAliasSubscribe(amountBefore, amountAfter, dAppAccountAddress, dAppAccountPublicKey, SUM_FEE);
     }
 
     private void checkAliasSubscribe(long amountBefore, long amountAfter, String address, String publicKey, long fee) {
         assertAll(
-                () -> assertThat(getChainId(0)).isEqualTo(DEVNET_CHAIN_ID),
+                () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(publicKey),
                 () -> assertThat(getAliasFromAliasTransaction(0)).isEqualTo(newAlias),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),

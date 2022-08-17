@@ -30,7 +30,7 @@ public class SubscribeInvokeSponsorFeeTest extends InvokeBaseTest {
         invokeSender(getCallerAccount(), getAssetDAppAccount(), getDAppCall());
 
         height = node().getHeight();
-        subscribeResponseHandler(channel, getAssetDAppAccount(), height, height);
+        subscribeResponseHandler(CHANNEL, getAssetDAppAccount(), height, height);
         prepareInvoke(getAssetDAppAccount());
 
         assertionsCheck(getAssetAmount().value());

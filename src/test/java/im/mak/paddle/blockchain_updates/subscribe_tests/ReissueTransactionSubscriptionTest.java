@@ -79,7 +79,7 @@ public class ReissueTransactionSubscriptionTest extends BaseTest {
         reissueTransactionSender(account, amount, assetId, SUM_FEE, LATEST_VERSION);
         height = node().getHeight();
 
-        subscribeResponseHandler(channel, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height);
         checkReissueSubscribe(assetId.toString(), amount.value());
     }
 
@@ -102,13 +102,13 @@ public class ReissueTransactionSubscriptionTest extends BaseTest {
         reissueTransactionSender(account, amount, assetId, SUM_FEE, LATEST_VERSION);
         height = node().getHeight();
 
-        subscribeResponseHandler(channel, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height);
         checkReissueSubscribe(assetId.toString(), amount.value());
     }
 
     private void checkReissueSubscribe(String assetId, long amount) {
         assertAll(
-                () -> assertThat(getChainId(0)).isEqualTo(DEVNET_CHAIN_ID),
+                () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(SUM_FEE),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(publicKey),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),

@@ -31,7 +31,7 @@ public class SubscribeInvokeReissueTest extends InvokeBaseTest {
 
         height = node().getHeight();
 
-        subscribeResponseHandler(channel, getAssetDAppAccount(), height, height);
+        subscribeResponseHandler(CHANNEL, getAssetDAppAccount(), height, height);
         prepareInvoke(getAssetDAppAccount());
 
         checkInvokeSubscribeTransaction(getFee(), getCallerPublicKey());

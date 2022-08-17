@@ -76,7 +76,7 @@ public class MassTransferTransactionSubscriptionTest extends BaseTest {
 
         massTransferTransactionSender(senderAccount, AssetId.WAVES, amountValue, accountList, LATEST_VERSION);
         height = node().getHeight();
-        subscribeResponseHandler(channel, senderAccount, height, height);
+        subscribeResponseHandler(CHANNEL, senderAccount, height, height);
 
         checkMassTransferSubscribe(senderPublicKey, senderAddress, "");
     }
@@ -90,7 +90,7 @@ public class MassTransferTransactionSubscriptionTest extends BaseTest {
 
         massTransferTransactionSender(dAppAccount, smartAssetId, amountValue, accountList, LATEST_VERSION);
         height = node().getHeight();
-        subscribeResponseHandler(channel, dAppAccount, height, height);
+        subscribeResponseHandler(CHANNEL, dAppAccount, height, height);
 
         checkMassTransferSubscribe(dAppAccountPublicKey, dAppAccountAddress, smartAssetId.toString());
     }
@@ -98,7 +98,7 @@ public class MassTransferTransactionSubscriptionTest extends BaseTest {
     private void checkMassTransferSubscribe(String publicKey, String address, String assetId) {
         assertThat(getTransactionFeeAmount(0)).isEqualTo(getTransactionCommission());
         assertAll(
-                () -> assertThat(getChainId(0)).isEqualTo(DEVNET_CHAIN_ID),
+                () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(publicKey),
                 () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(getTransactionCommission()),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),

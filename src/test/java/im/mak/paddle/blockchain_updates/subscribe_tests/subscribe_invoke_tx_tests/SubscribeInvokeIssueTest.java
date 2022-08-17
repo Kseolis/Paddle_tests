@@ -32,7 +32,7 @@ public class SubscribeInvokeIssueTest extends InvokeBaseTest {
 
         height = node().getHeight();
 
-        subscribeResponseHandler(channel, getAssetDAppAccount(), height, height);
+        subscribeResponseHandler(CHANNEL, getAssetDAppAccount(), height, height);
         prepareInvoke(getAssetDAppAccount());
 
         System.out.println(getAppend());

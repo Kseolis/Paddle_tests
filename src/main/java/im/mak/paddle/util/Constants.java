@@ -35,8 +35,6 @@ public class Constants {
 
     public static final String SCRIPT_PERMITTING_OPERATIONS = "{-# STDLIB_VERSION 5 #-} {-# SCRIPT_TYPE ASSET #-} true";
 
-    public static final long DEVNET_CHAIN_ID = 68;
-    public static final long STAGENET_CHAIN_ID = 83;
     public static final byte ORDER_V_3 = 3;
     public static final byte ORDER_V_4 = 4;
 

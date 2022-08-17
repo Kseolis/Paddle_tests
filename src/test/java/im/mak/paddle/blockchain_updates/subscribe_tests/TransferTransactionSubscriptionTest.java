@@ -66,7 +66,7 @@ public class TransferTransactionSubscriptionTest extends BaseTest {
         amountBefore = DEFAULT_FAUCET;
         transferTransactionSender(amountTransfer, senderAccount, recipient, ADDRESS, MIN_FEE, LATEST_VERSION);
         height = node().getHeight();
-        subscribeResponseHandler(channel, senderAccount, height, height);
+        subscribeResponseHandler(CHANNEL, senderAccount, height, height);
         checkTransferSubscribe("", DEFAULT_FAUCET, 0, MIN_FEE);
     }
 
@@ -84,7 +84,7 @@ public class TransferTransactionSubscriptionTest extends BaseTest {
 
         transferTransactionSender(amountTransfer, senderAccount, recipient, ADDRESS, MIN_FEE, LATEST_VERSION);
         height = node().getHeight();
-        subscribeResponseHandler(channel, senderAccount, height, height);
+        subscribeResponseHandler(CHANNEL, senderAccount, height, height);
 
         checkTransferSubscribe(assetId.toString(), issuedAsset.quantity(), assetAmount, MIN_FEE);
     }
@@ -106,14 +106,14 @@ public class TransferTransactionSubscriptionTest extends BaseTest {
 
         transferTransactionSender(amountTransfer, senderAccount, recipient, ADDRESS, SUM_FEE, LATEST_VERSION);
         height = node().getHeight();
-        subscribeResponseHandler(channel, senderAccount, height, height);
+        subscribeResponseHandler(CHANNEL, senderAccount, height, height);
 
         checkTransferSubscribe(assetId.toString(), issuedAsset.quantity(), assetAmount, SUM_FEE);
     }
 
     private void checkTransferSubscribe(String assetId, long quantity, long amountSecond, long fee) {
         assertAll(
-                () -> assertThat(getChainId(0)).isEqualTo(DEVNET_CHAIN_ID),
+                () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getTransferAssetAmount(0)).isEqualTo(amountValue),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(senderPublicKey),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),

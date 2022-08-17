@@ -18,7 +18,7 @@ class GetBlockUpdatesRangeTest extends BaseTest {
                 .setToHeight(height)
                 .build();
 
-        BlockchainUpdatesApiBlockingStub stub = newBlockingStub(channel);
+        BlockchainUpdatesApiBlockingStub stub = newBlockingStub(CHANNEL);
 
         GetBlockUpdatesRangeResponse response = stub.getBlockUpdatesRange(request);
 

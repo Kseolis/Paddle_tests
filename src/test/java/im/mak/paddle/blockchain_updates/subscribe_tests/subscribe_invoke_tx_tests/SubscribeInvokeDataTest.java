@@ -31,7 +31,7 @@ public class SubscribeInvokeDataTest extends InvokeBaseTest {
         invokeSenderWithPayment(getCallerAccount(), getDAppAccount(), getDAppCall(), getAmounts());
 
         height = node().getHeight();
-        subscribeResponseHandler(channel, getDAppAccount(), height, height);
+        subscribeResponseHandler(CHANNEL, getDAppAccount(), height, height);
         prepareInvoke(getDAppAccount());
 
         assertionsCheck(payment,

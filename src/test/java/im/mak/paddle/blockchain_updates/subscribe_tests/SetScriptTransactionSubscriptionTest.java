@@ -45,7 +45,7 @@ public class SetScriptTransactionSubscriptionTest extends BaseTest {
         setScriptTransactionSender(account, script, MIN_FEE, LATEST_VERSION);
         wavesAmountAfterSetAssetScript = DEFAULT_FAUCET - getFee();
         height = node().getHeight();
-        subscribeResponseHandler(channel, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height);
         checkSetScriptSubscribe();
     }
 
@@ -57,7 +57,7 @@ public class SetScriptTransactionSubscriptionTest extends BaseTest {
         setScriptTransactionSender(account, script, minimalValSetScriptFee, LATEST_VERSION);
         wavesAmountAfterSetAssetScript = DEFAULT_FAUCET - getFee();
         height = node().getHeight();
-        subscribeResponseHandler(channel, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height);
         checkSetScriptSubscribe();
     }
 
@@ -70,7 +70,7 @@ public class SetScriptTransactionSubscriptionTest extends BaseTest {
         setScriptTransactionSender(account, script, 0, LATEST_VERSION);
         wavesAmountAfterSetAssetScript = DEFAULT_FAUCET - getFee();
         height = node().getHeight();
-        subscribeResponseHandler(channel, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height);
         checkSetScriptSubscribe();
     }
 
@@ -83,13 +83,13 @@ public class SetScriptTransactionSubscriptionTest extends BaseTest {
         setScriptTransactionSender(account, script, 0, LATEST_VERSION);
         wavesAmountAfterSetAssetScript = DEFAULT_FAUCET - getFee();
         height = node().getHeight();
-        subscribeResponseHandler(channel, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height);
         checkSetScriptSubscribe();
     }
 
     private void checkSetScriptSubscribe() {
         assertAll(
-                () -> assertThat(getChainId(0)).isEqualTo(DEVNET_CHAIN_ID),
+                () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(publicKey),
                 () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(getFee()),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),

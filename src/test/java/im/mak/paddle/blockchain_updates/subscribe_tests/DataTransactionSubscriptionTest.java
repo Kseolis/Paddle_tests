@@ -57,14 +57,14 @@ public class DataTransactionSubscriptionTest extends BaseTest {
                 booleanEntry,
                 stringEntry);
         height = node().getHeight();
-        subscribeResponseHandler(channel, senderAccount, height, height);
+        subscribeResponseHandler(CHANNEL, senderAccount, height, height);
         checkDataTransactionSubscribe();
         checkDataEntries();
     }
 
     private void checkDataTransactionSubscribe() {
         assertAll(
-                () -> assertThat(getChainId(0)).isEqualTo(DEVNET_CHAIN_ID),
+                () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(senderPublicKey),
                 () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(MIN_FEE),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),

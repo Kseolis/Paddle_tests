@@ -18,7 +18,7 @@ class GetBlockUpdateTest extends BaseTest {
                 .setHeight(height)
                 .build();
 
-        BlockchainUpdatesApiBlockingStub stub = newBlockingStub(channel);
+        BlockchainUpdatesApiBlockingStub stub = newBlockingStub(CHANNEL);
 
         GetBlockUpdateResponse response = stub.getBlockUpdate(request);
 

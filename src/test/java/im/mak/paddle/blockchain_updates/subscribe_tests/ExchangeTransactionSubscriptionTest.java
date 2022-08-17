@@ -94,7 +94,7 @@ public class ExchangeTransactionSubscriptionTest extends BaseTest {
 
         exchangeTransactionSender(buyer, seller, buy, sell, amount.value(), price.value(), 0, LATEST_VERSION);
         height = node().getHeight();
-        subscribeResponseHandler(channel, buyer, height, height);
+        subscribeResponseHandler(CHANNEL, buyer, height, height);
 
         checkExchangeSubscribe(MIN_FEE_FOR_EXCHANGE, "");
         checkBalancesForExchangeWithWaves(amountBefore);
@@ -121,7 +121,7 @@ public class ExchangeTransactionSubscriptionTest extends BaseTest {
         exchangeTransactionSender
                 (buyer, seller, buy, sell, amount.value(), price.value(), EXCHANGE_FEE_FOR_SMART_ASSETS, LATEST_VERSION);
         height = node().getHeight();
-        subscribeResponseHandler(channel, buyer, height, height);
+        subscribeResponseHandler(CHANNEL, buyer, height, height);
         checkExchangeSubscribe(fee, amount.assetId().toString());
         checkBalancesForExchangeWithAssets(wavesBuyerAmountBefore, wavesSellerAmountBefore, EXCHANGE_FEE_FOR_SMART_ASSETS);
     }
@@ -145,14 +145,14 @@ public class ExchangeTransactionSubscriptionTest extends BaseTest {
         exchangeTransactionSender
                 (buyer, seller, buy, sell, amount.value(), price.value(), EXTRA_FEE, LATEST_VERSION);
         height = node().getHeight();
-        subscribeResponseHandler(channel, buyer, height, height);
+        subscribeResponseHandler(CHANNEL, buyer, height, height);
         checkExchangeSubscribe(fee, amount.assetId().toString());
         checkBalancesForExchangeWithAssets(wavesBuyerAmountBefore, wavesSellerAmountBefore, EXTRA_FEE);
     }
 
     private void checkExchangeSubscribe(long fee, String amountAssetId) {
         assertAll(
-                () -> assertThat(getChainId(0)).isEqualTo(DEVNET_CHAIN_ID),
+                () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(buyerPublicKey),
                 () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(fee),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),

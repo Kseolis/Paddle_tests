@@ -78,7 +78,7 @@ public class BurnTransactionSubscriptionTest extends BaseTest {
         quantityAfterBurn = assetQuantity - amount.value();
         height = node().getHeight();
 
-        subscribeResponseHandler(channel, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height);
         checkBurnSubscribe(assetId.toString(), amount.value(), SUM_FEE, compileScript);
     }
 
@@ -101,13 +101,13 @@ public class BurnTransactionSubscriptionTest extends BaseTest {
         quantityAfterBurn = assetQuantity - amount.value();
         height = node().getHeight();
 
-        subscribeResponseHandler(channel, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height);
         checkBurnSubscribe(assetId.toString(), amount.value(), MIN_FEE, script);
     }
 
     private void checkBurnSubscribe(String assetId, long amount, long burnAssetFee, byte[] script) {
         assertAll(
-                () -> assertThat(getChainId(0)).isEqualTo(DEVNET_CHAIN_ID),
+                () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(burnAssetFee),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(publicKey),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),

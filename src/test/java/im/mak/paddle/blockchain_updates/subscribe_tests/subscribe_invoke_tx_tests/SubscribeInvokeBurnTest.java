@@ -30,7 +30,7 @@ public class SubscribeInvokeBurnTest extends InvokeBaseTest {
 
         height = node().getHeight();
 
-        subscribeResponseHandler(channel, getAssetDAppAccount(), height, height);
+        subscribeResponseHandler(CHANNEL, getAssetDAppAccount(), height, height);
         prepareInvoke(getAssetDAppAccount());
 
         assertionsCheck();

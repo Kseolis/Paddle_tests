@@ -4,6 +4,7 @@ import java.util.Map;
 
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeBaseTest.getDAppAccountAddress;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeBaseTest.getDAppFunctionName;
+import static im.mak.paddle.helpers.Convert.convertAddressToHash;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.BaseInvokeMetadata.getInvokeMetadataDAppAddress;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.BaseInvokeMetadata.getInvokeMetadataFunctionName;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataArgs.*;
@@ -12,6 +13,7 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultBurn.getInvokeMetadataResultBurnAmount;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultBurn.getInvokeMetadataResultBurnAssetId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultData.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultInvokes.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultIssue.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultIssue.getInvokeMetadataResultIssueNonce;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultLease.getInvokeMetadataLeasesAmount;
@@ -134,21 +136,55 @@ public class InvokeMetadataAssertions {
 
     public static void checkLeaseMetadata(int metadataIndex, int dataIndex, String publicKeyHash, long amount) {
         assertAll(
-                () -> assertThat(getInvokeMetadataLeasesRecipientPublicKey(metadataIndex, dataIndex)).isEqualTo(publicKeyHash),
+                () -> assertThat(getInvokeMetadataLeasesRecipientPublicKey(metadataIndex, dataIndex))
+                        .isEqualTo(publicKeyHash),
                 () -> assertThat(getInvokeMetadataLeasesAmount(metadataIndex, dataIndex)).isEqualTo(amount)
         );
     }
 
     public static void checkTransfersMetadata(int metadataIndex, int dataIndex, byte[] address, String assetId, long amount) {
-        byte[] hash = new byte[address.length - 6];
-        System.arraycopy(address, 2, hash, 0, 20);
-
+        byte[] hash = convertAddressToHash(address);
         if (assetId != null) {
             assertThat(getInvokeMetadataResultTransfersAssetId(metadataIndex, dataIndex)).isEqualTo(assetId);
         }
         assertAll(
                 () -> assertThat(getInvokeMetadataResultTransfersAddress(metadataIndex, dataIndex)).isEqualTo(hash),
                 () -> assertThat(getInvokeMetadataResultTransfersAmount(metadataIndex, dataIndex)).isEqualTo(amount)
+        );
+    }
+
+    public static void checkResultInvokesMetadata(int metadataIndex, int dataIndex, String dApp, String func) {
+        assertAll(
+                () -> assertThat(getInvokeMetadataResultInvokesDApp(metadataIndex, dataIndex)).isEqualTo(dApp),
+                () -> assertThat(getInvokeMetadataResultInvokesCallFunc(metadataIndex, dataIndex)).isEqualTo(func)
+        );
+    }
+
+    public static void checkResultInvokesMetadataPayments
+            (int metadataIndex, int dataIndex, int payIndex, String assetId, long amount) {
+        if (assetId != null) {
+            assertThat(getInvokeMetadataResultInvokesPaymentAssetId(metadataIndex, dataIndex, payIndex))
+                    .isEqualTo(assetId);
+        }
+        assertThat(getInvokeMetadataResultInvokesPaymentAmount(metadataIndex, dataIndex, payIndex)).isEqualTo(amount);
+    }
+
+    public static void checkResultInvokesMetadataStateChanges(int metadataIndex, int dataIndex,
+                                                              int payIndex, String assetId,
+                                                              byte[] address, long amount) {
+        byte[] hash = convertAddressToHash(address);
+
+        if (assetId != null) {
+            assertThat(getInvokeMetadataResultInvokesStateChangesTransferAssetId(metadataIndex, dataIndex, payIndex))
+                    .isEqualTo(assetId);
+        }
+        assertAll(
+                () -> assertThat(
+                        getInvokeMetadataResultInvokesStateChangesTransferAddress(metadataIndex, dataIndex, payIndex))
+                        .isEqualTo(hash),
+                () -> assertThat(
+                        getInvokeMetadataResultInvokesStateChangesTransferAmount(metadataIndex, dataIndex, payIndex))
+                        .isEqualTo(amount)
         );
     }
 }

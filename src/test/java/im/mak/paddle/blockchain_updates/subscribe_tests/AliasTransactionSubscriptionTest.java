@@ -3,7 +3,7 @@ package im.mak.paddle.blockchain_updates.subscribe_tests;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseTest;
 import im.mak.paddle.dapps.DefaultDApp420Complexity;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -22,17 +22,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class AliasTransactionSubscriptionTest extends BaseTest {
-    private Account account;
-    private String accountAddress;
-    private String accountPublicKey;
+    private static Account account;
+    private static String accountAddress;
+    private static String accountPublicKey;
 
-    private DefaultDApp420Complexity dAppAccount;
-    private String dAppAccountAddress;
-    private String dAppAccountPublicKey;
+    private static DefaultDApp420Complexity dAppAccount;
+    private static String dAppAccountAddress;
+    private static String dAppAccountPublicKey;
     protected String newAlias;
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void setUp() {
         async(
                 () -> {
                     dAppAccount = new DefaultDApp420Complexity(DEFAULT_FAUCET);

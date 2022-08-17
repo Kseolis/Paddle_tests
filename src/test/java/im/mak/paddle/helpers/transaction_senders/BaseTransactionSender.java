@@ -22,7 +22,6 @@ public class BaseTransactionSender {
         return txInfo;
     }
 
-
     public static void setVersion(int version) {
         BaseTransactionSender.version = version;
     }
@@ -35,4 +34,7 @@ public class BaseTransactionSender {
         BaseTransactionSender.extraFee = extraFee;
     }
 
+    public static void setTxInfo(TransactionInfo txInfo) {
+        BaseTransactionSender.txInfo = txInfo;
+    }
 }

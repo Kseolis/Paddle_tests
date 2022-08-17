@@ -3,7 +3,7 @@ package im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers;
 import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdates;
 import com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdatesApiGrpc;
-import com.wavesplatform.events.protobuf.Events;
+import com.wavesplatform.events.protobuf.Events.BlockchainUpdated;
 import com.wavesplatform.protobuf.block.BlockOuterClass;
 import com.wavesplatform.protobuf.transaction.TransactionOuterClass;
 import im.mak.paddle.Account;
@@ -17,7 +17,7 @@ import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.ge
 
 public class SubscribeHandler {
 
-    private static Events.BlockchainUpdated.Append append;
+    private static BlockchainUpdated.Append append;
     private static BlockOuterClass.MicroBlock microBlockInfo;
     private static TransactionOuterClass.Transaction firstTransaction;
     private static String transactionId;
@@ -40,7 +40,7 @@ public class SubscribeHandler {
         }
     }
 
-    public static Events.BlockchainUpdated.Append getAppend() {
+    public static BlockchainUpdated.Append getAppend() {
         return append;
     }
 
@@ -56,7 +56,7 @@ public class SubscribeHandler {
         return transactionId;
     }
 
-    private static void subscribeEventHandler(Events.BlockchainUpdated subscribeEventUpdate, Account account) {
+    private static void subscribeEventHandler(BlockchainUpdated subscribeEventUpdate, Account account) {
         final String accPublicKey = account.publicKey().toString();
         final String txId = getTxInfo().tx().id().toString();
         append = subscribeEventUpdate.getAppend();
@@ -64,7 +64,6 @@ public class SubscribeHandler {
                 .getMicroBlock()
                 .getMicroBlock()
                 .getMicroBlock();
-
 
         if (microBlockInfo.getTransactionsCount() > 0) {
 

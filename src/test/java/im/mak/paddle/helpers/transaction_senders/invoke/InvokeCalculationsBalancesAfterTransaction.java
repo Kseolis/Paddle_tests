@@ -6,9 +6,7 @@ import im.mak.paddle.Account;
 
 import java.util.List;
 
-import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
-import static im.mak.paddle.helpers.PrepareInvokeTestsData.getAssetAmount;
-import static im.mak.paddle.util.Constants.VOLUME;
+import static im.mak.paddle.helpers.PrepareInvokeTestsData.getIntArg;
 
 public class InvokeCalculationsBalancesAfterTransaction extends InvokeScriptTransactionSender {
     private static long callerBalanceWavesBeforeTransaction;
@@ -25,6 +23,8 @@ public class InvokeCalculationsBalancesAfterTransaction extends InvokeScriptTran
     private static long accBalanceIssuedAssetsBeforeTransaction;
     private static long accBalanceWavesAfterTransaction;
     private static long accBalanceIssuedAssetsAfterTransaction;
+
+    private static String invokeResultData;
 
     public static void balancesAfterPaymentInvoke(Account caller, Account dApp, List<Amount> amounts, AssetId id) {
         prepareBalances(caller, dApp, id);
@@ -119,6 +119,7 @@ public class InvokeCalculationsBalancesAfterTransaction extends InvokeScriptTran
 
     public static void balancesAfterDAppToDApp(Account caller, Account dApp, Account acc, List<Amount> amounts, AssetId id) {
         prepareThreeAccBalances(caller, dApp, acc, id);
+        invokeResultData = String.valueOf(getIntArg() * 2);
 
         if (!amounts.isEmpty()) {
             amounts.forEach(
@@ -181,6 +182,10 @@ public class InvokeCalculationsBalancesAfterTransaction extends InvokeScriptTran
 
     public static long getAccBalanceIssuedAssetsAfterTransaction() {
         return accBalanceIssuedAssetsAfterTransaction;
+    }
+
+    public static String getInvokeResultData() {
+        return invokeResultData;
     }
 
     private static void prepareBalances(Account caller, Account dApp, AssetId id) {

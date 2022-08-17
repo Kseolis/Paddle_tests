@@ -86,7 +86,7 @@ public class SponsorFeeTransactionSubscriptionTest extends BaseTest {
         sponsorFeeTransactionSender(account, sponsorFeeAmount, assetId, SUM_FEE, LATEST_VERSION);
         height = node().getHeight();
 
-        subscribeResponseHandler(channel, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height);
         checkSponsorFeeSubscribe(assetIdToString, accAddress, accPublicKey, SUM_FEE);
     }
 
@@ -111,7 +111,7 @@ public class SponsorFeeTransactionSubscriptionTest extends BaseTest {
         sponsorFeeTransactionSender(dAppAccount, sponsorFeeAmount, assetId, SUM_FEE, LATEST_VERSION);
         height = node().getHeight();
 
-        subscribeResponseHandler(channel, dAppAccount, height, height);
+        subscribeResponseHandler(CHANNEL, dAppAccount, height, height);
         checkSponsorFeeSubscribe(assetIdToString, dAppAddress, dAppPublicKey, SUM_FEE);
     }
 
@@ -137,14 +137,14 @@ public class SponsorFeeTransactionSubscriptionTest extends BaseTest {
         cancelSponsorFeeSender(account, account, dAppAccount, assetId, LATEST_VERSION);
 
         height = node().getHeight();
-        subscribeResponseHandler(channel, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height);
 
         checkSponsorFeeSubscribe(assetIdToString, accAddress, accPublicKey, MIN_FEE);
     }
 
     private void checkSponsorFeeSubscribe(String assetId, String address, String publicKey, long fee) {
         assertAll(
-                () -> assertThat(getChainId(0)).isEqualTo(DEVNET_CHAIN_ID),
+                () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(publicKey),
                 () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(fee),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),
@@ -158,53 +158,21 @@ public class SponsorFeeTransactionSubscriptionTest extends BaseTest {
                 // check asset before sponsor fee transaction
                 () -> assertThat(getAssetIdFromAssetBefore(0, 0)).isEqualTo(assetId),
                 () -> assertThat(getIssuerBefore(0, 0)).isEqualTo(publicKey),
-                () -> assertThat(getDecimalsBefore(0, 0)).isEqualTo(assetDecimals),
-                () -> assertThat(getNameBefore(0, 0)).isEqualTo(assetName),
+                () -> assertThat(getDecimalsBefore(0, 0)).isEqualTo(String.valueOf(assetDecimals)),
+                () -> assertThat(getNameBefore(0, 0)).isEqualTo(String.valueOf(assetName)),
                 () -> assertThat(getDescriptionBefore(0, 0)).isEqualTo(assetDescription),
-                () -> assertThat(getReissueBefore(0, 0)).isEqualTo(true),
-                () -> assertThat(getQuantityBefore(0, 0)).isEqualTo(assetQuantity),
+                () -> assertThat(getReissueBefore(0, 0)).isEqualTo(String.valueOf(true)),
+                () -> assertThat(getQuantityBefore(0, 0)).isEqualTo(String.valueOf(assetQuantity)),
                 () -> assertThat(getScriptComplexityBefore(0, 0)).isEqualTo(0),
                 // check asset after sponsor fee transaction
                 () -> assertThat(getAssetIdFromAssetAfter(0, 0)).isEqualTo(assetId),
                 () -> assertThat(getIssuerAfter(0, 0)).isEqualTo(publicKey),
-                () -> assertThat(getDecimalsAfter(0, 0)).isEqualTo(assetDecimals),
+                () -> assertThat(getDecimalsAfter(0, 0)).isEqualTo(String.valueOf(assetDecimals)),
                 () -> assertThat(getNameAfter(0, 0)).isEqualTo(assetName),
                 () -> assertThat(getDescriptionAfter(0, 0)).isEqualTo(assetDescription),
-                () -> assertThat(getReissueAfter(0, 0)).isEqualTo(true),
-                () -> assertThat(getQuantityAfter(0, 0)).isEqualTo(assetQuantity),
+                () -> assertThat(getReissueAfter(0, 0)).isEqualTo(String.valueOf(true)),
+                () -> assertThat(getQuantityAfter(0, 0)).isEqualTo(String.valueOf(assetQuantity)),
                 () -> assertThat(getScriptComplexityAfter(0, 0)).isEqualTo(0)
         );
     }
 }
-
-/*
-        assertThat(getChainId(0)).isEqualTo(DEVNET_CHAIN_ID);
-        assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(publicKey);
-        assertThat(getTransactionFeeAmount(0)).isEqualTo(fee);
-        assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION);
-        assertThat(getAssetIdFromSponsorFee(0)).isEqualTo(assetId);
-        assertThat(getAmountFromSponsorFee(0)).isEqualTo(sponsorFeeAmount);
-        assertThat(getTransactionId()).isEqualTo(getSponsorTx().id().toString());
-        // check waves balance
-        assertThat(getAddress(0, 0)).isEqualTo(address);
-        assertThat(getAmountBefore(0, 0)).isEqualTo(wavesAmountBefore);
-        assertThat(getAmountAfter(0, 0)).isEqualTo(wavesAmountAfter);
-        // check asset before sponsor fee transaction
-        assertThat(getAssetIdFromAssetBefore(0, 0)).isEqualTo(assetId);
-        assertThat(getIssuerBefore(0, 0)).isEqualTo(publicKey);
-        assertThat(getDecimalsBefore(0, 0)).isEqualTo(assetDecimals);
-        assertThat(getNameBefore(0, 0)).isEqualTo(assetName);
-        assertThat(getDescriptionBefore(0, 0)).isEqualTo(assetDescription);
-        assertThat(getReissuableBefore(0, 0)).isEqualTo(true);
-        assertThat(getQuantityBefore(0, 0)).isEqualTo(assetQuantity);
-        assertThat(getScriptComplexityBefore(0, 0)).isEqualTo(0);
-        // check asset after sponsor fee transaction
-        assertThat(getAssetIdFromAssetAfter(0, 0)).isEqualTo(assetId);
-        assertThat(getIssuerAfter(0, 0)).isEqualTo(publicKey);
-        assertThat(getDecimalsAfter(0, 0)).isEqualTo(assetDecimals);
-        assertThat(getNameAfter(0, 0)).isEqualTo(assetName);
-        assertThat(getDescriptionAfter(0, 0)).isEqualTo(assetDescription);
-        assertThat(getReissuableAfter(0, 0)).isEqualTo(true);
-        assertThat(getQuantityAfter(0, 0)).isEqualTo(assetQuantity);
-        assertThat(getScriptComplexityAfter(0, 0)).isEqualTo(0);
-    */

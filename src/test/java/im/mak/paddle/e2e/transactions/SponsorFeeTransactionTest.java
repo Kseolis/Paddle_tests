@@ -88,7 +88,7 @@ public class SponsorFeeTransactionTest {
     private void checkSponsorTransaction
             (Account assetCreator, Account sender, Account recipient, long sponsorFee, long fee, AssetId assetId) {
         assertAll(
-                () -> assertThat(getSponsorTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
+                () -> assertThat(getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
                 () -> assertThat(getSponsorTx().sender()).isEqualTo(assetCreator.publicKey()),
                 () -> assertThat(getSponsorTx().assetId()).isEqualTo(assetId),
                 () -> assertThat(getSponsorTx().fee().value()).isEqualTo(fee),
@@ -110,7 +110,7 @@ public class SponsorFeeTransactionTest {
 
     private void checkCancelSponsorFee(Account assetOwner, AssetId assetId) {
         assertAll(
-                () -> assertThat(getSponsorTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
+                () -> assertThat(getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
                 () -> assertThat(getSponsorTx().sender()).isEqualTo(assetOwner.publicKey()),
                 () -> assertThat(getSponsorTx().assetId()).isEqualTo(assetId),
                 () -> assertThat(getSponsorTx().minSponsoredFee()).isEqualTo(0),

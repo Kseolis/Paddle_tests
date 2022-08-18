@@ -11,7 +11,6 @@ import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.*;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.*;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.*;
@@ -34,8 +33,6 @@ public class SubscribeInvokeIssueTest extends InvokeBaseTest {
 
         subscribeResponseHandler(CHANNEL, getAssetDAppAccount(), height, height);
         prepareInvoke(getAssetDAppAccount());
-
-        System.out.println(getAppend());
 
         assertionsCheck(
                 Long.parseLong(getIssueAssetData().get(VOLUME)),

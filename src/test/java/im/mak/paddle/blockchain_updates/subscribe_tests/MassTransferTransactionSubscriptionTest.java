@@ -6,7 +6,7 @@ import com.wavesplatform.transactions.common.Base58String;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseTest;
 import im.mak.paddle.dapps.DefaultDApp420Complexity;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -30,9 +30,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class MassTransferTransactionSubscriptionTest extends BaseTest {
-    private Account senderAccount;
-    private String senderAddress;
-    private String senderPublicKey;
+    private static Account senderAccount;
+    private static String senderAddress;
+    private static String senderPublicKey;
 
     private static DefaultDApp420Complexity dAppAccount;
     private static String dAppAccountAddress;
@@ -45,8 +45,8 @@ public class MassTransferTransactionSubscriptionTest extends BaseTest {
     private static Base58String base58StringAttachment;
     private static List<Account> accountList;
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void setUp() {
         async(
                 () -> base58StringAttachment = new Base58String("attachment"),
                 () -> {

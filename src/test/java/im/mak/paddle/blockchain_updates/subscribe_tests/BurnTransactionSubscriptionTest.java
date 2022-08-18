@@ -5,7 +5,7 @@ import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseTest;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -30,20 +30,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class BurnTransactionSubscriptionTest extends BaseTest {
-    private int assetQuantity;
-    private int assetDecimals;
-    private String assetName;
-    private String assetDescription;
-    private String address;
-    private String publicKey;
-    private Account account;
+    private static int assetQuantity;
+    private static int assetDecimals;
+    private static String assetName;
+    private static String assetDescription;
+    private static String address;
+    private static String publicKey;
+    private static Account account;
     private long quantityAfterBurn;
     private long wavesAmountAfterBurn;
-    private final long wavesAmountBeforeBurn = DEFAULT_FAUCET - ONE_WAVES;
+    private long wavesAmountBeforeBurn;
     private final byte[] compileScript = node().compileScript(SCRIPT_PERMITTING_OPERATIONS).script().bytes();
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void setUp() {
         async(
                 () -> {
                     assetQuantity = getRandomInt(1000, 999_999_999);
@@ -62,7 +62,9 @@ public class BurnTransactionSubscriptionTest extends BaseTest {
     @Test
     @DisplayName("Check subscription on burn smart asset transaction")
     void subscribeTestForBurnSmartAssetTransaction() {
+        wavesAmountBeforeBurn = account.getWavesBalance() - ONE_WAVES;
         wavesAmountAfterBurn = wavesAmountBeforeBurn - SUM_FEE;
+
         final IssueTransaction issueTx = account.issue(i -> i
                 .name(assetName)
                 .quantity(assetQuantity)
@@ -85,7 +87,9 @@ public class BurnTransactionSubscriptionTest extends BaseTest {
     @Test
     @DisplayName("Check subscription on burn asset transaction")
     void subscribeTestForBurnAssetTransaction() {
+        wavesAmountBeforeBurn = account.getWavesBalance() - ONE_WAVES;
         wavesAmountAfterBurn = wavesAmountBeforeBurn - MIN_FEE;
+
         byte[] script = new byte[0];
         final IssueTransaction issueTx = account.issue(i -> i
                 .name(assetName)

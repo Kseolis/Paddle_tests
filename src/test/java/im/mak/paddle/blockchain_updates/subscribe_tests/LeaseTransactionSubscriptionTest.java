@@ -37,7 +37,8 @@ public class LeaseTransactionSubscriptionTest extends BaseTest {
     private String recipientPublicKeyHash;
 
     private int amountLease;
-    private long amountAfter = DEFAULT_FAUCET - MIN_FEE;
+    private long amountBefore;
+    private long amountAfter;
     private static final DefaultDApp420Complexity accWithDApp = new DefaultDApp420Complexity(DEFAULT_FAUCET);
 
     @BeforeEach
@@ -60,18 +61,21 @@ public class LeaseTransactionSubscriptionTest extends BaseTest {
     @Test
     @DisplayName("Check subscription on lease min sum waves transaction")
     void subscribeTestForWavesLeaseTransaction() {
+        amountBefore = sender.getWavesBalance();
+        amountAfter = amountBefore - MIN_FEE;
+
         leaseTransactionSender(MIN_TRANSACTION_SUM, sender, recipient, MIN_FEE, LATEST_VERSION);
         String leaseId = getLeaseTx().id().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, sender, height, height);
-        checkLeaseSubscribe(leaseId, MIN_TRANSACTION_SUM, DEFAULT_FAUCET, MIN_FEE);
+        checkLeaseSubscribe(leaseId, MIN_TRANSACTION_SUM, MIN_FEE);
     }
 
     @Test
     @DisplayName("Check subscription on lease transaction in smartAcc")
     void subscribeTestForWavesLeaseTransactionDAppAcc() {
-        long balance = accWithDApp.getWavesBalance();
-        amountAfter = balance - SUM_FEE;
+        amountBefore = accWithDApp.getWavesBalance();
+        amountAfter = amountBefore - SUM_FEE;
         senderAddress = accWithDApp.address().toString();
         senderPublicKey = accWithDApp.publicKey().toString();
 
@@ -79,10 +83,10 @@ public class LeaseTransactionSubscriptionTest extends BaseTest {
         String leaseId = getLeaseTx().id().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, accWithDApp, height, height);
-        checkLeaseSubscribe(leaseId, amountLease, balance, SUM_FEE);
+        checkLeaseSubscribe(leaseId, amountLease, SUM_FEE);
     }
 
-    private void checkLeaseSubscribe(String leaseId, long leaseSum, long balanceBefore, long fee) {
+    private void checkLeaseSubscribe(String leaseId, long leaseSum, long fee) {
         assertAll(
                 // transaction
                 () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
@@ -98,7 +102,7 @@ public class LeaseTransactionSubscriptionTest extends BaseTest {
                 () -> assertThat(getLeaseTransactionMetadata(0)).isEqualTo(recipientAddress),
                 // balances sender
                 () -> assertThat(getAddress(0, 0)).isEqualTo(senderAddress),
-                () -> assertThat(getAmountBefore(0, 0)).isEqualTo(balanceBefore),
+                () -> assertThat(getAmountBefore(0, 0)).isEqualTo(amountBefore),
                 () -> assertThat(getAmountAfter(0, 0)).isEqualTo(amountAfter),
                 // leasing_for_address sender
                 () -> assertThat(getAddressFromLeasingForAddress(0, 0)).isEqualTo(senderAddress),

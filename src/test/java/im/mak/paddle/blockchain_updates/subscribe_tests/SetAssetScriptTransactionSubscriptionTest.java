@@ -4,6 +4,7 @@ import com.wavesplatform.transactions.IssueTransaction;
 import com.wavesplatform.transactions.SetAssetScriptTransaction;
 import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.common.Base64String;
+import com.wavesplatform.wavesj.info.IssueTransactionInfo;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,7 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.SetAssetScriptTransactionHandler.getAssetIdFromSetAssetScript;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.SetAssetScriptTransactionHandler.getScriptFromSetAssetScript;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
+import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setTxInfo;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.ScriptUtil.fromFile;
@@ -61,16 +63,17 @@ public class SetAssetScriptTransactionSubscriptionTest extends BaseTest {
     @Test
     @DisplayName("Check subscription on setAssetScript smart asset transaction")
     void subscribeTestForSetAssetScriptTransaction() {
-
-        IssueTransaction issueTx = account.issue(i -> i
+        final IssueTransactionInfo txInfo = account.issue(i -> i
                 .name(assetName)
                 .quantity(assetQuantity)
                 .description(assetDescription)
                 .decimals(assetDecimals)
-                .reissuable(true)
-                .script(SCRIPT_PERMITTING_OPERATIONS)).tx();
-        AssetId assetId = issueTx.assetId();
-        String assetIdToString = assetId.toString();
+                .reissuable(true).script(SCRIPT_PERMITTING_OPERATIONS));
+        final IssueTransaction tx = txInfo.tx();
+        final AssetId assetId = tx.assetId();
+        final String assetIdToString = assetId.toString();
+
+        setTxInfo(txInfo);
 
         SetAssetScriptTransaction setAssetScriptTx = account.setAssetScript(assetId, newScript).tx();
 

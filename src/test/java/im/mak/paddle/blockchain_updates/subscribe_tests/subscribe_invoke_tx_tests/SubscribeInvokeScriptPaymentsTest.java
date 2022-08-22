@@ -1,5 +1,6 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests;
 
+import im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +17,7 @@ import static im.mak.paddle.helpers.PrepareInvokeTestsData.getAssetId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.*;
-import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender.invokeSenderWithPayment;
+import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender.getInvokeScriptId;
 import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -26,12 +27,15 @@ public class SubscribeInvokeScriptPaymentsTest extends InvokeBaseTest {
     void subscribeInvokeWithScriptPayments() {
         getTestsData().prepareDataForPaymentsTests();
 
+        InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender
+                (getCallerAccount(), getDAppAccount(), getDAppCall(), getAmounts());
+
         setVersion(LATEST_VERSION);
         balancesAfterCallerInvokeAsset(getCallerAccount(), getDAppAccount(), getAmounts(), getAssetId());
-        invokeSenderWithPayment(getCallerAccount(), getDAppAccount(), getDAppCall(), getAmounts());
+        txSender.invokeSenderWithPayment();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, getDAppAccount(), height, height);
+        subscribeResponseHandler(CHANNEL, getDAppAccount(), height, height, getInvokeScriptId());
         prepareInvoke(getDAppAccount());
 
         assertionsCheck(getWavesAmount().value(),

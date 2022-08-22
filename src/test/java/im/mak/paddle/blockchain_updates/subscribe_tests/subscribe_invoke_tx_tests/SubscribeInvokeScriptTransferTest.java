@@ -1,5 +1,6 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests;
 
+import im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,8 +17,7 @@ import static im.mak.paddle.helpers.PrepareInvokeTestsData.getAssetId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.*;
-import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.getDAppBalanceIssuedAssetsBeforeTransaction;
-import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender.invokeSender;
+import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender.getInvokeScriptId;
 import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -28,13 +28,16 @@ public class SubscribeInvokeScriptTransferTest extends InvokeBaseTest {
         long assetAmountValue = getAssetAmount().value();
         getTestsData().prepareDataForScriptTransferTests();
 
+        InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender
+                (getCallerAccount(), getAssetDAppAccount(), getDAppCall());
+
         setVersion(LATEST_VERSION);
         balancesAfterCallerScriptTransfer(getCallerAccount(),
                 getAssetDAppAccount(), getDAppAccount(), getAmounts(), getAssetId());
-        invokeSender(getCallerAccount(), getAssetDAppAccount(), getDAppCall());
+        txSender.invokeSender();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, getCallerAccount(), height, height);
+        subscribeResponseHandler(CHANNEL, getCallerAccount(), height, height, getInvokeScriptId());
         prepareInvoke(getAssetDAppAccount());
 
         long dAppAssetAmountAfter = Long.parseLong(getIssueAssetData().get(VOLUME)) - assetAmountValue;

@@ -1,5 +1,6 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests;
 
+import im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -12,9 +13,9 @@ import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_
 import static im.mak.paddle.helpers.ConstructorRideFunctions.*;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.*;
+import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.*;
-import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender.invokeSender;
+import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender.getInvokeScriptId;
 import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -24,14 +25,17 @@ public class SubscribeInvokeIssueTest extends InvokeBaseTest {
     void prepareDataForIssueTests() {
         getTestsData().prepareDataForIssueTests();
 
+        InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender
+                (getCallerAccount(), getAssetDAppAccount(), getDAppCall());
+
         setVersion(LATEST_VERSION);
         balancesAfterReissueAssetInvoke(getCallerAccount(), getAssetDAppAccount(), getAmounts(), getAssetId());
 
-        invokeSender(getCallerAccount(), getAssetDAppAccount(), getDAppCall());
+        txSender.invokeSender();
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, getAssetDAppAccount(), height, height);
+        subscribeResponseHandler(CHANNEL, getAssetDAppAccount(), height, height, getInvokeScriptId());
         prepareInvoke(getAssetDAppAccount());
 
         assertionsCheck(

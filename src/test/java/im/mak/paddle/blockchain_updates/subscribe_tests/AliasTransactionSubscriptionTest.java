@@ -2,7 +2,8 @@ package im.mak.paddle.blockchain_updates.subscribe_tests;
 
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseTest;
-import im.mak.paddle.dapps.DefaultDApp420Complexity;
+import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
+import im.mak.paddle.helpers.transaction_senders.CreateAliasTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,6 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.AliasTransactionHandler.getAliasFromAliasTransaction;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
-import static im.mak.paddle.helpers.transaction_senders.CreateAliasTransactionSender.createAliasTransactionSender;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,9 +53,13 @@ public class AliasTransactionSubscriptionTest extends BaseTest {
         long amountBefore = account.getWavesBalance();
         long amountAfter = amountBefore - MIN_FEE;
         newAlias = randomNumAndLetterString(15);
-        createAliasTransactionSender(account, newAlias, MIN_FEE, LATEST_VERSION);
+
+        CreateAliasTransactionSender txSender =
+                new CreateAliasTransactionSender(account, newAlias, MIN_FEE, LATEST_VERSION);
+
+        txSender.createAliasTransactionSender();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height, txSender.getCreateAliasTx().id().toString());
         checkAliasSubscribe(amountBefore, amountAfter, accountAddress, accountPublicKey, MIN_FEE);
     }
 
@@ -65,9 +69,13 @@ public class AliasTransactionSubscriptionTest extends BaseTest {
         long amountBefore = dAppAccount.getWavesBalance();
         long amountAfter = amountBefore - SUM_FEE;
         newAlias = randomNumAndLetterString(4);
-        createAliasTransactionSender(dAppAccount, newAlias, SUM_FEE, LATEST_VERSION);
+
+        CreateAliasTransactionSender txSender =
+                new CreateAliasTransactionSender(dAppAccount, newAlias, SUM_FEE, LATEST_VERSION);
+
+        txSender.createAliasTransactionSender();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height, txSender.getCreateAliasTx().id().toString());
         checkAliasSubscribe(amountBefore, amountAfter, dAppAccountAddress, dAppAccountPublicKey, SUM_FEE);
     }
 

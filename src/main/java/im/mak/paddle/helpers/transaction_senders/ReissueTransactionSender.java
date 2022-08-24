@@ -8,10 +8,19 @@ import im.mak.paddle.Account;
 import static im.mak.paddle.Node.node;
 
 public class ReissueTransactionSender extends BaseTransactionSender {
-    private static ReissueTransaction reissueTx;
+    private ReissueTransaction reissueTx;
+    private final Account account;
+    private final Amount amount;
+    private final AssetId assetId;
 
-    public static void reissueTransactionSender(Account account, Amount amount, AssetId id, long fee, int version) {
-        balanceAfterTransaction = account.getBalance(id) + amount.value();
+    public ReissueTransactionSender(Account account, Amount amount, AssetId assetId) {
+        this.account = account;
+        this.amount = amount;
+        this.assetId = assetId;
+    }
+
+    public void reissueTransactionSender(long fee, int version) {
+        balanceAfterTransaction = account.getBalance(assetId) + amount.value();
         reissueTx = ReissueTransaction.builder(amount)
                 .version(version)
                 .fee(fee)
@@ -21,8 +30,20 @@ public class ReissueTransactionSender extends BaseTransactionSender {
         txInfo = node().getTransactionInfo(reissueTx.id());
     }
 
-    public static ReissueTransaction getReissueTx() {
+    public ReissueTransaction getReissueTx() {
         return reissueTx;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public Amount getAmount() {
+        return amount;
+    }
+
+    public AssetId getAssetId() {
+        return assetId;
     }
 
 }

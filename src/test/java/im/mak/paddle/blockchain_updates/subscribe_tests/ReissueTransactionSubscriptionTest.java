@@ -5,6 +5,7 @@ import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseTest;
+import im.mak.paddle.helpers.transaction_senders.ReissueTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,15 +16,10 @@ import static im.mak.paddle.helpers.Randomizer.getRandomInt;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.getDecimalsAfter;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.getAmountAfter;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.ReissueTransactionHandler.getReissueAssetAmount;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.ReissueTransactionHandler.getReissueAssetId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.getTransactionVersion;
-import static im.mak.paddle.helpers.transaction_senders.ReissueTransactionSender.getReissueTx;
-import static im.mak.paddle.helpers.transaction_senders.ReissueTransactionSender.reissueTransactionSender;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,11 +72,15 @@ public class ReissueTransactionSubscriptionTest extends BaseTest {
         AssetId assetId = issueTx.assetId();
         amount = Amount.of(getRandomInt(100, 10000000), assetId);
         quantityAfterReissue = assetQuantity + amount.value();
-        reissueTransactionSender(account, amount, assetId, SUM_FEE, LATEST_VERSION);
+
+        ReissueTransactionSender txSender = new ReissueTransactionSender(account, amount, assetId);
+        txSender.reissueTransactionSender(SUM_FEE, LATEST_VERSION);
+        String txId = txSender.getTxInfo().tx().id().toString();
+
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height);
-        checkReissueSubscribe(assetId.toString(), amount.value());
+        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        checkReissueSubscribe(txSender);
     }
 
     @Test
@@ -99,33 +99,37 @@ public class ReissueTransactionSubscriptionTest extends BaseTest {
         AssetId assetId = issueTx.assetId();
         amount = Amount.of(getRandomInt(100, 10000000), assetId);
         quantityAfterReissue = assetQuantity + amount.value();
-        reissueTransactionSender(account, amount, assetId, SUM_FEE, LATEST_VERSION);
+
+        ReissueTransactionSender txSender = new ReissueTransactionSender(account, amount, assetId);
+        txSender.reissueTransactionSender(SUM_FEE, LATEST_VERSION);
+        String txId = txSender.getTxInfo().tx().id().toString();
+
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height);
-        checkReissueSubscribe(assetId.toString(), amount.value());
+        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        checkReissueSubscribe(txSender);
     }
 
-    private void checkReissueSubscribe(String assetId, long amount) {
+    private void checkReissueSubscribe(ReissueTransactionSender txSender) {
         assertAll(
                 () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(SUM_FEE),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(publicKey),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),
-                () -> assertThat(getReissueAssetAmount(0)).isEqualTo(amount),
-                () -> assertThat(getReissueAssetId(0)).isEqualTo(assetId),
-                () -> assertThat(getTransactionId()).isEqualTo(getReissueTx().id().toString()),
+                () -> assertThat(getReissueAssetAmount(0)).isEqualTo(txSender.getAmount().value()),
+                () -> assertThat(getReissueAssetId(0)).isEqualTo(txSender.getAssetId().toString()),
+                () -> assertThat(getTransactionId()).isEqualTo(txSender.getReissueTx().id().toString()),
                 // check waves balance
                 () -> assertThat(getAddress(0, 0)).isEqualTo(address),
                 () -> assertThat(getAmountBefore(0, 0)).isEqualTo(wavesAmountBeforeReissue),
                 () -> assertThat(getAmountAfter(0, 0)).isEqualTo(wavesAmountAfterReissue),
                 // check asset balance
                 () -> assertThat(getAddress(0, 1)).isEqualTo(address),
-                () -> assertThat(getAssetIdAmountAfter(0, 1)).isEqualTo(assetId),
+                () -> assertThat(getAssetIdAmountAfter(0, 1)).isEqualTo(txSender.getAssetId().toString()),
                 () -> assertThat(getAmountBefore(0, 1)).isEqualTo(assetQuantity),
                 () -> assertThat(getAmountAfter(0, 1)).isEqualTo(quantityAfterReissue),
                 // check asset before reissue
-                () -> assertThat(getAssetIdFromAssetBefore(0, 0)).isEqualTo(assetId),
+                () -> assertThat(getAssetIdFromAssetBefore(0, 0)).isEqualTo(txSender.getAssetId().toString()),
                 () -> assertThat(getIssuerBefore(0, 0)).isEqualTo(publicKey),
                 () -> assertThat(getQuantityBefore(0, 0)).isEqualTo(String.valueOf(assetQuantity)),
                 () -> assertThat(getReissueBefore(0, 0)).isEqualTo(String.valueOf(true)),
@@ -134,7 +138,7 @@ public class ReissueTransactionSubscriptionTest extends BaseTest {
                 () -> assertThat(getDecimalsBefore(0, 0)).isEqualTo(String.valueOf(assetDecimals)),
                 () -> assertThat(getScriptBefore(0, 0)).isEqualTo(compileScript),
                 // check asset after reissue
-                () -> assertThat(getAssetIdFromAssetAfter(0, 0)).isEqualTo(assetId),
+                () -> assertThat(getAssetIdFromAssetAfter(0, 0)).isEqualTo(txSender.getAssetId().toString()),
                 () -> assertThat(getIssuerAfter(0, 0)).isEqualTo(publicKey),
                 () -> assertThat(getQuantityAfter(0, 0)).isEqualTo(String.valueOf(quantityAfterReissue)),
                 () -> assertThat(getReissueAfter(0, 0)).isEqualTo(String.valueOf(true)),

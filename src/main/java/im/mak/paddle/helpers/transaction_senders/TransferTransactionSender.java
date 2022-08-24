@@ -12,26 +12,29 @@ import static im.mak.paddle.util.Constants.ADDRESS;
 import static im.mak.paddle.util.Constants.MIN_FEE;
 
 public class TransferTransactionSender extends BaseTransactionSender {
-    private static long senderBalanceAfterTransaction;
-    private static long senderWavesBalanceAfterTransaction;
-    private static long recipientBalanceAfterTransaction;
-    private static long recipientWavesBalanceAfterTransaction;
-    private static TransferTransaction transferTx;
-    private static Base58String base58StringAttachment;
-    private static AssetId asset;
+    private long senderBalanceAfterTransaction;
+    private long senderWavesBalanceAfterTransaction;
+    private long recipientBalanceAfterTransaction;
+    private long recipientWavesBalanceAfterTransaction;
+    private TransferTransaction transferTx;
+    private Base58String base58StringAttachment;
+    private AssetId asset;
+    private Recipient transferTo;
 
-    public static void transferTransactionSender
-            (Amount amount, Account sender, Account recipient, String addressOrAlias, long fee, int version) {
-        asset = amount.assetId();
-        senderBalanceAfterTransaction = sender.getBalance(asset) - amount.value() - (asset.isWaves() ? MIN_FEE : 0);
-        recipientBalanceAfterTransaction = recipient.getBalance(asset) + amount.value();
-        base58StringAttachment = new Base58String("attachment");
-        Recipient transferTo = addressOrAlias.equals(ADDRESS) ? recipient.address() : recipient.getAliases().get(0);
+    private final Amount amount;
+    private final Account sender;
+    private final Account recipient;
+    private final long fee;
 
-        if (!asset.isWaves()) {
-            senderWavesBalanceAfterTransaction = sender.getWavesBalance() - fee;
-            recipientWavesBalanceAfterTransaction = recipient.getWavesBalance();
-        }
+    public TransferTransactionSender(Amount amount, Account sender, Account recipient, long fee) {
+        this.amount = amount;
+        this.sender = sender;
+        this.recipient = recipient;
+        this.fee = fee;
+    }
+
+    public void transferTransactionSender(String addressOrAlias, int version) {
+        prepareSender(addressOrAlias);
 
         transferTx = TransferTransaction.builder(transferTo, amount)
                 .attachment(base58StringAttachment)
@@ -43,32 +46,60 @@ public class TransferTransactionSender extends BaseTransactionSender {
         txInfo = node().getTransactionInfo(transferTx.id());
     }
 
-    public static long getSenderBalanceAfterTransaction() {
+    public long getSenderBalanceAfterTransaction() {
         return senderBalanceAfterTransaction;
     }
 
-    public static long getRecipientBalanceAfterTransaction() {
+    public long getRecipientBalanceAfterTransaction() {
         return recipientBalanceAfterTransaction;
     }
 
-    public static long getSenderWavesBalanceAfterTransaction() {
+    public long getSenderWavesBalanceAfterTransaction() {
         return senderWavesBalanceAfterTransaction;
     }
 
-    public static long getRecipientWavesBalanceAfterTransaction() {
+    public long getRecipientWavesBalanceAfterTransaction() {
         return recipientWavesBalanceAfterTransaction;
     }
 
-    public static TransferTransaction getTransferTx() {
+    public TransferTransaction getTransferTx() {
         return transferTx;
     }
 
-    public static Base58String getBase58StringAttachment() {
+    public Base58String getBase58StringAttachment() {
         return base58StringAttachment;
     }
 
-    public static AssetId getAsset() {
+    public AssetId getAsset() {
         return asset;
     }
 
+    public Amount getAmount() {
+        return amount;
+    }
+
+    public Account getSender() {
+        return sender;
+    }
+
+    public Account getRecipient() {
+        return recipient;
+    }
+
+    public long getFee() {
+        return fee;
+    }
+
+    private void prepareSender(String addressOrAlias) {
+        asset = amount.assetId().isWaves() ? AssetId.as("") : amount.assetId();
+        senderBalanceAfterTransaction = sender.getBalance(asset) - amount.value() - (asset.isWaves() ? MIN_FEE : 0);
+        recipientBalanceAfterTransaction = recipient.getBalance(asset) + amount.value();
+        base58StringAttachment = new Base58String("attachment");
+        transferTo = addressOrAlias.equals(ADDRESS) ? recipient.address() : recipient.getAliases().get(0);
+
+        if (!asset.isWaves()) {
+            senderWavesBalanceAfterTransaction = sender.getWavesBalance() - fee;
+            recipientWavesBalanceAfterTransaction = recipient.getWavesBalance();
+        }
+    }
 }

@@ -9,10 +9,18 @@ import static im.mak.paddle.util.Constants.EXTRA_FEE_FOR_SET_SCRIPT;
 import static im.mak.paddle.util.Constants.MIN_FEE_FOR_SET_SCRIPT;
 
 public class SetScriptTransactionSender extends BaseTransactionSender {
-    private static SetScriptTransaction setScriptTx;
-    private static long fee;
+    private SetScriptTransaction setScriptTx;
+    private long fee;
 
-    public static void setScriptTransactionSender(Account account, Base64String script, long moreFee, int version) {
+    private final Account account;
+    private final Base64String script;
+
+    public SetScriptTransactionSender(Account account, Base64String script) {
+        this.account = account;
+        this.script = script;
+    }
+
+    public void setScriptTransactionSender(long moreFee, int version) {
         fee = MIN_FEE_FOR_SET_SCRIPT + moreFee + EXTRA_FEE_FOR_SET_SCRIPT;
         balanceAfterTransaction = account.getWavesBalance() - fee;
 
@@ -26,12 +34,20 @@ public class SetScriptTransactionSender extends BaseTransactionSender {
         txInfo = node().getTransactionInfo(setScriptTx.id());
     }
 
-    public static SetScriptTransaction getSetScriptTx() {
+    public SetScriptTransaction getSetScriptTx() {
         return setScriptTx;
     }
 
-
-    public static long getFee() {
+    public long getFee() {
         return fee;
     }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public Base64String getScript() {
+        return script;
+    }
+
 }

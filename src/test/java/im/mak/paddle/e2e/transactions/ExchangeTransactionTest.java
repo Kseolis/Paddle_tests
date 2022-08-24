@@ -5,6 +5,7 @@ import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.exchange.Order;
 
 import im.mak.paddle.Account;
+import im.mak.paddle.helpers.transaction_senders.ExchangeTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,8 +17,6 @@ import static com.wavesplatform.wavesj.ApplicationStatus.SUCCEEDED;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Calculations.*;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getTxInfo;
-import static im.mak.paddle.helpers.transaction_senders.ExchangeTransactionSender.exchangeTransactionSender;
 import static im.mak.paddle.helpers.transaction_senders.ExchangeTransactionSender.getExchangeTx;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
@@ -73,8 +72,12 @@ public class ExchangeTransactionTest {
             Order sellOrder = Order.sell(amountsTokensForExchange, pricePerToken, alice.publicKey()).version(v)
                     .getSignedWith(bob.privateKey());
 
-            exchangeTransactionSender(alice, bob, buyerOrder, sellOrder, amountValue, priceValue, 0, v);
-            checkAssertsForExchangeTransaction(alice, bob, buyerOrder, sellOrder, amountValue);
+            ExchangeTransactionSender txSender = new ExchangeTransactionSender(alice, bob, buyerOrder, sellOrder);
+
+            txSender.exchangeTransactionSender(amountValue, priceValue, 0, v);
+
+            checkAssertsForExchangeTransaction(amountValue, txSender);
+
             node().faucet().transfer(bob, DEFAULT_FAUCET, AssetId.WAVES);
         }
     }
@@ -95,8 +98,12 @@ public class ExchangeTransactionTest {
         Order sellOrder = Order.sell(amountsTokensForExchange, pricePerToken, cat.publicKey()).version(ORDER_V_3)
                 .getSignedWith(alice.privateKey());
 
-        exchangeTransactionSender(cat, alice, buyerOrder, sellOrder, amountValue, priceValue, EXTRA_FEE, LATEST_VERSION);
-        checkAssertsForExchangeTransaction(cat, alice, buyerOrder, sellOrder, amountValue);
+
+        ExchangeTransactionSender txSender = new ExchangeTransactionSender(cat, alice, buyerOrder, sellOrder);
+
+        txSender.exchangeTransactionSender(amountValue, priceValue, EXTRA_FEE, LATEST_VERSION);
+
+        checkAssertsForExchangeTransaction(amountValue, txSender);
     }
 
     @Test
@@ -116,26 +123,33 @@ public class ExchangeTransactionTest {
                 .getSignedWith(bob.privateKey());
         Order sellOrder = Order.sell(amountsTokensForExchange, pricePerToken, bob.publicKey()).version(ORDER_V_4)
                 .getSignedWith(cat.privateKey());
-        exchangeTransactionSender
-                (bob, cat, buyerOrder, sellOrder, amountValue, priceValue, EXCHANGE_FEE_FOR_SMART_ASSETS, LATEST_VERSION);
-        checkAssertsForExchangeTransaction(bob, cat, buyerOrder, sellOrder, amountValue);
+
+        ExchangeTransactionSender txSender = new ExchangeTransactionSender(bob, cat, buyerOrder, sellOrder);
+
+        txSender.exchangeTransactionSender(amountValue, priceValue, EXCHANGE_FEE_FOR_SMART_ASSETS, LATEST_VERSION);
+
+        checkAssertsForExchangeTransaction(amountValue, txSender);
     }
 
-    private void checkAssertsForExchangeTransaction(Account from, Account to, Order buy, Order sell, long amount) {
+    private void checkAssertsForExchangeTransaction(long amount, ExchangeTransactionSender txSender) {
         assertAll(
-                () -> assertThat(getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
+                () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
                 () -> assertThat(getExchangeTx().fee().value()).isEqualTo(fee),
                 () -> assertThat(getExchangeTx().fee().assetId()).isEqualTo(AssetId.WAVES),
-                () -> assertThat(getExchangeTx().assetPair()).isEqualTo(buy.assetPair()),
-                () -> assertThat(getExchangeTx().sender()).isEqualTo(from.publicKey()),
-                () -> assertThat(getExchangeTx().orders()).isEqualTo(List.of(buy, sell)),
+                () -> assertThat(getExchangeTx().assetPair()).isEqualTo(txSender.getBuy().assetPair()),
+                () -> assertThat(getExchangeTx().sender()).isEqualTo(txSender.getFrom().publicKey()),
+                () -> assertThat(getExchangeTx().orders()).isEqualTo(List.of(txSender.getBuy(), txSender.getSell())),
                 () -> assertThat(getExchangeTx().amount()).isEqualTo(amount),
-                () -> assertThat(getExchangeTx().price()).isEqualTo(buy.price().value()),
+                () -> assertThat(getExchangeTx().price()).isEqualTo(txSender.getBuy().price().value()),
                 () -> assertThat(getExchangeTx().type()).isEqualTo(7),
-                () -> assertThat(from.getBalance(getAmountAssetId())).isEqualTo(getBuyerBalanceAfterTransactionAmountAsset()),
-                () -> assertThat(to.getBalance(getAmountAssetId())).isEqualTo(getSellerBalanceAfterTransactionAmountAsset()),
-                () -> assertThat(from.getBalance(getPriceAssetId())).isEqualTo(getBuyerBalanceAfterTransactionPriceAsset()),
-                () -> assertThat(to.getBalance(getPriceAssetId())).isEqualTo(getSellerBalanceAfterTransactionPriceAsset())
+                () -> assertThat(txSender.getFrom().getBalance(getAmountAssetId()))
+                        .isEqualTo(getBuyerBalanceAfterTransactionAmountAsset()),
+                () -> assertThat(txSender.getTo().getBalance(getAmountAssetId()))
+                        .isEqualTo(getSellerBalanceAfterTransactionAmountAsset()),
+                () -> assertThat(txSender.getFrom().getBalance(getPriceAssetId()))
+                        .isEqualTo(getBuyerBalanceAfterTransactionPriceAsset()),
+                () -> assertThat(txSender.getTo().getBalance(getPriceAssetId()))
+                        .isEqualTo(getSellerBalanceAfterTransactionPriceAsset())
         );
     }
 }

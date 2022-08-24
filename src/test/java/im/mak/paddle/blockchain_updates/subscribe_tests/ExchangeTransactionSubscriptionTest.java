@@ -7,6 +7,7 @@ import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.exchange.Order;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseTest;
+import im.mak.paddle.helpers.transaction_senders.ExchangeTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,11 +17,11 @@ import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Calculations.*;
 import static im.mak.paddle.helpers.Calculations.getSellerBalanceAfterTransactionAmountAsset;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.ExchangeTransactionHandler.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
-import static im.mak.paddle.helpers.transaction_senders.ExchangeTransactionSender.exchangeTransactionSender;
 import static im.mak.paddle.helpers.transaction_senders.ExchangeTransactionSender.getExchangeTx;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
@@ -92,9 +93,12 @@ public class ExchangeTransactionSubscriptionTest extends BaseTest {
         buy = Order.buy(amount, price, buyer.publicKey()).version(ORDER_V_3).getSignedWith(buyerPrivateKey);
         sell = Order.sell(amount, price, buyer.publicKey()).version(ORDER_V_4).getSignedWith(sellerPrivateKey);
 
-        exchangeTransactionSender(buyer, seller, buy, sell, amount.value(), price.value(), 0, LATEST_VERSION);
+        ExchangeTransactionSender txSender = new ExchangeTransactionSender(buyer, seller, buy, sell);
+        String txId = txSender.getTxInfo().tx().id().toString();
+
+        txSender.exchangeTransactionSender(amount.value(), price.value(), 0, LATEST_VERSION);
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, buyer, height, height);
+        subscribeResponseHandler(CHANNEL, buyer, height, height, txId);
 
         checkExchangeSubscribe(MIN_FEE_FOR_EXCHANGE, "");
         checkBalancesForExchangeWithWaves(amountBefore);
@@ -118,10 +122,12 @@ public class ExchangeTransactionSubscriptionTest extends BaseTest {
         buy = Order.buy(amount, price, buyer.publicKey()).version(ORDER_V_4).getSignedWith(buyerPrivateKey);
         sell = Order.sell(amount, price, buyer.publicKey()).version(ORDER_V_4).getSignedWith(sellerPrivateKey);
 
-        exchangeTransactionSender
-                (buyer, seller, buy, sell, amount.value(), price.value(), EXCHANGE_FEE_FOR_SMART_ASSETS, LATEST_VERSION);
+        ExchangeTransactionSender txSender = new ExchangeTransactionSender(buyer, seller, buy, sell);
+        String txId = txSender.getTxInfo().tx().id().toString();
+
+        txSender.exchangeTransactionSender(amount.value(), price.value(), EXCHANGE_FEE_FOR_SMART_ASSETS, LATEST_VERSION);
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, buyer, height, height);
+        subscribeResponseHandler(CHANNEL, buyer, height, height, txId);
         checkExchangeSubscribe(fee, amount.assetId().toString());
         checkBalancesForExchangeWithAssets(wavesBuyerAmountBefore, wavesSellerAmountBefore, EXCHANGE_FEE_FOR_SMART_ASSETS);
     }
@@ -142,10 +148,12 @@ public class ExchangeTransactionSubscriptionTest extends BaseTest {
         buy = Order.buy(amount, price, buyer.publicKey()).version(ORDER_V_4).getSignedWith(buyerPrivateKey);
         sell = Order.sell(amount, price, buyer.publicKey()).version(ORDER_V_4).getSignedWith(sellerPrivateKey);
 
-        exchangeTransactionSender
-                (buyer, seller, buy, sell, amount.value(), price.value(), EXTRA_FEE, LATEST_VERSION);
+        ExchangeTransactionSender txSender = new ExchangeTransactionSender(buyer, seller, buy, sell);
+        String txId = txSender.getTxInfo().tx().id().toString();
+
+        txSender.exchangeTransactionSender(amount.value(), price.value(), EXTRA_FEE, LATEST_VERSION);
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, buyer, height, height);
+        subscribeResponseHandler(CHANNEL, buyer, height, height, txId);
         checkExchangeSubscribe(fee, amount.assetId().toString());
         checkBalancesForExchangeWithAssets(wavesBuyerAmountBefore, wavesSellerAmountBefore, EXTRA_FEE);
     }

@@ -3,6 +3,7 @@ package im.mak.paddle.e2e.transactions;
 import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.common.Base64String;
 import im.mak.paddle.Account;
+import im.mak.paddle.helpers.transaction_senders.SetAssetScriptTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,9 +12,6 @@ import static com.wavesplatform.transactions.SetAssetScriptTransaction.LATEST_VE
 import static com.wavesplatform.wavesj.ApplicationStatus.SUCCEEDED;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getBalanceAfterTransaction;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getTxInfo;
-import static im.mak.paddle.helpers.transaction_senders.SetAssetScriptTransactionSender.getSetAssetScriptTx;
-import static im.mak.paddle.helpers.transaction_senders.SetAssetScriptTransactionSender.setAssetScriptTransactionSender;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.ScriptUtil.fromFile;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,22 +36,25 @@ public class SetAssetScriptTransactionTest {
         for (int v = 1; v <= LATEST_VERSION; v++) {
             Base64String script = node()
                     .compileScript(fromFile("ride_scripts/permissionOnUpdatingKeyValues.ride")).script();
-            setAssetScriptTransactionSender(alice, script, issuedAssetId, v);
-            checkSetAssetScriptTransaction(alice, script, issuedAssetId, v);
+
+            SetAssetScriptTransactionSender txSender = new SetAssetScriptTransactionSender(alice, script, issuedAssetId);
+            txSender.setAssetScriptTransactionSender(v);
+
+            checkSetAssetScriptTransaction(v, txSender);
         }
     }
 
-    private void checkSetAssetScriptTransaction(Account account, Base64String script, AssetId assetId, int version) {
+    private void checkSetAssetScriptTransaction(int version, SetAssetScriptTransactionSender txSender) {
         assertAll(
-                () -> assertThat(getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
-                () -> assertThat(getSetAssetScriptTx().fee().value()).isEqualTo(ONE_WAVES),
-                () -> assertThat(getSetAssetScriptTx().fee().value()).isEqualTo(ONE_WAVES),
-                () -> assertThat(getSetAssetScriptTx().sender()).isEqualTo(account.publicKey()),
-                () -> assertThat(getSetAssetScriptTx().script()).isEqualTo(script),
-                () -> assertThat(getSetAssetScriptTx().assetId()).isEqualTo(assetId),
-                () -> assertThat(getSetAssetScriptTx().version()).isEqualTo(version),
-                () -> assertThat(getSetAssetScriptTx().type()).isEqualTo(15),
-                () -> assertThat(account.getWavesBalance()).isEqualTo(getBalanceAfterTransaction())
+                () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
+                () -> assertThat(txSender.getSetAssetScriptTx().fee().value()).isEqualTo(ONE_WAVES),
+                () -> assertThat(txSender.getSetAssetScriptTx().fee().value()).isEqualTo(ONE_WAVES),
+                () -> assertThat(txSender.getSetAssetScriptTx().sender()).isEqualTo(txSender.getAccount().publicKey()),
+                () -> assertThat(txSender.getSetAssetScriptTx().script()).isEqualTo(txSender.getScript()),
+                () -> assertThat(txSender.getSetAssetScriptTx().assetId()).isEqualTo(txSender.getAssetId()),
+                () -> assertThat(txSender.getSetAssetScriptTx().version()).isEqualTo(version),
+                () -> assertThat(txSender.getSetAssetScriptTx().type()).isEqualTo(15),
+                () -> assertThat(txSender.getAccount().getWavesBalance()).isEqualTo(getBalanceAfterTransaction())
         );
     }
 }

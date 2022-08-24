@@ -9,18 +9,41 @@ import static im.mak.paddle.Node.node;
 import static im.mak.paddle.util.Constants.ONE_WAVES;
 
 public class SetAssetScriptTransactionSender extends BaseTransactionSender {
-    private static SetAssetScriptTransaction setAssetScriptTx;
+    private SetAssetScriptTransaction setAssetScriptTx;
 
-    public static void setAssetScriptTransactionSender(Account account, Base64String script, AssetId assetId, int version) {
+    private final Account account;
+    private final Base64String script;
+    private final AssetId assetId;
+
+    public SetAssetScriptTransactionSender(Account account, Base64String script, AssetId assetId) {
+        this.account = account;
+        this.script = script;
+        this.assetId = assetId;
+    }
+
+    public void setAssetScriptTransactionSender(int version) {
         balanceAfterTransaction = account.getWavesBalance() - ONE_WAVES;
         setAssetScriptTx = SetAssetScriptTransaction
-                .builder(assetId, script).version(version).getSignedWith(account.privateKey());
+                .builder(assetId, script)
+                .version(version)
+                .getSignedWith(account.privateKey());
         node().waitForTransaction(node().broadcast(setAssetScriptTx).id());
         txInfo = node().getTransactionInfo(setAssetScriptTx.id());
     }
 
-    public static SetAssetScriptTransaction getSetAssetScriptTx() {
+    public SetAssetScriptTransaction getSetAssetScriptTx() {
         return setAssetScriptTx;
     }
 
+    public Account getAccount() {
+        return account;
+    }
+
+    public Base64String getScript() {
+        return script;
+    }
+
+    public AssetId getAssetId() {
+        return assetId;
+    }
 }

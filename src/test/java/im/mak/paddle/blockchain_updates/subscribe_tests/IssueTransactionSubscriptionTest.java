@@ -10,13 +10,9 @@ import org.junit.jupiter.api.Test;
 
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getFirstTransaction;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.getScriptAfter;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.getAmountAfter;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.IssueTransactionHandler.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.getChainId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.getSenderPublicKeyFromTransaction;
@@ -36,6 +32,11 @@ public class IssueTransactionSubscriptionTest extends BaseTest {
     private static String assetDescription;
     private long fee = ONE_WAVES;
     private byte[] compileScript = node().compileScript(SCRIPT_PERMITTING_OPERATIONS).script().bytes();
+
+    private IssueTransactionInfo txInfo;
+    private IssueTransaction tx;
+    private String txId;
+    private String assetId;
 
     private long amountBefore;
     private long amountAfter;
@@ -62,22 +63,23 @@ public class IssueTransactionSubscriptionTest extends BaseTest {
         final int assetQuantity = getRandomInt(1000, 999_999_999);
         final boolean reissue = true;
 
-        final IssueTransactionInfo txInfo = account.issue(i -> i
+        txInfo = account.issue(i -> i
                 .name(assetName)
                 .quantity(assetQuantity)
                 .description(assetDescription)
                 .decimals(assetDecimals)
                 .reissuable(reissue)
                 .script(SCRIPT_PERMITTING_OPERATIONS));
-        final IssueTransaction tx = txInfo.tx();
-        final String assetId = tx.assetId().toString();
+        tx = txInfo.tx();
+        txId = tx.id().toString();
+        assetId = tx.assetId().toString();
 
         setTxInfo(txInfo);
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height);
-        checkIssueTransactionSubscribe(tx, assetId, assetQuantity, reissue);
+        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        checkIssueTransactionSubscribe(assetQuantity, reissue);
     }
 
     @Test
@@ -89,21 +91,22 @@ public class IssueTransactionSubscriptionTest extends BaseTest {
         final int assetQuantity = getRandomInt(1000, 999_999_999);
         final boolean reissue = false;
 
-        final IssueTransactionInfo txInfo = account.issue(i -> i
+        txInfo = account.issue(i -> i
                 .name(assetName)
                 .quantity(assetQuantity)
                 .description(assetDescription)
                 .decimals(assetDecimals)
                 .reissuable(reissue));
-        final IssueTransaction tx = txInfo.tx();
-        final String assetId = tx.assetId().toString();
+        tx = txInfo.tx();
+        txId = tx.id().toString();
+        assetId = tx.assetId().toString();
 
         setTxInfo(txInfo);
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height);
-        checkIssueTransactionSubscribe(tx, assetId, assetQuantity, reissue);
+        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        checkIssueTransactionSubscribe(assetQuantity, reissue);
     }
 
     @Test
@@ -115,19 +118,20 @@ public class IssueTransactionSubscriptionTest extends BaseTest {
         amountAfter = DEFAULT_FAUCET - fee;
         assetDecimals = 0;
 
-        final IssueTransactionInfo txInfo = account.issueNft(i -> i.name(assetName).description(assetDescription));
-        final IssueTransaction tx = txInfo.tx();
-        final String assetId = tx.assetId().toString();
+        txInfo = account.issueNft(i -> i.name(assetName).description(assetDescription));
+        tx = txInfo.tx();
+        txId = tx.id().toString();
+        assetId = tx.assetId().toString();
 
         setTxInfo(txInfo);
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height);
-        checkIssueTransactionSubscribe(tx, assetId, 1, false);
+        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        checkIssueTransactionSubscribe(1, false);
     }
 
-    private void checkIssueTransactionSubscribe(IssueTransaction tx, String assetId, int quantity, boolean reissue) {
+    private void checkIssueTransactionSubscribe(int quantity, boolean reissue) {
         assertAll(
                 () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(publicKey),

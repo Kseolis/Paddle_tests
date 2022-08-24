@@ -5,6 +5,7 @@ import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseTest;
+import im.mak.paddle.helpers.transaction_senders.BurnTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,14 +16,10 @@ import static im.mak.paddle.helpers.Randomizer.getRandomInt;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.getDecimalsAfter;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.getAmountAfter;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.BurnTransactionHandler.getBurnAssetAmount;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.BurnTransactionHandler.getBurnAssetId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.getTransactionVersion;
-import static im.mak.paddle.helpers.transaction_senders.BurnTransactionSender.burnTransactionSender;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.MIN_FEE;
@@ -75,12 +72,15 @@ public class BurnTransactionSubscriptionTest extends BaseTest {
         final AssetId assetId = issueTx.assetId();
         final Amount amount = Amount.of(getRandomInt(100, 10000), assetId);
 
-        burnTransactionSender(account, amount, issueTx.assetId(), SUM_FEE, LATEST_VERSION);
+        BurnTransactionSender txSender =
+                new BurnTransactionSender(account, amount, issueTx.assetId(), SUM_FEE, LATEST_VERSION);
+        String txId = txSender.getTxInfo().tx().id().toString();
+        txSender.burnTransactionSender();
 
         quantityAfterBurn = assetQuantity - amount.value();
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height, txId);
         checkBurnSubscribe(assetId.toString(), amount.value(), SUM_FEE, compileScript);
     }
 
@@ -100,12 +100,15 @@ public class BurnTransactionSubscriptionTest extends BaseTest {
         final AssetId assetId = issueTx.assetId();
         final Amount amount = Amount.of(getRandomInt(100, 10000000), assetId);
 
-        burnTransactionSender(account, amount, issueTx.assetId(), MIN_FEE, LATEST_VERSION);
+        BurnTransactionSender txSender =
+                new BurnTransactionSender(account, amount, issueTx.assetId(), SUM_FEE, LATEST_VERSION);
+        String txId = txSender.getTxInfo().tx().id().toString();
+        txSender.burnTransactionSender();
 
         quantityAfterBurn = assetQuantity - amount.value();
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height, txId);
         checkBurnSubscribe(assetId.toString(), amount.value(), MIN_FEE, script);
     }
 

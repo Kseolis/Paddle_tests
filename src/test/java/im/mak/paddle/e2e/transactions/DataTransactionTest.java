@@ -4,6 +4,7 @@ import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.common.Base64String;
 import com.wavesplatform.transactions.data.*;
 import im.mak.paddle.Account;
+import im.mak.paddle.helpers.transaction_senders.DataTransactionsSender;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.DataTransaction.LATEST_VERSION;
 import static com.wavesplatform.wavesj.ApplicationStatus.SUCCEEDED;
 import static im.mak.paddle.helpers.Randomizer.randomNumAndLetterString;
-import static im.mak.paddle.helpers.transaction_senders.DataTransactionsSender.*;
+import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getBalanceAfterTransaction;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -34,9 +35,14 @@ public class DataTransactionTest {
     @Test
     @DisplayName("transaction of all data types on dataTransaction")
     void allTypesDataTransactionTest() {
+        DataEntry[] dataEntries = new DataEntry[]{binaryEntry, booleanEntry, integerEntry, stringEntry};
+
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            dataEntryTransactionSender(account, v, binaryEntry, booleanEntry, integerEntry, stringEntry);
-            checkAssertsForDataTransaction();
+            final DataTransactionsSender txSender = new DataTransactionsSender(account, dataEntries);
+
+            txSender.dataEntryTransactionSender(account, v);
+
+            checkAssertsForDataTransaction(txSender);
         }
     }
 
@@ -44,8 +50,11 @@ public class DataTransactionTest {
     @DisplayName("transaction integer dataTransaction")
     void intTypeDataTransactionTest() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            dataEntryTransactionSender(account, v, integerEntry);
-            checkAssertsForDataTransaction();
+            final DataTransactionsSender txSender = new DataTransactionsSender(account, integerEntry);
+
+            txSender.dataEntryTransactionSender(account, v);
+
+            checkAssertsForDataTransaction(txSender);
         }
     }
 
@@ -53,8 +62,11 @@ public class DataTransactionTest {
     @DisplayName("transaction string dataTransaction")
     void stringTypeDataTransactionTest() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            dataEntryTransactionSender(account, v, stringEntry);
-            checkAssertsForDataTransaction();
+            final DataTransactionsSender txSender = new DataTransactionsSender(account, stringEntry);
+
+            txSender.dataEntryTransactionSender(account, v);
+
+            checkAssertsForDataTransaction(txSender);
         }
     }
 
@@ -62,8 +74,11 @@ public class DataTransactionTest {
     @DisplayName("transaction binary dataTransaction")
     void binaryTypeDataTransactionTest() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            dataEntryTransactionSender(account, v, binaryEntry);
-            checkAssertsForDataTransaction();
+            final DataTransactionsSender txSender = new DataTransactionsSender(account, binaryEntry);
+
+            txSender.dataEntryTransactionSender(account, v);
+
+            checkAssertsForDataTransaction(txSender);
         }
     }
 
@@ -71,21 +86,24 @@ public class DataTransactionTest {
     @DisplayName("transaction boolean dataTransaction")
     void booleanTypeDataTransactionTest() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            dataEntryTransactionSender(account, v, booleanEntry);
-            checkAssertsForDataTransaction();
+            final DataTransactionsSender txSender = new DataTransactionsSender(account, booleanEntry);
+
+            txSender.dataEntryTransactionSender(account, v);
+
+            checkAssertsForDataTransaction(txSender);
         }
     }
 
-    private void checkAssertsForDataTransaction() {
+    private void checkAssertsForDataTransaction(DataTransactionsSender txSender) {
         assertAll(
-                () -> assertThat(getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
-                () -> assertThat(account.getWavesBalance()).isEqualTo(getBalanceAfterTransaction()),
-                () -> assertThat(getDataTx().fee().value()).isEqualTo(MIN_FEE),
-                () -> assertThat(getDataTx().fee().assetId()).isEqualTo(AssetId.WAVES),
-                () -> assertThat(getDataTx().sender()).isEqualTo(account.publicKey()),
-                () -> assertThat(getDataTx().type()).isEqualTo(12),
-                () -> getDataTx().data().forEach(
-                        data -> assertThat(getDataTxEntryMap().get(data.key())).isEqualTo(data.type())
+                () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
+                () -> assertThat(txSender.getSender().getWavesBalance()).isEqualTo(getBalanceAfterTransaction()),
+                () -> assertThat(txSender.getDataTx().fee().value()).isEqualTo(MIN_FEE),
+                () -> assertThat(txSender.getDataTx().fee().assetId()).isEqualTo(AssetId.WAVES),
+                () -> assertThat(txSender.getDataTx().sender()).isEqualTo(txSender.getSender().publicKey()),
+                () -> assertThat(txSender.getDataTx().type()).isEqualTo(12),
+                () -> txSender.getDataTx().data().forEach(
+                        data -> assertThat(txSender.getDataTxEntryMap().get(data.key())).isEqualTo(data.type())
                 )
         );
     }

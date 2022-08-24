@@ -10,20 +10,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SponsorFeeTransactionSender extends BaseTransactionSender {
     private static SponsorFeeTransaction sponsorTx;
+    private final Account assetOwner;
+    private final long sponsorFee;
+    private final AssetId assetId;
 
-    public static void sponsorFeeTransactionSender(Account account, long sponsorFee, AssetId assetId, long fee, int version) {
+    public SponsorFeeTransactionSender(Account assetOwner, long sponsorFee, AssetId assetId) {
+        this.assetOwner = assetOwner;
+        this.sponsorFee = sponsorFee;
+        this.assetId = assetId;
+    }
 
+    public void sponsorFeeTransactionSender(long fee, int version) {
         sponsorTx = SponsorFeeTransaction.builder(assetId, sponsorFee)
                 .version(version)
                 .fee(fee)
-                .getSignedWith(account.privateKey());
+                .getSignedWith(assetOwner.privateKey());
         node().waitForTransaction(node().broadcast(sponsorTx).id());
         txInfo = node().getTransactionInfo(sponsorTx.id());
     }
 
-    public static void cancelSponsorFeeSender
-            (Account assetOwner, Account sender, Account recipient, AssetId assetId, int version) {
-
+    public void cancelSponsorFeeSender(Account assetOwner, Account sender, Account recipient, int version) {
         sponsorTx = SponsorFeeTransaction.builder(assetId, 0).version(version)
                 .getSignedWith(assetOwner.privateKey());
         node().waitForTransaction(node().broadcast(sponsorTx).id());
@@ -37,7 +43,19 @@ public class SponsorFeeTransactionSender extends BaseTransactionSender {
         }
     }
 
-    public static SponsorFeeTransaction getSponsorTx() {
+    public Account getAssetOwner() {
+        return assetOwner;
+    }
+
+    public long getSponsorFee() {
+        return sponsorFee;
+    }
+
+    public AssetId getAssetId() {
+        return assetId;
+    }
+
+    public SponsorFeeTransaction getSponsorTx() {
         return sponsorTx;
     }
 }

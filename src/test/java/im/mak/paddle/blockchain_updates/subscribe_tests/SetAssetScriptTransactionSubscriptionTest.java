@@ -16,7 +16,6 @@ import static im.mak.paddle.helpers.Randomizer.getRandomInt;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.getScriptComplexityAfter;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.SetAssetScriptTransactionHandler.getAssetIdFromSetAssetScript;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.SetAssetScriptTransactionHandler.getScriptFromSetAssetScript;
@@ -76,10 +75,11 @@ public class SetAssetScriptTransactionSubscriptionTest extends BaseTest {
         setTxInfo(txInfo);
 
         SetAssetScriptTransaction setAssetScriptTx = account.setAssetScript(assetId, newScript).tx();
+        String txId = setAssetScriptTx.id().toString();
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height);
+        subscribeResponseHandler(CHANNEL, account, height, height, txId);
 
         assertAll(
                 () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),

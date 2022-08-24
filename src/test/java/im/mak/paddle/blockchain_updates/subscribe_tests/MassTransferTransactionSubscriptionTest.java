@@ -5,7 +5,9 @@ import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.common.Base58String;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseTest;
-import im.mak.paddle.dapps.DefaultDApp420Complexity;
+import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
+import im.mak.paddle.helpers.transaction_senders.MassTransferTransactionSender;
+import org.checkerframework.checker.units.qual.Mass;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,14 +18,12 @@ import static com.wavesplatform.transactions.MassTransferTransaction.LATEST_VERS
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Calculations.getTransactionCommission;
 import static im.mak.paddle.helpers.Randomizer.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.TransactionMetadataHandler.getMassTransferFromTransactionMetadata;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.MassTransferTransactionHandler.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.getTransactionFeeAmount;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getBalanceAfterTransaction;
-import static im.mak.paddle.helpers.transaction_senders.MassTransferTransactionSender.*;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,11 +74,16 @@ public class MassTransferTransactionSubscriptionTest extends BaseTest {
         amountValue = getRandomInt(10_000, 1_000_000);
         accountList = accountListGenerator(MAX_NUM_ACCOUNT_FOR_MASS_TRANSFER);
 
-        massTransferTransactionSender(senderAccount, AssetId.WAVES, amountValue, accountList, LATEST_VERSION);
-        height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, senderAccount, height, height);
 
-        checkMassTransferSubscribe(senderPublicKey, senderAddress, "");
+        MassTransferTransactionSender txSender =
+                new MassTransferTransactionSender(senderAccount, AssetId.WAVES, amountValue, accountList);
+        String txId = txSender.getMassTransferTx().id().toString();
+
+        txSender.massTransferTransactionSender(LATEST_VERSION);
+        height = node().getHeight();
+        subscribeResponseHandler(CHANNEL, senderAccount, height, height, txId);
+
+        checkMassTransferSubscribe(senderPublicKey, senderAddress, txSender);
     }
 
     @Test
@@ -88,14 +93,18 @@ public class MassTransferTransactionSubscriptionTest extends BaseTest {
         amountValue = getRandomInt(10_000, 1_000_000);
         accountList = accountListGenerator(MAX_NUM_ACCOUNT_FOR_MASS_TRANSFER);
 
-        massTransferTransactionSender(dAppAccount, smartAssetId, amountValue, accountList, LATEST_VERSION);
-        height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, dAppAccount, height, height);
+        MassTransferTransactionSender txSender =
+                new MassTransferTransactionSender(dAppAccount, smartAssetId, amountValue, accountList);
+        String txId = txSender.getMassTransferTx().id().toString();
 
-        checkMassTransferSubscribe(dAppAccountPublicKey, dAppAccountAddress, smartAssetId.toString());
+        txSender.massTransferTransactionSender(LATEST_VERSION);
+        height = node().getHeight();
+        subscribeResponseHandler(CHANNEL, dAppAccount, height, height, txId);
+
+        checkMassTransferSubscribe(dAppAccountPublicKey, dAppAccountAddress, txSender);
     }
 
-    private void checkMassTransferSubscribe(String publicKey, String address, String assetId) {
+    private void checkMassTransferSubscribe(String publicKey, String address, MassTransferTransactionSender txSender) {
         assertThat(getTransactionFeeAmount(0)).isEqualTo(getTransactionCommission());
         assertAll(
                 () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
@@ -103,13 +112,13 @@ public class MassTransferTransactionSubscriptionTest extends BaseTest {
                 () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(getTransactionCommission()),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),
                 () -> assertThat(getAttachmentFromMassTransfer(0)).isEqualTo(base58StringAttachment.toString()),
-                () -> assertThat(getAssetIdFromMassTransfer(0)).isEqualTo(assetId)
+                () -> assertThat(getAssetIdFromMassTransfer(0)).isEqualTo(txSender.getAssetId().toString()),
+                () -> checkBalances(address, txSender)
         );
-        checkBalances(address, assetId);
 
     }
 
-    private void checkBalances(String address, String assetId) {
+    private void checkBalances(String address, MassTransferTransactionSender txSender) {
         for (int i = 0; i < accountList.size(); i++) {
             assertThat(getRecipientAmountFromMassTransfer(0, i)).isEqualTo(amountValue);
             assertThat(getRecipientPublicKeyHashFromMassTransfer(0, i)).isEqualTo(publicKeyHashFromList(i));
@@ -125,10 +134,10 @@ public class MassTransferTransactionSubscriptionTest extends BaseTest {
                     assertThat(getAmountAfter(0, i)).isEqualTo(amountValue);
                 }
 
-                if (address.equals(addressFromBalance) && assetId.equals(assetFromBalance)) {
-                    assertThat(getAmountBefore(0, i)).isEqualTo(getSenderBalanceBeforeMassTransfer());
-                    assertThat(getAmountAfter(0, i)).isEqualTo(getSenderBalanceAfterMassTransfer());
-                } else if(!assetId.equals(assetFromBalance)) {
+                if (address.equals(addressFromBalance) && txSender.getAssetId().toString().equals(assetFromBalance)) {
+                    assertThat(getAmountBefore(0, i)).isEqualTo(txSender.getSenderBalanceBeforeMassTransfer());
+                    assertThat(getAmountAfter(0, i)).isEqualTo(txSender.getSenderBalanceAfterMassTransfer());
+                } else if (!txSender.getAssetId().toString().equals(assetFromBalance)) {
                     assertThat(getAmountBefore(0, i)).isEqualTo(balanceBefore);
                     assertThat(getAmountAfter(0, i)).isEqualTo(getBalanceAfterTransaction());
                 }

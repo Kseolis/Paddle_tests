@@ -6,6 +6,7 @@ import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseTest;
+import im.mak.paddle.helpers.transaction_senders.TransferTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,13 +14,12 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.TransferTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.TransactionMetadataHandler.getTransferRecipientAddressFromTransactionMetadata;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransferTransactionHandler.*;
-import static im.mak.paddle.helpers.transaction_senders.TransferTransactionSender.getTransferTx;
-import static im.mak.paddle.helpers.transaction_senders.TransferTransactionSender.transferTransactionSender;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,17 +64,22 @@ public class TransferTransactionSubscriptionTest extends BaseTest {
     @DisplayName("Check subscription on transfer transaction")
     void subscribeTestForTransferTransaction() {
         amountBefore = DEFAULT_FAUCET;
-        transferTransactionSender(amountTransfer, senderAccount, recipient, ADDRESS, MIN_FEE, LATEST_VERSION);
+
+        TransferTransactionSender txSender = new TransferTransactionSender(amountTransfer, senderAccount, recipient, MIN_FEE);
+
+        txSender.transferTransactionSender(ADDRESS, LATEST_VERSION);
+        String txId = txSender.getTransferTx().id().toString();
+
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, senderAccount, height, height);
-        checkTransferSubscribe("", DEFAULT_FAUCET, 0, MIN_FEE);
+        subscribeResponseHandler(CHANNEL, senderAccount, height, height, txId);
+        checkTransferSubscribe(txSender, DEFAULT_FAUCET, 0, MIN_FEE);
     }
 
     @Test
     @DisplayName("Check subscription on transfer transaction issue asset")
     void subscribeTestForTransferTransactionIssueAsset() {
         IssueTransaction issuedAsset = senderAccount.issue(i -> i.name("Test_Asset").quantity(1000)).tx();
-        AssetId assetId = issuedAsset.assetId();
+
         amountBefore = senderAccount.getWavesBalance();
         amountAfter = amountBefore - MIN_FEE;
         amountTransfer = Amount.of(getRandomInt(1, 1000), issuedAsset.assetId());
@@ -82,11 +87,14 @@ public class TransferTransactionSubscriptionTest extends BaseTest {
 
         long assetAmount = issuedAsset.quantity() - amountTransfer.value();
 
-        transferTransactionSender(amountTransfer, senderAccount, recipient, ADDRESS, MIN_FEE, LATEST_VERSION);
-        height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, senderAccount, height, height);
+        TransferTransactionSender txSender =
+                new TransferTransactionSender(amountTransfer, senderAccount, recipient, MIN_FEE);
 
-        checkTransferSubscribe(assetId.toString(), issuedAsset.quantity(), assetAmount, MIN_FEE);
+        txSender.transferTransactionSender(ADDRESS, LATEST_VERSION);
+        String txId = txSender.getTransferTx().id().toString();
+        height = node().getHeight();
+        subscribeResponseHandler(CHANNEL, senderAccount, height, height, txId);
+        checkTransferSubscribe(txSender, issuedAsset.quantity(), assetAmount, MIN_FEE);
     }
 
     @Test
@@ -96,7 +104,7 @@ public class TransferTransactionSubscriptionTest extends BaseTest {
                 .name("Test_Asset")
                 .quantity(1000)
                 .script(SCRIPT_PERMITTING_OPERATIONS)).tx();
-        AssetId assetId = issuedAsset.assetId();
+
         amountBefore = senderAccount.getWavesBalance();
         amountAfter = amountBefore - SUM_FEE;
         amountTransfer = Amount.of(getRandomInt(1, 1000), issuedAsset.assetId());
@@ -104,23 +112,26 @@ public class TransferTransactionSubscriptionTest extends BaseTest {
 
         long assetAmount = issuedAsset.quantity() - amountTransfer.value();
 
-        transferTransactionSender(amountTransfer, senderAccount, recipient, ADDRESS, SUM_FEE, LATEST_VERSION);
-        height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, senderAccount, height, height);
+        TransferTransactionSender txSender =
+                new TransferTransactionSender(amountTransfer, senderAccount, recipient, SUM_FEE);
 
-        checkTransferSubscribe(assetId.toString(), issuedAsset.quantity(), assetAmount, SUM_FEE);
+        txSender.transferTransactionSender(ADDRESS, LATEST_VERSION);
+        String txId = txSender.getTransferTx().id().toString();
+        height = node().getHeight();
+        subscribeResponseHandler(CHANNEL, senderAccount, height, height, txId);
+        checkTransferSubscribe(txSender, issuedAsset.quantity(), assetAmount, SUM_FEE);
     }
 
-    private void checkTransferSubscribe(String assetId, long quantity, long amountSecond, long fee) {
+    private void checkTransferSubscribe(TransferTransactionSender txSender, long quantity, long amountSecond, long fee) {
         assertAll(
                 () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getTransferAssetAmount(0)).isEqualTo(amountValue),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(senderPublicKey),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),
                 () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(fee),
-                () -> assertThat(getTransferAssetId(0)).isEqualTo(assetId),
+                () -> assertThat(getTransferAssetId(0)).isEqualTo(txSender.getAsset().toString()),
                 () -> assertThat(getTransferTransactionPublicKeyHash(0)).isEqualTo(recipientPublicKeyHash),
-                () -> assertThat(getTransactionId()).isEqualTo(getTransferTx().id().toString()),
+                () -> assertThat(getTransactionId()).isEqualTo(txSender.getTransferTx().id().toString()),
                 // check sender WAVES balance
                 () -> assertThat(getAddress(0, 0)).isEqualTo(sender),
                 () -> assertThat(getAmountBefore(0, 0)).isEqualTo(amountBefore),
@@ -128,7 +139,7 @@ public class TransferTransactionSubscriptionTest extends BaseTest {
                 // check recipient address
                 () -> assertThat(getTransferRecipientAddressFromTransactionMetadata(0)).isEqualTo(recipientAddress)
         );
-        if (assetId.equals("")) {
+        if (txSender.getAsset().toString().equals(AssetId.WAVES.toString())) {
             // check recipient balance
             assertAll(
                     () -> assertThat(getAddress(0, 1)).isEqualTo(recipientAddress),

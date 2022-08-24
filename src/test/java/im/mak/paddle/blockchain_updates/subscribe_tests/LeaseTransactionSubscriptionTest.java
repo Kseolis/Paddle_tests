@@ -3,7 +3,8 @@ package im.mak.paddle.blockchain_updates.subscribe_tests;
 import com.wavesplatform.crypto.base.Base58;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseTest;
-import im.mak.paddle.dapps.DefaultDApp420Complexity;
+import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
+import im.mak.paddle.helpers.transaction_senders.LeaseTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,8 +20,6 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.LeaseTransactionHandler.getLeaseAssetAmount;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.LeaseTransactionHandler.getLeaseTransactionPublicKeyHash;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
-import static im.mak.paddle.helpers.transaction_senders.LeaseTransactionSender.getLeaseTx;
-import static im.mak.paddle.helpers.transaction_senders.LeaseTransactionSender.leaseTransactionSender;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.DEFAULT_FAUCET;
@@ -64,10 +63,13 @@ public class LeaseTransactionSubscriptionTest extends BaseTest {
         amountBefore = sender.getWavesBalance();
         amountAfter = amountBefore - MIN_FEE;
 
-        leaseTransactionSender(MIN_TRANSACTION_SUM, sender, recipient, MIN_FEE, LATEST_VERSION);
-        String leaseId = getLeaseTx().id().toString();
+        LeaseTransactionSender txSender = new LeaseTransactionSender(sender, recipient);
+
+        txSender.leaseTransactionSender(MIN_TRANSACTION_SUM, MIN_FEE, LATEST_VERSION);
+
+        String leaseId = txSender.getLeaseTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, sender, height, height);
+        subscribeResponseHandler(CHANNEL, sender, height, height, leaseId);
         checkLeaseSubscribe(leaseId, MIN_TRANSACTION_SUM, MIN_FEE);
     }
 
@@ -79,10 +81,13 @@ public class LeaseTransactionSubscriptionTest extends BaseTest {
         senderAddress = accWithDApp.address().toString();
         senderPublicKey = accWithDApp.publicKey().toString();
 
-        leaseTransactionSender(amountLease, accWithDApp, recipient, SUM_FEE, LATEST_VERSION);
-        String leaseId = getLeaseTx().id().toString();
+        LeaseTransactionSender txSender = new LeaseTransactionSender(accWithDApp, recipient);
+
+        txSender.leaseTransactionSender(amountLease, SUM_FEE, LATEST_VERSION);
+
+        String leaseId = txSender.getLeaseTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, accWithDApp, height, height);
+        subscribeResponseHandler(CHANNEL, accWithDApp, height, height, leaseId);
         checkLeaseSubscribe(leaseId, amountLease, SUM_FEE);
     }
 

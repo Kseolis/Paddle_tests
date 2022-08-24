@@ -4,7 +4,8 @@ import com.wavesplatform.transactions.LeaseTransaction;
 import com.wavesplatform.transactions.common.Id;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseTest;
-import im.mak.paddle.dapps.DefaultDApp420Complexity;
+import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
+import im.mak.paddle.helpers.transaction_senders.LeaseTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,9 +19,6 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Leasing.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.LeaseCancelTransactionHandler.getLeaseCancelLeaseId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.getTransactionVersion;
-import static im.mak.paddle.helpers.transaction_senders.LeaseTransactionSender.getLeaseCancelTx;
-import static im.mak.paddle.helpers.transaction_senders.LeaseTransactionSender.leaseCancelTransactionSender;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,10 +60,12 @@ public class LeaseCancelTransactionSubscriptionTest extends BaseTest {
         final Id leaseId = leaseTx.id();
         final String leaseIdString = leaseId.toString();
 
-        leaseCancelTransactionSender(sender, recipient, leaseId, amountLease, MIN_FEE, LATEST_VERSION);
-        final String leaseCancelId = getLeaseCancelTx().id().toString();
+        LeaseTransactionSender txSender = new LeaseTransactionSender(sender, recipient);
+
+        txSender.leaseCancelTransactionSender(leaseId, amountLease, MIN_FEE, LATEST_VERSION);
+        final String leaseCancelId = txSender.getLeaseCancelTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, sender, height, height);
+        subscribeResponseHandler(CHANNEL, sender, height, height, leaseCancelId);
         checkLeaseCancelSubscribe(leaseIdString, leaseCancelId, MIN_FEE);
     }
 
@@ -80,10 +80,11 @@ public class LeaseCancelTransactionSubscriptionTest extends BaseTest {
         amountBefore = accWithDApp.getWavesBalance();
         amountAfter = amountBefore - SUM_FEE;
 
-        leaseCancelTransactionSender(accWithDApp, recipient, leaseId, amountLease, SUM_FEE, LATEST_VERSION);
-        final String leaseCancelId = getLeaseCancelTx().id().toString();
+        LeaseTransactionSender txSender = new LeaseTransactionSender(accWithDApp, recipient);
+        txSender.leaseCancelTransactionSender(leaseId, amountLease, SUM_FEE, LATEST_VERSION);
+        final String leaseCancelId = txSender.getLeaseCancelTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, accWithDApp, height, height);
+        subscribeResponseHandler(CHANNEL, accWithDApp, height, height, leaseCancelId);
         checkLeaseCancelSubscribe(leaseIdString, leaseCancelId, SUM_FEE);
     }
 

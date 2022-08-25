@@ -203,7 +203,7 @@
         <dependency>
             <groupId>com.wavesplatform</groupId>
             <artifactId>wavesj</artifactId>
-            <version>1.2.4</version>
+            <version>1.4.2</version>
         </dependency>
         <dependency>
             <groupId>com.spotify</groupId>
@@ -227,12 +227,12 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.8.2</version>
+            <version>5.9.0</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.22.0</version>
+            <version>3.23.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.truth.extensions</groupId>

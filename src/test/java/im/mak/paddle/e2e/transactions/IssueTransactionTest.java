@@ -5,7 +5,7 @@ import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.common.Base64String;
 import com.wavesplatform.wavesj.info.TransactionInfo;
 import im.mak.paddle.Account;
-import im.mak.paddle.dapps.DefaultDApp420Complexity;
+import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
 import im.mak.paddle.exceptions.ApiError;
 import org.junit.jupiter.api.*;
 
@@ -18,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 class IssueTransactionTest {
-
     private static Account normalAccount;
     private static Account dAppAccount;
 

@@ -78,13 +78,13 @@ public class LeaseTransactionTest {
         assertAll(
                 () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
                 () -> assertThat(txSender.getLeaseTx().sender()).isEqualTo(txSender.getFrom().publicKey()),
+                () -> assertThat(txSender.getLeaseTx().recipient()).isEqualTo(txSender.getTo().address()),
                 () -> assertThat(txSender.getLeaseTx().amount()).isEqualTo(amount),
-                () -> assertThat(txSender.getLeaseTx().recipient()).isEqualTo(txSender.getFrom().address()),
                 () -> assertThat(txSender.getLeaseTx().fee().assetId()).isEqualTo(AssetId.WAVES),
                 () -> assertThat(txSender.getLeaseTx().fee().value()).isEqualTo(fee),
                 () -> assertThat(txSender.getFrom().getWavesBalanceDetails().effective())
                         .isEqualTo(txSender.getEffectiveBalanceAfterSendTransaction()),
-                () -> assertThat(txSender.getFrom().getWavesBalanceDetails().effective())
+                () -> assertThat(txSender.getTo().getWavesBalanceDetails().effective())
                         .isEqualTo(txSender.getBalanceAfterReceiving()),
                 () -> assertThat(txSender.getLeaseTx().type()).isEqualTo(8)
         );

@@ -85,11 +85,12 @@ public class TransferTransactionTest {
     @Test
     @DisplayName("transfer all WAVES on address")
     void transferTransactionWavesByAddressTest() {
+        final int transactionVersion = 1;
         node().faucet().transfer(alice, DEFAULT_FAUCET, WAVES);
         Amount amount = Amount.of(aliceBalance - MIN_FEE, WAVES);
 
         TransferTransactionSender txSender = new TransferTransactionSender(amount, alice, bob, MIN_FEE);
-        txSender.transferTransactionSender(ADDRESS, 1);
+        txSender.transferTransactionSender(ADDRESS, transactionVersion);
 
         checkTransferTransaction(txSender);
     }
@@ -100,7 +101,7 @@ public class TransferTransactionTest {
         Amount amount = Amount.of(alice.getBalance(issuedAssetId), issuedAssetId);
 
         TransferTransactionSender txSender = new TransferTransactionSender(amount, alice, bob, MIN_FEE);
-        txSender.transferTransactionSender(ALIAS, 3);
+        txSender.transferTransactionSender(ALIAS, LATEST_VERSION);
 
         checkTransferTransaction(txSender);
     }
@@ -117,19 +118,21 @@ public class TransferTransactionTest {
     @Test
     @DisplayName("transfer minimum smart asset on address from dAppAccount high complexity")
     void transferMinSmartAsset() {
+        final int transactionVersion = 2;
         Amount amount = Amount.of(MIN_TRANSACTION_SUM, issuedSmartAssetId);
         TransferTransactionSender txSender = new TransferTransactionSender(amount, dAppAccount, alice, FEE_FOR_DAPP_ACC);
-        txSender.transferTransactionSender(ADDRESS, 2);
+        txSender.transferTransactionSender(ADDRESS, transactionVersion);
         checkTransferTransaction(txSender);
     }
 
     @Test
     @DisplayName("transfer almost all smart asset on alias for smart account")
     void transferMaxSmartAsset() {
+        final int transactionVersion = 2;
         long transferSum = dAppAccount.getBalance(issuedSmartAssetId) - MIN_TRANSACTION_SUM;
         Amount amount = Amount.of(transferSum, issuedSmartAssetId);
         TransferTransactionSender txSender = new TransferTransactionSender(amount, dAppAccount, alice, FEE_FOR_DAPP_ACC);
-        txSender.transferTransactionSender(ALIAS, 2);
+        txSender.transferTransactionSender(ALIAS, transactionVersion);
 
         checkTransferTransaction(txSender);
     }

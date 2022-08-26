@@ -136,12 +136,12 @@ public class MassTransferTransactionTest {
     }
 
     private void checkMassTransferTransaction(MassTransferTransactionSender txSender) {
+        AssetId assetId = AssetId.as(txSender.getAssetId());
         assertAll(
                 () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
-                () -> assertThat(txSender.getSender().getBalance(txSender.getAssetId()))
-                        .isEqualTo(txSender.getSenderBalanceAfterMassTransfer()),
+                () -> assertThat(txSender.getSender().getBalance(assetId)).isEqualTo(txSender.getSenderBalanceAfterMassTransfer()),
                 () -> assertThat(txSender.getMassTransferTx().attachment()).isEqualTo(txSender.getAttach()),
-                () -> assertThat(txSender.getMassTransferTx().assetId()).isEqualTo(txSender.getAssetId()),
+                () -> assertThat(txSender.getMassTransferTx().assetId().toString()).isEqualTo(assetId.toString()),
                 () -> assertThat(txSender.getMassTransferTx().fee().assetId()).isEqualTo(WAVES),
                 () -> assertThat(txSender.getMassTransferTx().fee().value()).isEqualTo(getTransactionCommission()),
                 () -> assertThat(txSender.getMassTransferTx().sender()).isEqualTo(txSender.getSender().publicKey()),
@@ -149,10 +149,9 @@ public class MassTransferTransactionTest {
                 () -> assertThat(txSender.getMassTransferTx().type()).isEqualTo(11),
                 () -> txSender.getMassTransferTx().transfers().forEach(
                         transfer -> assertThat(transfer.amount()).isEqualTo(txSender.getAmount())),
-                () -> txSender.getAccounts().forEach(
-                        account -> assertThat(txSender.getBalancesAfterTransaction()
-                                .get(account.address())).isEqualTo(account.getBalance(txSender.getAssetId()))
-                )
+                () -> txSender.getAccounts().forEach(account ->
+                        assertThat(txSender.getBalancesAfterTransaction().get(account.address()))
+                                .isEqualTo(account.getBalance(assetId)))
         );
     }
 }

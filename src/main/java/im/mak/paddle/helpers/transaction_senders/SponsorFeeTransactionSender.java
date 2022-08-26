@@ -6,6 +6,8 @@ import im.mak.paddle.Account;
 import im.mak.paddle.exceptions.ApiError;
 
 import static im.mak.paddle.Node.node;
+import static im.mak.paddle.util.Constants.EXTRA_FEE;
+import static im.mak.paddle.util.Constants.SUM_FEE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SponsorFeeTransactionSender extends BaseTransactionSender {
@@ -29,8 +31,10 @@ public class SponsorFeeTransactionSender extends BaseTransactionSender {
         txInfo = node().getTransactionInfo(sponsorTx.id());
     }
 
-    public void cancelSponsorFeeSender(Account assetOwner, Account sender, Account recipient, int version) {
-        sponsorTx = SponsorFeeTransaction.builder(assetId, 0).version(version)
+    public void cancelSponsorFeeSender(Account assetOwner, Account sender, Account recipient, int version, long extraFee) {
+        sponsorTx = SponsorFeeTransaction.builder(assetId, 0)
+                .version(version)
+                .extraFee(extraFee)
                 .getSignedWith(assetOwner.privateKey());
         node().waitForTransaction(node().broadcast(sponsorTx).id());
 

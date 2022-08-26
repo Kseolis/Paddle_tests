@@ -54,7 +54,7 @@ public class SponsorFeeTransactionTest {
             Amount amount = Amount.of(amountValue, aliceAssetId);
 
             SponsorFeeTransactionSender txSender = new SponsorFeeTransactionSender(alice, sponsorFee, aliceAssetId);
-            txSender.sponsorFeeTransactionSender(MIN_FEE, v);
+            txSender.sponsorFeeTransactionSender(SUM_FEE, v);
 
             TransferTransactionSender transferTxSender = new TransferTransactionSender(amount, assetOwner, acc, SUM_FEE);
             transferTxSender.transferTransactionSender(ADDRESS, 2);
@@ -91,11 +91,11 @@ public class SponsorFeeTransactionTest {
             SponsorFeeTransactionSender txSender = new SponsorFeeTransactionSender(assetOwner, 100, assetOwnerAssetId);
             txSender.sponsorFeeTransactionSender(SUM_FEE, v);
 
-            txSender.cancelSponsorFeeSender(alice, assetOwner, acc, v);
+            txSender.cancelSponsorFeeSender(assetOwner, alice, acc, v, EXTRA_FEE);
             checkCancelSponsorFee(txSender);
         }
     }
-//
+
     private void checkSponsorTransaction
             (SponsorFeeTransactionSender txSender, TransferTransactionSender transferTxSender, long sponsorFee, long fee) {
         assertAll(

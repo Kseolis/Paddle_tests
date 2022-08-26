@@ -107,6 +107,7 @@ public class SponsorFeeTransactionSubscriptionTest extends BaseTest {
     @Test
     @DisplayName("Check subscription on cancel sponsorFee asset transaction")
     void subscribeTestForCancelSponsorFeeTransaction() {
+        long extraFee = 0;
         assetName = getRandomInt(1, 900000) + "asset";
         assetDescription = assetName + "test";
         assetQuantity = getRandomInt(1000, 999_999_999);
@@ -122,8 +123,8 @@ public class SponsorFeeTransactionSubscriptionTest extends BaseTest {
                 .reissuable(true)).tx();
         assetId = issueTx.assetId();
 
-        SponsorFeeTransactionSender txSender = new SponsorFeeTransactionSender(account, 0, assetId);
-        txSender.cancelSponsorFeeSender(account, account, dAppAccount, LATEST_VERSION);
+        SponsorFeeTransactionSender txSender = new SponsorFeeTransactionSender(account, sponsorFeeAmount, assetId);
+        txSender.cancelSponsorFeeSender(account, account, dAppAccount, LATEST_VERSION, extraFee);
         String txId = txSender.getSponsorTx().id().toString();
 
         height = node().getHeight();

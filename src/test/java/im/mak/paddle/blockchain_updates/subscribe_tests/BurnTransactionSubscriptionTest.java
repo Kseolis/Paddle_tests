@@ -74,8 +74,8 @@ public class BurnTransactionSubscriptionTest extends BaseTest {
 
         BurnTransactionSender txSender =
                 new BurnTransactionSender(account, amount, issueTx.assetId(), SUM_FEE, LATEST_VERSION);
-        String txId = txSender.getTxInfo().tx().id().toString();
         txSender.burnTransactionSender();
+        String txId = txSender.getTxInfo().tx().id().toString();
 
         quantityAfterBurn = assetQuantity - amount.value();
         height = node().getHeight();
@@ -101,9 +101,9 @@ public class BurnTransactionSubscriptionTest extends BaseTest {
         final Amount amount = Amount.of(getRandomInt(100, 10000000), assetId);
 
         BurnTransactionSender txSender =
-                new BurnTransactionSender(account, amount, issueTx.assetId(), SUM_FEE, LATEST_VERSION);
-        String txId = txSender.getTxInfo().tx().id().toString();
+                new BurnTransactionSender(account, amount, issueTx.assetId(), MIN_FEE, LATEST_VERSION);
         txSender.burnTransactionSender();
+        String txId = txSender.getTxInfo().tx().id().toString();
 
         quantityAfterBurn = assetQuantity - amount.value();
         height = node().getHeight();

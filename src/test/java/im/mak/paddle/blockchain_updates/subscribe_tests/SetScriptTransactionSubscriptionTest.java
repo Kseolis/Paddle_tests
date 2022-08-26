@@ -42,9 +42,9 @@ public class SetScriptTransactionSubscriptionTest extends BaseTest {
     @DisplayName("Check subscription on setScript transaction")
     void subscribeTestForSetScriptTransaction() {
         SetScriptTransactionSender txSender = new SetScriptTransactionSender(account, script);
+        txSender.setScriptTransactionSender(MIN_FEE, LATEST_VERSION);
         String txId = txSender.getSetScriptTx().id().toString();
 
-        txSender.setScriptTransactionSender(MIN_FEE, LATEST_VERSION);
         wavesAmountAfterSetAssetScript = DEFAULT_FAUCET - txSender.getFee();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, account, height, height, txId);
@@ -58,9 +58,8 @@ public class SetScriptTransactionSubscriptionTest extends BaseTest {
         script = node().compileScript(fromFile("ride_scripts/scriptSize32kb.ride")).script();
 
         SetScriptTransactionSender txSender = new SetScriptTransactionSender(account, script);
-        String txId = txSender.getSetScriptTx().id().toString();
-
         txSender.setScriptTransactionSender(minimalValSetScriptFee, LATEST_VERSION);
+        String txId = txSender.getSetScriptTx().id().toString();
 
         wavesAmountAfterSetAssetScript = DEFAULT_FAUCET - txSender.getFee();
         height = node().getHeight();
@@ -76,9 +75,8 @@ public class SetScriptTransactionSubscriptionTest extends BaseTest {
                 "{-# CONTENT_TYPE DAPP #-}").script();
 
         SetScriptTransactionSender txSender = new SetScriptTransactionSender(account, script);
-        String txId = txSender.getSetScriptTx().id().toString();
-
         txSender.setScriptTransactionSender(0, LATEST_VERSION);
+        String txId = txSender.getSetScriptTx().id().toString();
 
         wavesAmountAfterSetAssetScript = DEFAULT_FAUCET - txSender.getFee();
         height = node().getHeight();
@@ -94,9 +92,8 @@ public class SetScriptTransactionSubscriptionTest extends BaseTest {
                 "{-# CONTENT_TYPE LIBRARY #-}").script();
 
         SetScriptTransactionSender txSender = new SetScriptTransactionSender(account, script);
-        String txId = txSender.getSetScriptTx().id().toString();
-
         txSender.setScriptTransactionSender(0, LATEST_VERSION);
+        String txId = txSender.getSetScriptTx().id().toString();
 
         wavesAmountAfterSetAssetScript = DEFAULT_FAUCET - txSender.getFee();
         height = node().getHeight();

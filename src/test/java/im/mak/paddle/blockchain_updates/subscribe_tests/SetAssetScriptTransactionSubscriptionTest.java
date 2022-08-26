@@ -80,13 +80,18 @@ public class SetAssetScriptTransactionSubscriptionTest extends BaseTest {
         height = node().getHeight();
 
         subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        checkSetAssetSubscribe(setAssetScriptTx, assetIdToString);
+
+    }
+
+    private void checkSetAssetSubscribe(SetAssetScriptTransaction setAssetScriptTx, String assetId) {
 
         assertAll(
                 () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(publicKey),
                 () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(ONE_WAVES),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(SetAssetScriptTransaction.LATEST_VERSION),
-                () -> assertThat(getAssetIdFromSetAssetScript(0)).isEqualTo(assetIdToString),
+                () -> assertThat(getAssetIdFromSetAssetScript(0)).isEqualTo(assetId),
                 () -> assertThat(getScriptFromSetAssetScript(0)).isEqualTo(newScript.bytes()),
                 () -> assertThat(getTransactionId()).isEqualTo(setAssetScriptTx.id().toString()),
                 // check waves balance
@@ -94,7 +99,7 @@ public class SetAssetScriptTransactionSubscriptionTest extends BaseTest {
                 () -> assertThat(getAmountBefore(0, 0)).isEqualTo(wavesAmountBeforeSetAssetScript),
                 () -> assertThat(getAmountAfter(0, 0)).isEqualTo(wavesAmountAfterSetAssetScript),
                 // check asset before set asset script
-                () -> assertThat(getAssetIdFromAssetBefore(0, 0)).isEqualTo(assetIdToString),
+                () -> assertThat(getAssetIdFromAssetBefore(0, 0)).isEqualTo(assetId),
                 () -> assertThat(getIssuerBefore(0, 0)).isEqualTo(publicKey),
                 () -> assertThat(getQuantityBefore(0, 0)).isEqualTo(String.valueOf(assetQuantity)),
                 () -> assertThat(getReissueBefore(0, 0)).isEqualTo(String.valueOf(true)),
@@ -104,7 +109,7 @@ public class SetAssetScriptTransactionSubscriptionTest extends BaseTest {
                 () -> assertThat(getScriptBefore(0, 0)).isEqualTo(firstScript),
                 () -> assertThat(getScriptComplexityBefore(0, 0)).isEqualTo(0),
                 // check asset after set asset script
-                () -> assertThat(getAssetIdFromAssetAfter(0, 0)).isEqualTo(assetIdToString),
+                () -> assertThat(getAssetIdFromAssetAfter(0, 0)).isEqualTo(assetId),
                 () -> assertThat(getIssuerAfter(0, 0)).isEqualTo(publicKey),
                 () -> assertThat(getQuantityAfter(0, 0)).isEqualTo(String.valueOf(assetQuantity)),
                 () -> assertThat(getReissueAfter(0, 0)).isEqualTo(String.valueOf(true)),

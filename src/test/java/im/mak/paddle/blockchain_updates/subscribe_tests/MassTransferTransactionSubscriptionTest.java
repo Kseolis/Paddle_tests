@@ -7,7 +7,6 @@ import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseTest;
 import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
 import im.mak.paddle.helpers.transaction_senders.MassTransferTransactionSender;
-import org.checkerframework.checker.units.qual.Mass;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,12 +73,11 @@ public class MassTransferTransactionSubscriptionTest extends BaseTest {
         amountValue = getRandomInt(10_000, 1_000_000);
         accountList = accountListGenerator(MAX_NUM_ACCOUNT_FOR_MASS_TRANSFER);
 
-
         MassTransferTransactionSender txSender =
                 new MassTransferTransactionSender(senderAccount, AssetId.WAVES, amountValue, accountList);
+        txSender.massTransferTransactionSender(LATEST_VERSION);
         String txId = txSender.getMassTransferTx().id().toString();
 
-        txSender.massTransferTransactionSender(LATEST_VERSION);
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, senderAccount, height, height, txId);
 
@@ -95,9 +93,9 @@ public class MassTransferTransactionSubscriptionTest extends BaseTest {
 
         MassTransferTransactionSender txSender =
                 new MassTransferTransactionSender(dAppAccount, smartAssetId, amountValue, accountList);
+        txSender.massTransferTransactionSender(LATEST_VERSION);
         String txId = txSender.getMassTransferTx().id().toString();
 
-        txSender.massTransferTransactionSender(LATEST_VERSION);
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, dAppAccount, height, height, txId);
 
@@ -112,7 +110,7 @@ public class MassTransferTransactionSubscriptionTest extends BaseTest {
                 () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(getTransactionCommission()),
                 () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),
                 () -> assertThat(getAttachmentFromMassTransfer(0)).isEqualTo(base58StringAttachment.toString()),
-                () -> assertThat(getAssetIdFromMassTransfer(0)).isEqualTo(txSender.getAssetId().toString()),
+                () -> assertThat(getAssetIdFromMassTransfer(0)).isEqualTo(txSender.getAssetId()),
                 () -> checkBalances(address, txSender)
         );
 
@@ -134,10 +132,10 @@ public class MassTransferTransactionSubscriptionTest extends BaseTest {
                     assertThat(getAmountAfter(0, i)).isEqualTo(amountValue);
                 }
 
-                if (address.equals(addressFromBalance) && txSender.getAssetId().toString().equals(assetFromBalance)) {
+                if (address.equals(addressFromBalance) && txSender.getAssetId().equals(assetFromBalance)) {
                     assertThat(getAmountBefore(0, i)).isEqualTo(txSender.getSenderBalanceBeforeMassTransfer());
                     assertThat(getAmountAfter(0, i)).isEqualTo(txSender.getSenderBalanceAfterMassTransfer());
-                } else if (!txSender.getAssetId().toString().equals(assetFromBalance)) {
+                } else if (!txSender.getAssetId().equals(assetFromBalance)) {
                     assertThat(getAmountBefore(0, i)).isEqualTo(balanceBefore);
                     assertThat(getAmountAfter(0, i)).isEqualTo(getBalanceAfterTransaction());
                 }

@@ -54,9 +54,9 @@ public class DataTransactionSubscriptionTest extends BaseTest {
         DataEntry[] dataEntries = new DataEntry[]{integerEntry, binaryEntry, booleanEntry, stringEntry};
 
         final DataTransactionsSender txSender = new DataTransactionsSender(senderAccount, dataEntries);
-        String txId = txSender.getTxInfo().tx().id().toString();
 
         txSender.dataEntryTransactionSender(senderAccount, LATEST_VERSION);
+        String txId = txSender.getTxInfo().tx().id().toString();
 
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, senderAccount, height, height, txId);

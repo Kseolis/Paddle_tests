@@ -229,6 +229,7 @@ public class PrepareInvokeTestsData {
 
     public void prepareDataForLeaseTests() {
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
+        fee = SUM_FEE;
 
         final String functionArgs = "address:ByteVector";
         final String functions = "[\nLease(Address(address), " + wavesAmount.value() + ")\n]\n";
@@ -240,11 +241,11 @@ public class PrepareInvokeTestsData {
 
         amounts.clear();
         amounts.add(wavesAmount);
-        setFee(SUM_FEE);
     }
 
     public void prepareDataForLeaseCancelTests() {
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
+        fee = SUM_FEE;
 
         final String functionArgs = "leaseId:ByteVector";
         final String functions = "[\nLeaseCancel(leaseId)\n]\n";
@@ -254,9 +255,6 @@ public class PrepareInvokeTestsData {
 
         amounts.clear();
         amounts.add(wavesAmount);
-
-        setFee(SUM_FEE);
-        setExtraFee(0);
 
         leaseId = Base58.decode(dAppAccount.lease(callerAccount, wavesAmount.value()).tx().id().toString());
         dAppCall = dAppAccount.setData(leaseId);
@@ -320,6 +318,7 @@ public class PrepareInvokeTestsData {
     }
 
     public void prepareDataForDAppToDAppTests() {
+        fee = SUM_FEE;
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
 
         final String functionArgsDApp1 = "dapp2:ByteVector, a:Int, key1:String, key2:String, assetId:ByteVector";
@@ -351,8 +350,6 @@ public class PrepareInvokeTestsData {
         amounts.clear();
         amounts.add(wavesAmount);
         amounts.add(assetAmount);
-
-        setFee(SUM_FEE);
     }
 
     public static DAppCall getDAppCall() {

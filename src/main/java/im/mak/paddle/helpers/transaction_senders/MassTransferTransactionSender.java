@@ -79,8 +79,8 @@ public class MassTransferTransactionSender extends BaseTransactionSender {
         return sender;
     }
 
-    public AssetId getAssetId() {
-        return assetId;
+    public String getAssetId() {
+        return assetId.isWaves() ? "" : assetId.toString();
     }
 
     public long getAmount() {

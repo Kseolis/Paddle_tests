@@ -46,12 +46,8 @@ public class SponsorFeeTransactionSubscriptionTest extends BaseTest {
     static void setUp() {
         async(
                 () -> sponsorFeeAmount = getRandomInt(100, 100000),
-                () -> {
-                    account = new Account(DEFAULT_FAUCET);
-                },
-                () -> {
-                    dAppAccount = new DefaultDApp420Complexity(DEFAULT_FAUCET);
-                }
+                () -> account = new Account(DEFAULT_FAUCET),
+                () -> dAppAccount = new DefaultDApp420Complexity(DEFAULT_FAUCET)
         );
     }
 
@@ -74,8 +70,8 @@ public class SponsorFeeTransactionSubscriptionTest extends BaseTest {
         assetId = issueTx.assetId();
 
         SponsorFeeTransactionSender txSender = new SponsorFeeTransactionSender(account, sponsorFeeAmount, assetId);
-        String txId = txSender.getSponsorTx().id().toString();
         txSender.sponsorFeeTransactionSender(SUM_FEE, LATEST_VERSION);
+        String txId = txSender.getSponsorTx().id().toString();
         height = node().getHeight();
 
         subscribeResponseHandler(CHANNEL, account, height, height, txId);
@@ -100,9 +96,8 @@ public class SponsorFeeTransactionSubscriptionTest extends BaseTest {
         assetId = issueTx.assetId();
 
         SponsorFeeTransactionSender txSender = new SponsorFeeTransactionSender(dAppAccount, sponsorFeeAmount, assetId);
-        String txId = txSender.getSponsorTx().id().toString();
-
         txSender.sponsorFeeTransactionSender(SUM_FEE, LATEST_VERSION);
+        String txId = txSender.getSponsorTx().id().toString();
         height = node().getHeight();
 
         subscribeResponseHandler(CHANNEL, dAppAccount, height, height, txId);
@@ -128,9 +123,8 @@ public class SponsorFeeTransactionSubscriptionTest extends BaseTest {
         assetId = issueTx.assetId();
 
         SponsorFeeTransactionSender txSender = new SponsorFeeTransactionSender(account, 0, assetId);
-        String txId = txSender.getSponsorTx().id().toString();
-
         txSender.cancelSponsorFeeSender(account, account, dAppAccount, LATEST_VERSION);
+        String txId = txSender.getSponsorTx().id().toString();
 
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, account, height, height, txId);

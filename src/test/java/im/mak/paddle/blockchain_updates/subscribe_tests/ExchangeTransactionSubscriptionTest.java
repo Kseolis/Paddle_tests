@@ -94,9 +94,8 @@ public class ExchangeTransactionSubscriptionTest extends BaseTest {
         sell = Order.sell(amount, price, buyer.publicKey()).version(ORDER_V_4).getSignedWith(sellerPrivateKey);
 
         ExchangeTransactionSender txSender = new ExchangeTransactionSender(buyer, seller, buy, sell);
-        String txId = txSender.getTxInfo().tx().id().toString();
-
         txSender.exchangeTransactionSender(amount.value(), price.value(), 0, LATEST_VERSION);
+        String txId = txSender.getTxInfo().tx().id().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, buyer, height, height, txId);
 
@@ -123,9 +122,8 @@ public class ExchangeTransactionSubscriptionTest extends BaseTest {
         sell = Order.sell(amount, price, buyer.publicKey()).version(ORDER_V_4).getSignedWith(sellerPrivateKey);
 
         ExchangeTransactionSender txSender = new ExchangeTransactionSender(buyer, seller, buy, sell);
-        String txId = txSender.getTxInfo().tx().id().toString();
-
         txSender.exchangeTransactionSender(amount.value(), price.value(), EXCHANGE_FEE_FOR_SMART_ASSETS, LATEST_VERSION);
+        String txId = txSender.getTxInfo().tx().id().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, buyer, height, height, txId);
         checkExchangeSubscribe(fee, amount.assetId().toString());
@@ -149,9 +147,8 @@ public class ExchangeTransactionSubscriptionTest extends BaseTest {
         sell = Order.sell(amount, price, buyer.publicKey()).version(ORDER_V_4).getSignedWith(sellerPrivateKey);
 
         ExchangeTransactionSender txSender = new ExchangeTransactionSender(buyer, seller, buy, sell);
-        String txId = txSender.getTxInfo().tx().id().toString();
-
         txSender.exchangeTransactionSender(amount.value(), price.value(), EXTRA_FEE, LATEST_VERSION);
+        String txId = txSender.getTxInfo().tx().id().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, buyer, height, height, txId);
         checkExchangeSubscribe(fee, amount.assetId().toString());

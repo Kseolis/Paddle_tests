@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.SetScriptTransaction.LATEST_VERSION;
 import static com.wavesplatform.wavesj.ApplicationStatus.SUCCEEDED;
 import static im.mak.paddle.Node.node;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getBalanceAfterTransaction;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.ScriptUtil.fromFile;
@@ -88,7 +87,8 @@ public class SetScriptTransactionTest {
     private void checkSetScriptTransaction(SetScriptTransactionSender txSender) {
         assertAll(
                 () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
-                () -> assertThat(txSender.getAccount().getWavesBalance()).isEqualTo(getBalanceAfterTransaction()),
+                () -> assertThat(txSender.getAccount().getWavesBalance())
+                        .isEqualTo(txSender.getBalanceAfterTransaction()),
                 () -> assertThat(txSender.getSetScriptTx().sender()).isEqualTo(txSender.getAccount().publicKey()),
                 () -> assertThat(txSender.getSetScriptTx().script()).isEqualTo(txSender.getScript()),
                 () -> assertThat(txSender.getSetScriptTx().fee().assetId()).isEqualTo(AssetId.WAVES),

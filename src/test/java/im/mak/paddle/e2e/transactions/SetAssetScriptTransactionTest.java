@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.SetAssetScriptTransaction.LATEST_VERSION;
 import static com.wavesplatform.wavesj.ApplicationStatus.SUCCEEDED;
 import static im.mak.paddle.Node.node;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getBalanceAfterTransaction;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.ScriptUtil.fromFile;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,7 +53,7 @@ public class SetAssetScriptTransactionTest {
                 () -> assertThat(txSender.getSetAssetScriptTx().assetId()).isEqualTo(txSender.getAssetId()),
                 () -> assertThat(txSender.getSetAssetScriptTx().version()).isEqualTo(version),
                 () -> assertThat(txSender.getSetAssetScriptTx().type()).isEqualTo(15),
-                () -> assertThat(txSender.getAccount().getWavesBalance()).isEqualTo(getBalanceAfterTransaction())
+                () -> assertThat(txSender.getAccount().getWavesBalance()).isEqualTo(txSender.getBalanceAfterTransaction())
         );
     }
 }

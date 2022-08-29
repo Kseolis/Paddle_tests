@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.CreateAliasTransaction.LATEST_VERSION;
 import static com.wavesplatform.wavesj.ApplicationStatus.SUCCEEDED;
 import static im.mak.paddle.helpers.Randomizer.randomNumAndLetterString;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getBalanceAfterTransaction;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.MIN_FEE;
@@ -70,9 +69,11 @@ public class CreateAliasTransactionTest {
 
     private void checkAssertsForCreateAliasTransaction
             (String alias, Account acc, long fee, CreateAliasTransactionSender txSender) {
+
+        assertThat(acc.getWavesBalance()).isEqualTo(txSender.getBalanceAfterTransaction());
+
         assertAll(
                 () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
-                () -> assertThat(acc.getWavesBalance()).isEqualTo(getBalanceAfterTransaction()),
                 () -> assertThat(txSender.getCreateAliasTx().sender()).isEqualTo(acc.publicKey()),
                 () -> assertThat(txSender.getCreateAliasTx().alias().name()).isEqualTo(alias),
                 () -> assertThat(txSender.getCreateAliasTx().fee().assetId()).isEqualTo(AssetId.WAVES),

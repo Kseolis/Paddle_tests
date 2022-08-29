@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 import static com.wavesplatform.wavesj.ApplicationStatus.SUCCEEDED;
 import static im.mak.paddle.helpers.Randomizer.randomNumAndLetterString;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getBalanceAfterTransaction;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -93,7 +92,7 @@ public class ReissueTransactionTest {
     private void checkReissueTransaction(ReissueTransactionSender txSender, long fee, int version) {
         assertAll(
                 () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
-                () -> assertThat(account.getAssetBalance(txSender.getAssetId())).isEqualTo(getBalanceAfterTransaction()),
+                () -> assertThat(account.getAssetBalance(txSender.getAssetId())).isEqualTo(txSender.getBalanceAfterTransaction()),
                 () -> assertThat(account.getWavesBalance()).isEqualTo(accountWavesBalance - fee),
                 () -> assertThat(txSender.getReissueTx().fee().assetId()).isEqualTo(AssetId.WAVES),
                 () -> assertThat(txSender.getReissueTx().fee().value()).isEqualTo(fee),

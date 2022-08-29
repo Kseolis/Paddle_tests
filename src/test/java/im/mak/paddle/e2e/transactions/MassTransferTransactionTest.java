@@ -29,6 +29,7 @@ public class MassTransferTransactionTest {
 
     private static DefaultDApp420Complexity dAppAccount;
     private static AssetId issuedSmartAssetId;
+    private static AssetId checkedAsset;
 
     @BeforeAll
     static void before() {
@@ -58,9 +59,8 @@ public class MassTransferTransactionTest {
 
             MassTransferTransactionSender txSender =
                     new MassTransferTransactionSender(account, WAVES, amount, maximumAccountsList);
-
+            checkedAsset = AssetId.as(txSender.getAssetId());
             txSender.massTransferTransactionSender(v);
-
             checkMassTransferTransaction(txSender);
         }
     }
@@ -73,7 +73,7 @@ public class MassTransferTransactionTest {
 
             MassTransferTransactionSender txSender =
                     new MassTransferTransactionSender(account, WAVES, amount, minimumAccountsList);
-
+            checkedAsset = AssetId.as(txSender.getAssetId());
             txSender.massTransferTransactionSender(v);
             checkMassTransferTransaction(txSender);
         }
@@ -87,7 +87,7 @@ public class MassTransferTransactionTest {
 
             MassTransferTransactionSender txSender =
                     new MassTransferTransactionSender(account, issuedAsset, amount, maximumAccountsList);
-
+            checkedAsset = AssetId.as(txSender.getAssetId());
             txSender.massTransferTransactionSender(v);
             checkMassTransferTransaction(txSender);
         }
@@ -101,7 +101,7 @@ public class MassTransferTransactionTest {
 
             MassTransferTransactionSender txSender =
                     new MassTransferTransactionSender(account, issuedAsset, amount, minimumAccountsList);
-
+            checkedAsset = AssetId.as(txSender.getAssetId());
             txSender.massTransferTransactionSender(v);
             checkMassTransferTransaction(txSender);
         }
@@ -113,9 +113,11 @@ public class MassTransferTransactionTest {
         for (int v = 1; v <= LATEST_VERSION; v++) {
             int amount = getRandomInt(MIN_TRANSACTION_SUM, 100);
 
+            System.out.println(amount);
+
             MassTransferTransactionSender txSender =
                     new MassTransferTransactionSender(dAppAccount, issuedSmartAssetId, amount, maximumAccountsList);
-
+            checkedAsset = AssetId.as(txSender.getAssetId());
             txSender.massTransferTransactionSender(v);
             checkMassTransferTransaction(txSender);
         }
@@ -129,19 +131,19 @@ public class MassTransferTransactionTest {
 
             MassTransferTransactionSender txSender =
                     new MassTransferTransactionSender(dAppAccount, issuedSmartAssetId, amount, minimumAccountsList);
-
+            checkedAsset = AssetId.as(txSender.getAssetId());
             txSender.massTransferTransactionSender(v);
             checkMassTransferTransaction(txSender);
         }
     }
 
     private void checkMassTransferTransaction(MassTransferTransactionSender txSender) {
-        AssetId assetId = AssetId.as(txSender.getAssetId());
         assertAll(
                 () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
-                () -> assertThat(txSender.getSender().getBalance(assetId)).isEqualTo(txSender.getSenderBalanceAfterMassTransfer()),
+                () -> assertThat(txSender.getSender().getBalance(checkedAsset))
+                        .isEqualTo(txSender.getSenderBalanceAfterMassTransfer()),
                 () -> assertThat(txSender.getMassTransferTx().attachment()).isEqualTo(txSender.getAttach()),
-                () -> assertThat(txSender.getMassTransferTx().assetId().toString()).isEqualTo(assetId.toString()),
+                () -> assertThat(txSender.getMassTransferTx().assetId().toString()).isEqualTo(checkedAsset.toString()),
                 () -> assertThat(txSender.getMassTransferTx().fee().assetId()).isEqualTo(WAVES),
                 () -> assertThat(txSender.getMassTransferTx().fee().value()).isEqualTo(getTransactionCommission()),
                 () -> assertThat(txSender.getMassTransferTx().sender()).isEqualTo(txSender.getSender().publicKey()),
@@ -151,7 +153,7 @@ public class MassTransferTransactionTest {
                         transfer -> assertThat(transfer.amount()).isEqualTo(txSender.getAmount())),
                 () -> txSender.getAccounts().forEach(account ->
                         assertThat(txSender.getBalancesAfterTransaction().get(account.address()))
-                                .isEqualTo(account.getBalance(assetId)))
+                                .isEqualTo(account.getBalance(checkedAsset)))
         );
     }
 }

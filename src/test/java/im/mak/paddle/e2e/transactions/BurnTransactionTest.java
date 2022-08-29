@@ -11,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.BurnTransaction.LATEST_VERSION;
 import static com.wavesplatform.wavesj.ApplicationStatus.SUCCEEDED;
 import static im.mak.paddle.helpers.Randomizer.randomNumAndLetterString;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getAccountWavesBalance;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getBalanceAfterTransaction;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -96,9 +94,9 @@ public class BurnTransactionTest {
         assertAll(
                 () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
                 () -> assertThat(txSender.getSender().getAssetBalance(assetId))
-                        .isEqualTo(getBalanceAfterTransaction()),
+                        .isEqualTo(txSender.getBalanceAfterTransaction()),
                 () -> assertThat(txSender.getSender().getWavesBalance())
-                        .isEqualTo(getAccountWavesBalance() - txSender.getFee()),
+                        .isEqualTo(txSender.getAccountWavesBalance() - txSender.getFee()),
                 () -> assertThat(txSender.getBurnTx().fee().assetId()).isEqualTo(AssetId.WAVES),
                 () -> assertThat(txSender.getBurnTx().fee().value()).isEqualTo(txSender.getFee()),
                 () -> assertThat(txSender.getBurnTx().amount().value()).isEqualTo(txSender.getAmount().value()),

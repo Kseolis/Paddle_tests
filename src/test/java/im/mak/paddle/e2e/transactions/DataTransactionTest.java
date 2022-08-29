@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.DataTransaction.LATEST_VERSION;
 import static com.wavesplatform.wavesj.ApplicationStatus.SUCCEEDED;
 import static im.mak.paddle.helpers.Randomizer.randomNumAndLetterString;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getBalanceAfterTransaction;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -97,7 +96,7 @@ public class DataTransactionTest {
     private void checkAssertsForDataTransaction(DataTransactionsSender txSender) {
         assertAll(
                 () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
-                () -> assertThat(txSender.getSender().getWavesBalance()).isEqualTo(getBalanceAfterTransaction()),
+                () -> assertThat(txSender.getSender().getWavesBalance()).isEqualTo(txSender.getBalanceAfterTransaction()),
                 () -> assertThat(txSender.getDataTx().fee().value()).isEqualTo(MIN_FEE),
                 () -> assertThat(txSender.getDataTx().fee().assetId()).isEqualTo(AssetId.WAVES),
                 () -> assertThat(txSender.getDataTx().sender()).isEqualTo(txSender.getSender().publicKey()),

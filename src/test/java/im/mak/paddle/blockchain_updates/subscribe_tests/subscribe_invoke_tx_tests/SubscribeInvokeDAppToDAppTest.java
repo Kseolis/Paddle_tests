@@ -44,7 +44,7 @@ public class SubscribeInvokeDAppToDAppTest extends InvokeBaseTest {
 
     private void assertionsCheck(String key1, String key2, String assetId) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(SUM_FEE, getCallerPublicKey()),
+                () -> checkInvokeSubscribeTransaction(getFee(), getCallerPublicKey()),
                 () -> checkMainMetadata(0),
                 () -> checkArgumentsMetadata(0, 0, BINARY_BASE58, getAssetDAppAddress()),
                 () -> checkArgumentsMetadata(0, 1, INTEGER, String.valueOf(getIntArg())),

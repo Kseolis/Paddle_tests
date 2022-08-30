@@ -41,7 +41,7 @@ public class SubscribeInvokeLeaseTest extends InvokeBaseTest {
 
     private void assertionsCheck(long amountValue) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(SUM_FEE, getCallerPublicKey()),
+                () -> checkInvokeSubscribeTransaction(getFee(), getCallerPublicKey()),
                 () -> checkMainMetadata(0),
                 () -> checkPaymentsSubscribe(0, 0, amountValue, ""),
                 () -> checkPaymentMetadata(0, 0, null, amountValue),

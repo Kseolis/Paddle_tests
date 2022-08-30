@@ -5,7 +5,7 @@ import com.wavesplatform.transactions.common.Id;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseTest;
 import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
-import im.mak.paddle.helpers.transaction_senders.LeaseTransactionSender;
+import im.mak.paddle.helpers.transaction_senders.LeaseCancelTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,7 +60,7 @@ public class LeaseCancelTransactionSubscriptionTest extends BaseTest {
         final Id leaseId = leaseTx.id();
         final String leaseIdString = leaseId.toString();
 
-        LeaseTransactionSender txSender = new LeaseTransactionSender(sender, recipient);
+        LeaseCancelTransactionSender txSender = new LeaseCancelTransactionSender(sender, recipient);
 
         txSender.leaseCancelTransactionSender(leaseId, amountLease, MIN_FEE, LATEST_VERSION);
         final String leaseCancelId = txSender.getLeaseCancelTx().id().toString();
@@ -80,7 +80,7 @@ public class LeaseCancelTransactionSubscriptionTest extends BaseTest {
         amountBefore = accWithDApp.getWavesBalance();
         amountAfter = amountBefore - SUM_FEE;
 
-        LeaseTransactionSender txSender = new LeaseTransactionSender(accWithDApp, recipient);
+        LeaseCancelTransactionSender txSender = new LeaseCancelTransactionSender(accWithDApp, recipient);
         txSender.leaseCancelTransactionSender(leaseId, amountLease, SUM_FEE, LATEST_VERSION);
         final String leaseCancelId = txSender.getLeaseCancelTx().id().toString();
         height = node().getHeight();

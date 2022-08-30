@@ -22,7 +22,6 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.MassTransferTransactionHandler.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.getBalanceAfterTransaction;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -137,7 +136,7 @@ public class MassTransferTransactionSubscriptionTest extends BaseTest {
                     assertThat(getAmountAfter(0, i)).isEqualTo(txSender.getSenderBalanceAfterMassTransfer());
                 } else if (!txSender.getAssetId().equals(assetFromBalance)) {
                     assertThat(getAmountBefore(0, i)).isEqualTo(balanceBefore);
-                    assertThat(getAmountAfter(0, i)).isEqualTo(getBalanceAfterTransaction());
+                    assertThat(getAmountAfter(0, i)).isEqualTo(txSender.getBalanceAfterTransaction());
                 }
             }
         }

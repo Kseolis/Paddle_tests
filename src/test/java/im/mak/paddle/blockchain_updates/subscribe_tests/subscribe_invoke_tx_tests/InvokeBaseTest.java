@@ -4,19 +4,19 @@ import com.wavesplatform.crypto.base.Base58;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseTest;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
 
 public class InvokeBaseTest extends BaseTest {
-    private static PrepareInvokeTestsData testsData;
+    private PrepareInvokeTestsData testsData;
     private static String dAppAccountPublicKey;
     private static String dAppAccountPublicKeyHash;
     private static String dAppAccountAddress;
     private static String dAppFunctionName;
 
-    @BeforeAll
-    static void before() {
+    @BeforeEach
+    void before() {
         testsData = new PrepareInvokeTestsData();
     }
 
@@ -27,7 +27,7 @@ public class InvokeBaseTest extends BaseTest {
         dAppFunctionName = getDAppCall().getFunction().name();
     }
 
-    public static PrepareInvokeTestsData getTestsData() {
+    public PrepareInvokeTestsData getTestsData() {
         return testsData;
     }
 

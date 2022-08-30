@@ -55,8 +55,8 @@ public class PrepareInvokeTestsData {
     private static DAppCall dAppCall;
     private static long fee;
 
-    private static final Map<String, String> assetData =  new HashMap<>();
-    private static final Map<String, String> assetDataForIssue =  new HashMap<>();
+    private static final Map<String, String> assetData = new HashMap<>();
+    private static final Map<String, String> assetDataForIssue = new HashMap<>();
     private static final List<Amount> amounts = new ArrayList<>();
 
     public PrepareInvokeTestsData() {
@@ -88,12 +88,12 @@ public class PrepareInvokeTestsData {
                     assetDAppPublicKey = assetDAppAccount.publicKey().toString();
                     assetDAppAddressBase58 = Base58.decode(assetDAppAddress);
                     assetId = assetDAppAccount.issue(i -> i
-                                    .decimals(Integer.parseInt(assetData.get(DECIMALS)))
-                                    .description(description)
-                                    .name(assetData.get(NAME))
-                                    .quantity(Integer.parseInt(assetData.get(VOLUME)))
-                                    .reissuable(Boolean.parseBoolean(assetData.get(REISSUE)))
-                            ).tx().assetId();
+                            .decimals(Integer.parseInt(assetData.get(DECIMALS)))
+                            .description(description)
+                            .name(assetData.get(NAME))
+                            .quantity(Integer.parseInt(assetData.get(VOLUME)))
+                            .reissuable(Boolean.parseBoolean(assetData.get(REISSUE)))
+                    ).tx().assetId();
 
                     assetData.put(ISSUER, assetDAppPublicKey);
                     assetData.put(ASSET_ID, assetId.toString());
@@ -318,7 +318,7 @@ public class PrepareInvokeTestsData {
     }
 
     public void prepareDataForDAppToDAppTests() {
-        fee = SUM_FEE  + ONE_WAVES;
+        fee = SUM_FEE + ONE_WAVES;
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
 
         final String functionArgsDApp1 = "dapp2:ByteVector, a:Int, key1:String, key2:String, assetId:ByteVector";

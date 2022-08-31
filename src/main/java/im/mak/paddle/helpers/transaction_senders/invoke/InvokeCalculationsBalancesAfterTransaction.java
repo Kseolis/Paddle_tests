@@ -6,7 +6,7 @@ import im.mak.paddle.Account;
 
 import java.util.List;
 
-import static im.mak.paddle.helpers.PrepareInvokeTestsData.getFee;
+import static im.mak.paddle.helpers.PrepareInvokeTestsData.getInvokeFee;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.getIntArg;
 
 public class InvokeCalculationsBalancesAfterTransaction {
@@ -195,7 +195,7 @@ public class InvokeCalculationsBalancesAfterTransaction {
         callerBalanceIssuedAssetsBeforeTransaction = caller.getBalance(id);
         dAppBalanceIssuedAssetsBeforeTransaction = dApp.getBalance(id);
 
-        callerBalanceWavesAfterTransaction = callerBalanceWavesBeforeTransaction - getFee();
+        callerBalanceWavesAfterTransaction = callerBalanceWavesBeforeTransaction - getInvokeFee();
         callerBalanceIssuedAssetsAfterTransaction = callerBalanceIssuedAssetsBeforeTransaction;
         dAppBalanceWavesAfterTransaction = dAppBalanceWavesBeforeTransaction;
         dAppBalanceIssuedAssetsAfterTransaction = dAppBalanceIssuedAssetsBeforeTransaction;

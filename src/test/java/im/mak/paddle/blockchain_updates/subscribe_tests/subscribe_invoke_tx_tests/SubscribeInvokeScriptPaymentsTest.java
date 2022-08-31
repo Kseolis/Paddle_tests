@@ -1,6 +1,8 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests;
 
+import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -22,10 +24,17 @@ import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeScriptPaymentsTest extends InvokeBaseTest {
+    private PrepareInvokeTestsData testsData;
+
+    @BeforeEach
+    void before() {
+        testsData = new PrepareInvokeTestsData();
+    }
+
     @Test
     @DisplayName("subscribe invoke with payments")
     void subscribeInvokeWithScriptPayments() {
-        getTestsData().prepareDataForPaymentsTests();
+        testsData.prepareDataForPaymentsTests();
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender
                 (getCallerAccount(), getDAppAccount(), getDAppCall(), getAmounts());
@@ -46,7 +55,7 @@ public class SubscribeInvokeScriptPaymentsTest extends InvokeBaseTest {
 
     private void assertionsCheck(long paymentWaves, long paymentAsset, String assetId, String intArg) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(getFee(), getCallerPublicKey()),
+                () -> checkInvokeSubscribeTransaction(getInvokeFee(), getCallerPublicKey()),
                 () -> checkPaymentsSubscribe(0, 0, paymentWaves, ""),
                 () -> checkPaymentsSubscribe(0, 1, paymentAsset, assetId),
 

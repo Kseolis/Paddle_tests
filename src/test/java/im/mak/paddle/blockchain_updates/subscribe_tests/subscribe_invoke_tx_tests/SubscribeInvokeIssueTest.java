@@ -1,6 +1,8 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests;
 
+import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -20,10 +22,17 @@ import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeIssueTest extends InvokeBaseTest {
+    private PrepareInvokeTestsData testsData;
+
+    @BeforeEach
+    void before() {
+        testsData = new PrepareInvokeTestsData();
+    }
+
     @Test
     @DisplayName("subscribe invoke with Issue")
     void prepareDataForIssueTests() {
-        getTestsData().prepareDataForIssueTests();
+        testsData.prepareDataForIssueTests();
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender
                 (getCallerAccount(), getAssetDAppAccount(), getDAppCall());
@@ -46,7 +55,7 @@ public class SubscribeInvokeIssueTest extends InvokeBaseTest {
 
     private void assertionsCheck(long issueAssetDataVolume, long assetDataForIssueVolume) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(getFee(), getCallerPublicKey()),
+                () -> checkInvokeSubscribeTransaction(getInvokeFee(), getCallerPublicKey()),
                 () -> checkMainMetadata(0),
                 () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
                 () -> checkIssueAssetMetadata(0, 1, getAssetDataForIssue()),

@@ -6,8 +6,8 @@ import im.mak.paddle.Account;
 
 import java.util.List;
 
-import static im.mak.paddle.blockchain_updates.invoke_subscribe_helpers.PrepareInvokeTestsData.getInvokeFee;
-import static im.mak.paddle.blockchain_updates.subscribe_invoke_tx_tests.SubscribeInvokeBaseTest.getIntArg;
+import static im.mak.paddle.helpers.PrepareInvokeTestsData.getIntArg;
+import static im.mak.paddle.helpers.PrepareInvokeTestsData.getInvokeFee;
 
 public class InvokeCalculationsBalancesAfterTransaction {
     private static long callerBalanceWavesBeforeTransaction;

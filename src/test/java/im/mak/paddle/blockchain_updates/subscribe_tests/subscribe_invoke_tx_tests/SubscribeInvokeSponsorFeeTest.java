@@ -21,57 +21,57 @@ import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeSponsorFeeTest extends InvokeBaseTest {
-    private static PrepareInvokeTestsData testsData;
+    private static PrepareInvokeTestsData testData;
 
     @BeforeAll
     static void before() {
-        testsData = new PrepareInvokeTestsData();
+        testData = new PrepareInvokeTestsData();
     }
 
     @Test
     @DisplayName("subscribe invoke with SponsorFee")
     void subscribeInvokeWithSponsorFee() {
-        testsData.prepareDataForSponsorFeeTests();
+        testData.prepareDataForSponsorFeeTests();
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender
-                (testsData.getCallerAccount(), testsData.getAssetDAppAccount(), testsData.getDAppCall());
+                (testData.getCallerAccount(), testData.getAssetDAppAccount(), testData.getDAppCall());
 
         setVersion(LATEST_VERSION);
-        balancesAfterPaymentInvoke(testsData.getCallerAccount(), testsData.getAssetDAppAccount(), testsData.getAmounts(), testsData.getAssetId());
+        balancesAfterPaymentInvoke(testData.getCallerAccount(), testData.getAssetDAppAccount(), testData.getAmounts(), testData.getAssetId());
         txSender.invokeSender();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, testsData.getAssetDAppAccount(), height, height, getInvokeScriptId());
-        prepareInvoke(testsData.getAssetDAppAccount(), testsData);
+        subscribeResponseHandler(CHANNEL, testData.getAssetDAppAccount(), height, height, getInvokeScriptId());
+        prepareInvoke(testData.getAssetDAppAccount(), testData);
 
-        assertionsCheck(testsData.getAssetAmount().value());
+        assertionsCheck(testData.getAssetAmount().value());
     }
 
     private void assertionsCheck(long sponsorship) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(testsData.getInvokeFee(), testsData.getCallerPublicKey()),
+                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey()),
                 () -> checkMainMetadata(0),
-                () -> checkArgumentsMetadata(0, 0, BINARY_BASE58, testsData.getAssetId().toString()),
+                () -> checkArgumentsMetadata(0, 0, BINARY_BASE58, testData.getAssetId().toString()),
                 () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
-                () -> checkSponsorFeeMetadata(0, 0, testsData.getAssetId().toString(), testsData.getAssetAmount().value()),
-                () -> checkSponsorFeeMetadata(0, 1, null, testsData.getAssetAmount().value()),
+                () -> checkSponsorFeeMetadata(0, 0, testData.getAssetId().toString(), testData.getAssetAmount().value()),
+                () -> checkSponsorFeeMetadata(0, 1, null, testData.getAssetAmount().value()),
 
                 () -> checkStateUpdateBalance(0,
                         0,
-                        testsData.getCallerAddress(),
+                        testData.getCallerAddress(),
                         WAVES_STRING_ID,
                         getCallerBalanceWavesBeforeTransaction(), getCallerBalanceWavesAfterTransaction()),
 
                 () -> checkStateUpdateBalance(0,
                         1,
-                        testsData.getAssetDAppAddress(),
+                        testData.getAssetDAppAddress(),
                         null,
                         0, Long.parseLong(getIssueAssetData().get(VOLUME))),
 
                 () -> checkStateUpdateAssets(0, 0, getIssueAssetData(), getIssueAssetVolume()),
                 () -> checkStateUpdateAssets(0, 1,
-                        testsData.getAssetData(),
-                        Long.parseLong(testsData.getAssetData().get(VOLUME))),
+                        testData.getAssetData(),
+                        Long.parseLong(testData.getAssetData().get(VOLUME))),
 
                 () -> checkStateUpdateAssetsSponsorship(0, 0, sponsorship),
                 () -> checkStateUpdateAssetsSponsorship(0, 1, sponsorship)

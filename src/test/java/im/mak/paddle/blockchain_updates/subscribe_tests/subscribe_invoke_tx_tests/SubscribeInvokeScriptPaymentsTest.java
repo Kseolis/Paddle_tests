@@ -22,38 +22,38 @@ import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeScriptPaymentsTest extends InvokeBaseTest {
-    private static PrepareInvokeTestsData testsData;
+    private static PrepareInvokeTestsData testData;
 
     @BeforeAll
     static void before() {
-        testsData = new PrepareInvokeTestsData();
+        testData = new PrepareInvokeTestsData();
     }
 
     @Test
     @DisplayName("subscribe invoke with payments")
     void subscribeInvokeWithScriptPayments() {
-        testsData.prepareDataForPaymentsTests();
+        testData.prepareDataForPaymentsTests();
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender
-                (testsData.getCallerAccount(), testsData.getDAppAccount(), testsData.getDAppCall(), testsData.getAmounts());
+                (testData.getCallerAccount(), testData.getDAppAccount(), testData.getDAppCall(), testData.getAmounts());
 
         setVersion(LATEST_VERSION);
-        balancesAfterCallerInvokeAsset(testsData.getCallerAccount(), testsData.getDAppAccount(), testsData.getAmounts(), testsData.getAssetId());
+        balancesAfterCallerInvokeAsset(testData.getCallerAccount(), testData.getDAppAccount(), testData.getAmounts(), testData.getAssetId());
         txSender.invokeSenderWithPayment();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, testsData.getDAppAccount(), height, height, getInvokeScriptId());
-        prepareInvoke(testsData.getDAppAccount(), testsData);
+        subscribeResponseHandler(CHANNEL, testData.getDAppAccount(), height, height, getInvokeScriptId());
+        prepareInvoke(testData.getDAppAccount(), testData);
 
-        assertionsCheck(testsData.getWavesAmount().value(),
-                testsData.getAssetAmount().value(),
-                testsData.getAssetId().toString(),
-                String.valueOf(testsData.getIntArg()));
+        assertionsCheck(testData.getWavesAmount().value(),
+                testData.getAssetAmount().value(),
+                testData.getAssetId().toString(),
+                String.valueOf(testData.getIntArg()));
     }
 
     private void assertionsCheck(long paymentWaves, long paymentAsset, String assetId, String intArg) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(testsData.getInvokeFee(), testsData.getCallerPublicKey()),
+                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey()),
                 () -> checkPaymentsSubscribe(0, 0, paymentWaves, ""),
                 () -> checkPaymentsSubscribe(0, 1, paymentAsset, assetId),
 
@@ -66,27 +66,27 @@ public class SubscribeInvokeScriptPaymentsTest extends InvokeBaseTest {
 
                 () -> checkStateUpdateBalance(0,
                         0,
-                        testsData.getCallerAddress(),
+                        testData.getCallerAddress(),
                         WAVES_STRING_ID,
                         getCallerBalanceWavesBeforeTransaction(), getCallerBalanceWavesAfterTransaction()),
                 () -> checkStateUpdateBalance(0,
                         1,
-                        testsData.getCallerAddress(),
+                        testData.getCallerAddress(),
                         assetId,
                         getCallerBalanceIssuedAssetsBeforeTransaction(), getCallerBalanceIssuedAssetsAfterTransaction()),
                 () -> checkStateUpdateBalance(0,
                         2,
-                        testsData.getDAppAddress(),
+                        testData.getDAppAddress(),
                         WAVES_STRING_ID,
                         getDAppBalanceWavesBeforeTransaction(), getDAppBalanceWavesAfterTransaction()),
                 () -> checkStateUpdateBalance(0,
                         3,
-                        testsData.getDAppAddress(),
+                        testData.getDAppAddress(),
                         assetId,
                         getDAppBalanceIssuedAssetsBeforeTransaction(), getDAppBalanceIssuedAssetsAfterTransaction()),
                 () -> checkStateUpdateBalance(0,
                         4,
-                        testsData.getDAppAddress(),
+                        testData.getDAppAddress(),
                         null,
                         0, getIssueAssetVolume()),
                 () -> checkStateUpdateDataEntries(0, 0, getDAppAccountAddress(), DATA_ENTRY_INT, intArg),

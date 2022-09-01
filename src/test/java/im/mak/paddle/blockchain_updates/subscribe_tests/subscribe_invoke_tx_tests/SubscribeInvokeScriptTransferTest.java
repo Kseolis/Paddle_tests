@@ -22,92 +22,92 @@ import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeScriptTransferTest extends InvokeBaseTest {
-    private static PrepareInvokeTestsData testsData;
+    private static PrepareInvokeTestsData testData;
 
     @BeforeAll
     static void before() {
-        testsData = new PrepareInvokeTestsData();
+        testData = new PrepareInvokeTestsData();
     }
 
     @Test
     @DisplayName("subscribe invoke with ScriptTransfer")
     void subscribeInvokeWithScriptTransfer() {
-        long assetAmountValue = testsData.getAssetAmount().value();
-        testsData.prepareDataForScriptTransferTests();
+        long assetAmountValue = testData.getAssetAmount().value();
+        testData.prepareDataForScriptTransferTests();
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender
-                (testsData.getCallerAccount(), testsData.getAssetDAppAccount(), testsData.getDAppCall());
+                (testData.getCallerAccount(), testData.getAssetDAppAccount(), testData.getDAppCall());
 
         setVersion(LATEST_VERSION);
-        balancesAfterCallerScriptTransfer(testsData.getCallerAccount(),
-                testsData.getAssetDAppAccount(), testsData.getDAppAccount(), testsData.getAmounts(), testsData.getAssetId());
+        balancesAfterCallerScriptTransfer(testData.getCallerAccount(),
+                testData.getAssetDAppAccount(), testData.getDAppAccount(), testData.getAmounts(), testData.getAssetId());
         txSender.invokeSender();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, testsData.getCallerAccount(), height, height, getInvokeScriptId());
-        prepareInvoke(testsData.getAssetDAppAccount(), testsData);
+        subscribeResponseHandler(CHANNEL, testData.getCallerAccount(), height, height, getInvokeScriptId());
+        prepareInvoke(testData.getAssetDAppAccount(), testData);
 
         long dAppAssetAmountAfter = Long.parseLong(getIssueAssetData().get(VOLUME)) - assetAmountValue;
-        assertionsCheck(testsData.getAssetId().toString(), dAppAssetAmountAfter, assetAmountValue);
+        assertionsCheck(testData.getAssetId().toString(), dAppAssetAmountAfter, assetAmountValue);
     }
 
     private void assertionsCheck(String assetId, long dAppAssetAmountAfter, long recipientAmountValueAfter) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(testsData.getInvokeFee(), testsData.getCallerPublicKey()),
+                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey()),
 
                 () -> checkMainMetadata(0),
                 () -> checkArgumentsMetadata(0, 0, BINARY_BASE58, assetId),
-                () -> checkArgumentsMetadata(0, 1, BINARY_BASE58, testsData.getDAppAddress()),
+                () -> checkArgumentsMetadata(0, 1, BINARY_BASE58, testData.getDAppAddress()),
                 () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
 
                 () -> checkTransfersMetadata(0, 0,
-                        testsData.getDAppAddressBase58(),
+                        testData.getDAppAddressBase58(),
                         assetId,
-                        testsData.getAssetAmount().value()),
+                        testData.getAssetAmount().value()),
                 () -> checkTransfersMetadata(0, 1,
-                        testsData.getDAppAddressBase58(),
+                        testData.getDAppAddressBase58(),
                         null,
-                        testsData.getAssetAmount().value()),
+                        testData.getAssetAmount().value()),
                 () -> checkTransfersMetadata(0, 2,
-                        testsData.getDAppAddressBase58(),
+                        testData.getDAppAddressBase58(),
                         WAVES_STRING_ID,
-                        testsData.getWavesAmount().value()),
+                        testData.getWavesAmount().value()),
 
                 () -> checkStateUpdateBalance(0,
                         0,
-                        testsData.getCallerAddress(),
+                        testData.getCallerAddress(),
                         WAVES_STRING_ID,
                         getCallerBalanceWavesBeforeTransaction(), getCallerBalanceWavesAfterTransaction()),
 
                 () -> checkStateUpdateBalance(0,
                         1,
-                        testsData.getAssetDAppAddress(),
+                        testData.getAssetDAppAddress(),
                         WAVES_STRING_ID,
                         getDAppBalanceWavesBeforeTransaction(), getDAppBalanceWavesAfterTransaction()),
                 () -> checkStateUpdateBalance(0,
                         2,
-                        testsData.getAssetDAppAddress(),
+                        testData.getAssetDAppAddress(),
                         null,
                         0, dAppAssetAmountAfter),
                 () -> checkStateUpdateBalance(0,
                         3,
-                        testsData.getAssetDAppAddress(),
+                        testData.getAssetDAppAddress(),
                         assetId,
                         getDAppBalanceIssuedAssetsBeforeTransaction(), getDAppBalanceIssuedAssetsAfterTransaction()),
 
                 () -> checkStateUpdateBalance(0,
                         4,
-                        testsData.getDAppAddress(),
+                        testData.getDAppAddress(),
                         WAVES_STRING_ID,
                         getAccBalanceWavesBeforeTransaction(), getAccBalanceWavesAfterTransaction()),
                 () -> checkStateUpdateBalance(0,
                         5,
-                        testsData.getDAppAddress(),
+                        testData.getDAppAddress(),
                         assetId,
                         getAccBalanceIssuedAssetsBeforeTransaction(), getAccBalanceIssuedAssetsAfterTransaction()),
                 () -> checkStateUpdateBalance(0,
                         6,
-                        testsData.getDAppAddress(),
+                        testData.getDAppAddress(),
                         null,
                         0, recipientAmountValueAfter),
 

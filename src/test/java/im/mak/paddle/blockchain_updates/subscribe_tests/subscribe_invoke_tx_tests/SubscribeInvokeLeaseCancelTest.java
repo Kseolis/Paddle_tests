@@ -22,64 +22,64 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeLeaseCancelTest extends InvokeBaseTest {
-    private static PrepareInvokeTestsData testsData;
+    private static PrepareInvokeTestsData testData;
 
     @BeforeAll
     static void before() {
-        testsData = new PrepareInvokeTestsData();
+        testData = new PrepareInvokeTestsData();
     }
 
     @Test
     @DisplayName("subscribe invoke with LeaseCancel and WAVES payment")
     void subscribeInvokeWithLeaseCancel() {
-        long amountValue = testsData.getWavesAmount().value();
+        long amountValue = testData.getWavesAmount().value();
 
-        testsData.prepareDataForLeaseCancelTests();
+        testData.prepareDataForLeaseCancelTests();
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender
-                (testsData.getCallerAccount(), testsData.getDAppAccount(), testsData.getDAppCall(), testsData.getAmounts());
+                (testData.getCallerAccount(), testData.getDAppAccount(), testData.getDAppCall(), testData.getAmounts());
 
         setVersion(LATEST_VERSION);
-        balancesAfterPaymentInvoke(testsData.getCallerAccount(), testsData.getDAppAccount(), testsData.getAmounts(), testsData.getAssetId());
+        balancesAfterPaymentInvoke(testData.getCallerAccount(), testData.getDAppAccount(), testData.getAmounts(), testData.getAssetId());
         txSender.invokeSenderWithPayment();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, testsData.getDAppAccount(), height, height, getInvokeScriptId());
-        prepareInvoke(testsData.getDAppAccount(), testsData);
+        subscribeResponseHandler(CHANNEL, testData.getDAppAccount(), height, height, getInvokeScriptId());
+        prepareInvoke(testData.getDAppAccount(), testData);
 
         assertionsCheck(amountValue);
     }
 
     private void assertionsCheck(long amountValue) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(testsData.getInvokeFee(), testsData.getCallerPublicKey()),
+                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey()),
                 () -> checkMainMetadata(0),
                 () -> checkPaymentsSubscribe(0, 0, amountValue, ""),
                 () -> checkPaymentMetadata(0, 0, null, amountValue),
-                () -> assertThat(getInvokeMetadataCancelLeaseId(0, 0)).isEqualTo(testsData.getLeaseId()),
+                () -> assertThat(getInvokeMetadataCancelLeaseId(0, 0)).isEqualTo(testData.getLeaseId()),
 
                 () -> checkStateUpdateBalance(0,
                         0,
-                        testsData.getCallerAddress(),
+                        testData.getCallerAddress(),
                         WAVES_STRING_ID,
                         getCallerBalanceWavesBeforeTransaction(), getCallerBalanceWavesAfterTransaction()),
 
                 () -> checkStateUpdateBalance(0,
                         1,
-                        testsData.getDAppAddress(),
+                        testData.getDAppAddress(),
                         null,
                         getDAppBalanceWavesBeforeTransaction(), getDAppBalanceWavesAfterTransaction()),
 
-                () -> checkStateUpdateBeforeLeasing(0, 0, testsData.getCallerAddress(), amountValue, 0),
-                () -> checkStateUpdateBeforeLeasing(0, 1, testsData.getDAppAddress(), 0, amountValue),
+                () -> checkStateUpdateBeforeLeasing(0, 0, testData.getCallerAddress(), amountValue, 0),
+                () -> checkStateUpdateBeforeLeasing(0, 1, testData.getDAppAddress(), 0, amountValue),
 
-                () -> checkStateUpdateAfterLeasing(0, 0, testsData.getCallerAddress(), 0, 0),
-                () -> checkStateUpdateAfterLeasing(0, 1, testsData.getDAppAddress(), 0, 0),
+                () -> checkStateUpdateAfterLeasing(0, 0, testData.getCallerAddress(), 0, 0),
+                () -> checkStateUpdateAfterLeasing(0, 1, testData.getDAppAddress(), 0, 0),
 
                 () -> checkStateUpdateIndividualLeases(0, 0,
                         amountValue,
-                        testsData.getDAppPublicKey(),
-                        testsData.getCallerAddress(),
+                        testData.getDAppPublicKey(),
+                        testData.getCallerAddress(),
                         INACTIVE_STATUS_LEASE)
         );
     }

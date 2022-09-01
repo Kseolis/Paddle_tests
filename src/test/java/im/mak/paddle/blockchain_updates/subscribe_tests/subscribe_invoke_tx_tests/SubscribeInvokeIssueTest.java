@@ -21,67 +21,67 @@ import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeIssueTest extends InvokeBaseTest {
-    private static PrepareInvokeTestsData testsData;
+    private static PrepareInvokeTestsData testData;
 
     @BeforeAll
     static void before() {
-        testsData = new PrepareInvokeTestsData();
+        testData = new PrepareInvokeTestsData();
     }
 
     @Test
     @DisplayName("subscribe invoke with Issue")
     void prepareDataForIssueTests() {
-        testsData.prepareDataForIssueTests();
+        testData.prepareDataForIssueTests();
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender
-                (testsData.getCallerAccount(), testsData.getAssetDAppAccount(), testsData.getDAppCall());
+                (testData.getCallerAccount(), testData.getAssetDAppAccount(), testData.getDAppCall());
 
         setVersion(LATEST_VERSION);
         balancesAfterReissueAssetInvoke(
-                testsData.getCallerAccount(),
-                testsData.getAssetDAppAccount(),
-                testsData.getAmounts(),
-                testsData.getAssetId());
+                testData.getCallerAccount(),
+                testData.getAssetDAppAccount(),
+                testData.getAmounts(),
+                testData.getAssetId());
 
         txSender.invokeSender();
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, testsData.getAssetDAppAccount(), height, height, getInvokeScriptId());
-        prepareInvoke(testsData.getAssetDAppAccount(), testsData);
+        subscribeResponseHandler(CHANNEL, testData.getAssetDAppAccount(), height, height, getInvokeScriptId());
+        prepareInvoke(testData.getAssetDAppAccount(), testData);
 
         assertionsCheck(
                 Long.parseLong(getIssueAssetData().get(VOLUME)),
-                Long.parseLong(testsData.getAssetDataForIssue().get(VOLUME))
+                Long.parseLong(testData.getAssetDataForIssue().get(VOLUME))
         );
     }
 
     private void assertionsCheck(long issueAssetDataVolume, long assetDataForIssueVolume) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(testsData.getInvokeFee(), testsData.getCallerPublicKey()),
+                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey()),
                 () -> checkMainMetadata(0),
                 () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
-                () -> checkIssueAssetMetadata(0, 1, testsData.getAssetDataForIssue()),
+                () -> checkIssueAssetMetadata(0, 1, testData.getAssetDataForIssue()),
 
                 () -> checkStateUpdateBalance(0,
                         0,
-                        testsData.getCallerAddress(),
+                        testData.getCallerAddress(),
                         WAVES_STRING_ID,
                         getCallerBalanceWavesBeforeTransaction(), getCallerBalanceWavesAfterTransaction()),
 
                 () -> checkStateUpdateBalance(0,
                         1,
-                        testsData.getAssetDAppAddress(),
+                        testData.getAssetDAppAddress(),
                         null,
                         0, issueAssetDataVolume),
                 () -> checkStateUpdateBalance(0,
                         2,
-                        testsData.getAssetDAppAddress(),
+                        testData.getAssetDAppAddress(),
                         null,
                         0, assetDataForIssueVolume),
 
                 () -> checkStateUpdateAssets(0, 0, getIssueAssetData(), issueAssetDataVolume),
-                () -> checkStateUpdateAssets(0, 1, testsData.getAssetDataForIssue(), assetDataForIssueVolume)
+                () -> checkStateUpdateAssets(0, 1, testData.getAssetDataForIssue(), assetDataForIssueVolume)
         );
     }
 }

@@ -19,63 +19,63 @@ import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeLeaseTest extends InvokeBaseTest {
-    private static PrepareInvokeTestsData testsData;
+    private static PrepareInvokeTestsData testData;
 
     @BeforeAll
     static void before() {
-        testsData = new PrepareInvokeTestsData();
+        testData = new PrepareInvokeTestsData();
     }
 
     @Test
     @DisplayName("subscribe invoke with Lease and WAVES payment")
     void subscribeInvokeWithLease() {
-        long amountValue = testsData.getWavesAmount().value();
-        testsData.prepareDataForLeaseTests();
+        long amountValue = testData.getWavesAmount().value();
+        testData.prepareDataForLeaseTests();
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender
-                (testsData.getCallerAccount(), testsData.getDAppAccount(), testsData.getDAppCall(), testsData.getAmounts());
+                (testData.getCallerAccount(), testData.getDAppAccount(), testData.getDAppCall(), testData.getAmounts());
 
         setVersion(LATEST_VERSION);
-        balancesAfterPaymentInvoke(testsData.getCallerAccount(), testsData.getDAppAccount(), testsData.getAmounts(), testsData.getAssetId());
+        balancesAfterPaymentInvoke(testData.getCallerAccount(), testData.getDAppAccount(), testData.getAmounts(), testData.getAssetId());
         txSender.invokeSenderWithPayment();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, testsData.getDAppAccount(), height, height, getInvokeScriptId());
-        prepareInvoke(testsData.getDAppAccount(), testsData);
+        subscribeResponseHandler(CHANNEL, testData.getDAppAccount(), height, height, getInvokeScriptId());
+        prepareInvoke(testData.getDAppAccount(), testData);
 
         assertionsCheck(amountValue);
     }
 
     private void assertionsCheck(long amountValue) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(testsData.getInvokeFee(), testsData.getCallerPublicKey()),
+                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey()),
                 () -> checkMainMetadata(0),
                 () -> checkPaymentsSubscribe(0, 0, amountValue, ""),
                 () -> checkPaymentMetadata(0, 0, null, amountValue),
-                () -> checkLeaseMetadata(0, 0, testsData.getCallerPublicKeyHash(), amountValue),
+                () -> checkLeaseMetadata(0, 0, testData.getCallerPublicKeyHash(), amountValue),
 
                 () -> checkStateUpdateBalance(0,
                         0,
-                        testsData.getCallerAddress(),
+                        testData.getCallerAddress(),
                         WAVES_STRING_ID,
                         getCallerBalanceWavesBeforeTransaction(), getCallerBalanceWavesAfterTransaction()),
 
                 () -> checkStateUpdateBalance(0,
                         1,
-                        testsData.getDAppAddress(),
+                        testData.getDAppAddress(),
                         null,
                         getDAppBalanceWavesBeforeTransaction(), getDAppBalanceWavesAfterTransaction()),
 
-                () -> checkStateUpdateBeforeLeasing(0, 0, testsData.getCallerAddress(), 0, 0),
-                () -> checkStateUpdateBeforeLeasing(0, 1, testsData.getDAppAddress(), 0, 0),
+                () -> checkStateUpdateBeforeLeasing(0, 0, testData.getCallerAddress(), 0, 0),
+                () -> checkStateUpdateBeforeLeasing(0, 1, testData.getDAppAddress(), 0, 0),
 
-                () -> checkStateUpdateAfterLeasing(0, 0, testsData.getCallerAddress(), amountValue, 0),
-                () -> checkStateUpdateAfterLeasing(0, 1, testsData.getDAppAddress(), 0, amountValue),
+                () -> checkStateUpdateAfterLeasing(0, 0, testData.getCallerAddress(), amountValue, 0),
+                () -> checkStateUpdateAfterLeasing(0, 1, testData.getDAppAddress(), 0, amountValue),
 
                 () -> checkStateUpdateIndividualLeases(0, 0,
                         amountValue,
-                        testsData.getDAppPublicKey(),
-                        testsData.getCallerAddress(),
+                        testData.getDAppPublicKey(),
+                        testData.getCallerAddress(),
                         ACTIVE_STATUS_LEASE)
         );
     }

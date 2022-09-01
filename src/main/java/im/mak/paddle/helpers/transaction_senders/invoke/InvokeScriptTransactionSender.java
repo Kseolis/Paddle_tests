@@ -12,7 +12,7 @@ import java.util.List;
 import static im.mak.paddle.Node.node;
 
 public class InvokeScriptTransactionSender extends BaseTransactionSender {
-    private static InvokeScriptTransaction invokeScriptTx;
+    private InvokeScriptTransaction invokeScriptTx;
     private final DAppCall dAppCall;
     private final Account caller;
     private final Account dAppAccount;
@@ -26,9 +26,9 @@ public class InvokeScriptTransactionSender extends BaseTransactionSender {
     }
 
     public InvokeScriptTransactionSender(Account caller, Account dAppAccount, DAppCall call) {
-        this.dAppCall = call;
         this.caller = caller;
         this.dAppAccount = dAppAccount;
+        this.dAppCall = call;
     }
 
     public void invokeSenderWithPayment() {
@@ -59,7 +59,7 @@ public class InvokeScriptTransactionSender extends BaseTransactionSender {
         return invokeScriptTx;
     }
 
-    public static String getInvokeScriptId() {
+    public String getInvokeScriptId() {
         return invokeScriptTx.id().toString();
     }
 }

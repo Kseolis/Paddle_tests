@@ -1,8 +1,9 @@
+/*
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests;
 
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -14,21 +15,18 @@ import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateDataEntries;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.checkPaymentsSubscribe;
-import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
-import static im.mak.paddle.helpers.PrepareInvokeTestsData.getAssetId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
-import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.*;
 import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender.getInvokeScriptId;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.WAVES_STRING_ID;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeDeleteEntryTest extends InvokeBaseTest {
-    private PrepareInvokeTestsData testsData;
+    private static PrepareInvokeTestsData testsData;
 
-    @BeforeEach
-    void before() {
+    @BeforeAll
+    static void before() {
         testsData = new PrepareInvokeTestsData();
     }
 
@@ -39,22 +37,22 @@ public class SubscribeInvokeDeleteEntryTest extends InvokeBaseTest {
         testsData.prepareDataForDeleteEntryTests();
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender
-                (getCallerAccount(), getDAppAccount(), getDAppCall(), getAmounts());
+                (testsData.getCallerAccount(), testsData.getDAppAccount(), testsData.getDAppCall(), testsData.getAmounts());
 
         setVersion(LATEST_VERSION);
-        balancesAfterPaymentInvoke(getCallerAccount(), getDAppAccount(), getAmounts(), getAssetId());
+        balancesAfterPaymentInvoke(testsData.getCallerAccount(), testsData.getDAppAccount(), testsData.getAmounts(), testsData.getAssetId());
         txSender.invokeSenderWithPayment();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, getDAppAccount(), height, height, getInvokeScriptId());
-        prepareInvoke(getDAppAccount());
+        subscribeResponseHandler(CHANNEL, testsData.getDAppAccount(), height, height, getInvokeScriptId());
+        prepareInvoke(testsData.getDAppAccount(), testsData);
 
-        assertionsCheck(getWavesAmount().value(), String.valueOf(getIntArg()), intValueAfter);
+        assertionsCheck(testsData.getWavesAmount().value(), String.valueOf(testsData.getIntArg()), intValueAfter);
     }
 
     private void assertionsCheck(long payment, String intVal, String valAfter) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(getInvokeFee(), getCallerPublicKey()),
+                () -> checkInvokeSubscribeTransaction(testsData.getInvokeFee(), testsData.getCallerPublicKey()),
                 () -> checkPaymentsSubscribe(0, 0, payment, ""),
 
                 () -> checkMainMetadata(0),
@@ -64,7 +62,7 @@ public class SubscribeInvokeDeleteEntryTest extends InvokeBaseTest {
 
                 () -> checkStateUpdateBalance(0,
                         0,
-                        getCallerAddress(),
+                        testsData.getCallerAddress(),
                         WAVES_STRING_ID,
                         getCallerBalanceWavesBeforeTransaction(), getCallerBalanceWavesAfterTransaction()),
 
@@ -79,3 +77,4 @@ public class SubscribeInvokeDeleteEntryTest extends InvokeBaseTest {
         );
     }
 }
+*/

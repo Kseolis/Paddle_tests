@@ -11,11 +11,11 @@ public class InvokeBaseTest extends BaseTest {
     private static String dAppAccountAddress;
     private static String dAppFunctionName;
 
-    void prepareInvoke(Account dAppAccount, PrepareInvokeTestsData testsData) {
+    void prepareInvoke(Account dAppAccount, PrepareInvokeTestsData testData) {
         dAppAccountPublicKey = dAppAccount.publicKey().toString();
         dAppAccountPublicKeyHash = Base58.encode(dAppAccount.address().publicKeyHash());
         dAppAccountAddress = dAppAccount.address().toString();
-        dAppFunctionName = testsData.getDAppCall().getFunction().name();
+        dAppFunctionName = testData.getDAppCall().getFunction().name();
     }
 
     public static String getDAppAccountPublicKey() {

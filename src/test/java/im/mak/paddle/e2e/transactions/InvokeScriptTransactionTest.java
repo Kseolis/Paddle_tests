@@ -1,47 +1,63 @@
 package im.mak.paddle.e2e.transactions;
 
+import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeBaseTest;
+import im.mak.paddle.dapp.DAppCall;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
+import im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTx;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static com.wavesplatform.transactions.common.AssetId.WAVES;
 import static com.wavesplatform.wavesj.ApplicationStatus.SUCCEEDED;
 import static im.mak.paddle.Node.node;
-import static im.mak.paddle.helpers.PrepareInvokeTestsData.*;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
-import static im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTransaction.*;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class InvokeScriptTransactionTest extends InvokeBaseTest {
-    private PrepareInvokeTestsData testsData;
+    private PrepareInvokeTestsData testData;
+    private Account caller;
+    private Account dAppAccount;
+    private Account assetDAppAccount;
+    private List<Amount> amounts;
+    private AssetId assetId;
+    private DAppCall dAppCall;
 
     @BeforeEach
     void before() {
-        testsData = new PrepareInvokeTestsData();
+        testData = new PrepareInvokeTestsData();
+        caller = testData.getCallerAccount();
+        dAppAccount = testData.getDAppAccount();
+        assetDAppAccount = testData.getAssetDAppAccount();
+        amounts = testData.getAmounts();
+        assetId = testData.getAssetId();
     }
 
     @Test
     @DisplayName("invoke with DataDApp and issue asset payment")
     void invokeScriptWithDataDAppTest() {
-        testsData.prepareDataForDataDAppTests();
+        testData.prepareDataForDataDAppTests();
+        dAppCall = testData.getDAppCall();
 
         for (int v = 1; v <= LATEST_VERSION; v++) {
+            InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
             InvokeScriptTransactionSender txSender =
-                    new InvokeScriptTransactionSender(getCallerAccount(), getDAppAccount(), getDAppCall(), getAmounts());
+                    new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, amounts);
 
             setVersion(v);
-            balancesAfterPaymentInvoke(getCallerAccount(), getDAppAccount(), getAmounts(), getAssetId());
+            calcBalances.balancesAfterPaymentInvoke(caller, dAppAccount, amounts, assetId);
             txSender.invokeSenderWithPayment();
-            checkInvokeTransaction(getCallerAccount(), getInvokeFee(), txSender);
-            checkBalancesAfterInvoke(getCallerAccount(), getDAppAccount());
+            checkInvokeTransaction(caller, testData.getInvokeFee(), txSender);
+            checkBalancesAfterInvoke(caller, dAppAccount, calcBalances);
         }
     }
 
@@ -49,49 +65,55 @@ public class InvokeScriptTransactionTest extends InvokeBaseTest {
     @DisplayName("invoke with DeleteEntry")
     void invokeScriptDeleteEntryTest() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            testsData.prepareDataForDeleteEntryTests();
+            InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+            testData.prepareDataForDeleteEntryTests();
+            dAppCall = testData.getDAppCall();
             InvokeScriptTransactionSender txSender =
-                    new InvokeScriptTransactionSender(getCallerAccount(), getDAppAccount(), getDAppCall(), getAmounts());
+                    new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, amounts);
 
             setVersion(v);
-            balancesAfterPaymentInvoke(getCallerAccount(), getDAppAccount(), getAmounts(), getAssetId());
+            calcBalances.balancesAfterPaymentInvoke(caller, dAppAccount, amounts, assetId);
             txSender.invokeSenderWithPayment();
-            checkInvokeTransaction(getCallerAccount(), SUM_FEE, txSender);
-            checkBalancesAfterInvoke(getCallerAccount(), getDAppAccount());
+            checkInvokeTransaction(caller, SUM_FEE, txSender);
+            checkBalancesAfterInvoke(caller, dAppAccount, calcBalances);
         }
     }
 
     @Test
     @DisplayName("invoke with Burn transaction")
     void invokeScriptWithBurn() {
-        testsData.prepareDataForBurnTests();
+        testData.prepareDataForBurnTests();
+        dAppCall = testData.getDAppCall();
 
         for (int v = 1; v <= LATEST_VERSION; v++) {
+            InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
             InvokeScriptTransactionSender txSender =
-                    new InvokeScriptTransactionSender(getCallerAccount(), getAssetDAppAccount(), getDAppCall());
+                    new InvokeScriptTransactionSender(caller, testData.getAssetDAppAccount(), dAppCall);
 
             setVersion(v);
-            balancesAfterBurnAssetInvoke(getCallerAccount(), getAssetDAppAccount(), getAmounts(), getAssetId());
+            calcBalances.balancesAfterBurnAssetInvoke(caller, testData.getAssetDAppAccount(), amounts, assetId);
             txSender.invokeSender();
-            checkInvokeTransaction(getCallerAccount(), getInvokeFee(), txSender);
-            checkBalancesAfterInvoke(getCallerAccount(), getAssetDAppAccount());
+            checkInvokeTransaction(caller, testData.getInvokeFee(), txSender);
+            checkBalancesAfterInvoke(caller, testData.getAssetDAppAccount(), calcBalances);
         }
     }
 
     @Test
     @DisplayName("invoke with Reissue Transaction")
     void invokeScriptWithReissue() {
-        testsData.prepareDataForReissueTests();
+        testData.prepareDataForReissueTests();
+        dAppCall = testData.getDAppCall();
 
         for (int v = 1; v <= LATEST_VERSION; v++) {
+            InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
             InvokeScriptTransactionSender txSender =
-                    new InvokeScriptTransactionSender(getCallerAccount(), getAssetDAppAccount(), getDAppCall());
+                    new InvokeScriptTransactionSender(caller, testData.getAssetDAppAccount(), dAppCall);
 
             setVersion(v);
-            balancesAfterReissueAssetInvoke(getCallerAccount(), getAssetDAppAccount(), getAmounts(), getAssetId());
+            calcBalances.balancesAfterReissueAssetInvoke(caller, testData.getAssetDAppAccount(), amounts, assetId);
             txSender.invokeSender();
-            checkInvokeTransaction(getCallerAccount(), getInvokeFee(), txSender);
-            checkBalancesAfterInvoke(getCallerAccount(), getAssetDAppAccount());
+            checkInvokeTransaction(caller, testData.getInvokeFee(), txSender);
+            checkBalancesAfterInvoke(caller, testData.getAssetDAppAccount(), calcBalances);
         }
     }
 
@@ -99,15 +121,17 @@ public class InvokeScriptTransactionTest extends InvokeBaseTest {
     @DisplayName("invoke with Lease and WAVES payment")
     void invokeScriptWithLease() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            testsData.prepareDataForLeaseTests();
+            InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+            testData.prepareDataForLeaseTests();
+            dAppCall = testData.getDAppCall();
             InvokeScriptTransactionSender txSender =
-                    new InvokeScriptTransactionSender(getCallerAccount(), getDAppAccount(), getDAppCall(), getAmounts());
+                    new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, amounts);
 
             setVersion(v);
-            balancesAfterPaymentInvoke(getCallerAccount(), getDAppAccount(), getAmounts(), getAssetId());
+            calcBalances.balancesAfterPaymentInvoke(caller, dAppAccount, amounts, assetId);
             txSender.invokeSenderWithPayment();
-            checkInvokeTransaction(getCallerAccount(), getInvokeFee(), txSender);
-            checkBalancesAfterInvoke(getCallerAccount(), getDAppAccount());
+            checkInvokeTransaction(caller, testData.getInvokeFee(), txSender);
+            checkBalancesAfterInvoke(caller, dAppAccount, calcBalances);
         }
     }
 
@@ -115,15 +139,17 @@ public class InvokeScriptTransactionTest extends InvokeBaseTest {
     @DisplayName("invoke with LeaseCancel and WAVES payment")
     void invokeScriptWithLeaseCancel() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            testsData.prepareDataForLeaseCancelTests();
+            InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+            testData.prepareDataForLeaseCancelTests();
+            dAppCall = testData.getDAppCall();
             InvokeScriptTransactionSender txSender =
-                    new InvokeScriptTransactionSender(getCallerAccount(), getDAppAccount(), getDAppCall(), getAmounts());
+                    new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, amounts);
 
             setVersion(v);
-            balancesAfterPaymentInvoke(getCallerAccount(), getDAppAccount(), getAmounts(), getAssetId());
+            calcBalances.balancesAfterPaymentInvoke(caller, dAppAccount, amounts, assetId);
             txSender.invokeSenderWithPayment();
-            checkInvokeTransaction(getCallerAccount(), getInvokeFee(), txSender);
-            checkBalancesAfterInvoke(getCallerAccount(), getDAppAccount());
+            checkInvokeTransaction(caller, testData.getInvokeFee(), txSender);
+            checkBalancesAfterInvoke(caller, dAppAccount, calcBalances);
         }
     }
 
@@ -131,15 +157,17 @@ public class InvokeScriptTransactionTest extends InvokeBaseTest {
     @DisplayName("invoke with SponsorFee")
     void invokeScriptWithSponsorFee() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            testsData.prepareDataForSponsorFeeTests();
+            InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+            testData.prepareDataForSponsorFeeTests();
+            dAppCall = testData.getDAppCall();
             InvokeScriptTransactionSender txSender =
-                    new InvokeScriptTransactionSender(getCallerAccount(), getAssetDAppAccount(), getDAppCall());
+                    new InvokeScriptTransactionSender(caller, testData.getAssetDAppAccount(), dAppCall);
 
             setVersion(v);
-            balancesAfterPaymentInvoke(getCallerAccount(), getAssetDAppAccount(), getAmounts(), getAssetId());
+            calcBalances.balancesAfterPaymentInvoke(caller, testData.getAssetDAppAccount(), amounts, assetId);
             txSender.invokeSender();
-            checkInvokeTransaction(getCallerAccount(), getInvokeFee(), txSender);
-            checkBalancesAfterInvoke(getCallerAccount(), getAssetDAppAccount());
+            checkInvokeTransaction(caller, testData.getInvokeFee(), txSender);
+            checkBalancesAfterInvoke(caller, testData.getAssetDAppAccount(), calcBalances);
         }
     }
 
@@ -147,86 +175,97 @@ public class InvokeScriptTransactionTest extends InvokeBaseTest {
     @DisplayName("invoke with ScriptTransfer")
     void invokeScriptWithScriptTransfer() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            testsData.prepareDataForScriptTransferTests();
+            InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+            testData.prepareDataForScriptTransferTests();
+            dAppCall = testData.getDAppCall();
             InvokeScriptTransactionSender txSender =
-                    new InvokeScriptTransactionSender(getAssetDAppAccount(), getAssetDAppAccount(), getDAppCall());
+                    new InvokeScriptTransactionSender(testData.getAssetDAppAccount(), testData.getAssetDAppAccount(), dAppCall);
 
             setVersion(v);
-            balancesAfterCallerInvokeAsset(getAssetDAppAccount(), getDAppAccount(), getAmounts(), getAssetId());
+            calcBalances.balancesAfterCallerInvokeAsset(testData.getAssetDAppAccount(), dAppAccount, amounts, assetId);
             txSender.invokeSender();
-            checkInvokeTransaction(getAssetDAppAccount(), getInvokeFee(), txSender);
-            checkBalancesAfterInvoke(getAssetDAppAccount(), getDAppAccount());
+            checkInvokeTransaction(testData.getAssetDAppAccount(), testData.getInvokeFee(), txSender);
+            checkBalancesAfterInvoke(testData.getAssetDAppAccount(), dAppAccount, calcBalances);
         }
     }
 
     @Test
     @DisplayName("invoke with payments")
     void invokeScriptPayments() {
-        testsData.prepareDataForPaymentsTests();
+        testData.prepareDataForPaymentsTests();
+        dAppCall = testData.getDAppCall();
 
         for (int v = 1; v <= LATEST_VERSION; v++) {
+            InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
             InvokeScriptTransactionSender txSender =
-                    new InvokeScriptTransactionSender(getCallerAccount(), getDAppAccount(), getDAppCall(), getAmounts());
+                    new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, amounts);
 
             setVersion(v);
-            balancesAfterCallerInvokeAsset(getCallerAccount(), getDAppAccount(), getAmounts(), getAssetId());
+            calcBalances.balancesAfterCallerInvokeAsset(caller, dAppAccount, amounts, assetId);
             txSender.invokeSenderWithPayment();
-            checkInvokeTransaction(getCallerAccount(), getInvokeFee(), txSender);
-            checkBalancesAfterInvoke(getCallerAccount(), getDAppAccount());
+            checkInvokeTransaction(caller, testData.getInvokeFee(), txSender);
+            checkBalancesAfterInvoke(caller, dAppAccount, calcBalances);
         }
     }
 
     @Test
     @DisplayName("invoke dApp to dApp")
     void invokeDAppToDApp() {
-        testsData.prepareDataForDAppToDAppTests();
+        testData.prepareDataForDAppToDAppTests(SUM_FEE + ONE_WAVES);
+        dAppCall = testData.getDAppCall();
 
         for (int v = 1; v <= LATEST_VERSION; v++) {
+            InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
             InvokeScriptTransactionSender txSender =
-                    new InvokeScriptTransactionSender(getCallerAccount(), getDAppAccount(), getDAppCall());
+                    new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
 
             setVersion(v);
-            balancesAfterDAppToDApp(getCallerAccount(), getDAppAccount(), getAssetDAppAccount(), getAmounts(), getAssetId());
+            calcBalances.balancesAfterDAppToDApp(caller, dAppAccount, assetDAppAccount, amounts, assetId);
             txSender.invokeSender();
-            checkInvokeTransaction(getCallerAccount(), getInvokeFee(), txSender);
-            checkBalancesAfterDAppToDAppInvoke(getCallerAccount(), getDAppAccount(), getAssetDAppAccount());
+            checkInvokeTransaction(caller, testData.getInvokeFee(), txSender);
+            checkBalancesAfterDAppToDAppInvoke(
+                    caller,
+                    dAppAccount,
+                    testData.getAssetDAppAccount(),
+                    calcBalances);
         }
     }
 
     private void checkInvokeTransaction(Account caller, long fee, InvokeScriptTransactionSender tx) {
         assertThat(tx.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED);
-        assertThat(tx.getInvokeScriptTx().dApp()).isEqualTo(getDAppCall().getDApp());
-        assertThat(tx.getInvokeScriptTx().function()).isEqualTo(getDAppCall().getFunction());
+        assertThat(tx.getInvokeScriptTx().dApp()).isEqualTo(dAppCall.getDApp());
+        assertThat(tx.getInvokeScriptTx().function()).isEqualTo(dAppCall.getFunction());
         assertThat(tx.getInvokeScriptTx().sender()).isEqualTo(caller.publicKey());
         assertThat(tx.getInvokeScriptTx().fee().assetId()).isEqualTo(AssetId.WAVES);
         assertThat(tx.getInvokeScriptTx().fee().value()).isEqualTo(fee);
         assertThat(tx.getInvokeScriptTx().type()).isEqualTo(16);
     }
 
-    private void checkBalancesAfterInvoke(Account caller, Account dApp) {
-        assertThat(caller.getWavesBalance()).isEqualTo(getCallerBalanceWavesAfterTransaction());
-        assertThat(dApp.getWavesBalance()).isEqualTo(getDAppBalanceWavesAfterTransaction());
-        if (getAssetId() != null) {
-            assertThat(caller.getBalance(getAssetId())).isEqualTo(getCallerBalanceIssuedAssetsAfterTransaction());
-            assertThat(dApp.getBalance(getAssetId())).isEqualTo(getDAppBalanceIssuedAssetsAfterTransaction());
+    private void checkBalancesAfterInvoke(Account caller, Account dApp, InvokeCalculationsBalancesAfterTx calcBalances) {
+        assertThat(caller.getWavesBalance()).isEqualTo(calcBalances.getCallerBalanceWavesAfterTransaction());
+        assertThat(dApp.getWavesBalance()).isEqualTo(calcBalances.getDAppBalanceWavesAfterTransaction());
+        if (assetId != null) {
+            assertThat(caller.getBalance(assetId)).isEqualTo(calcBalances.getCallerBalanceIssuedAssetsAfterTransaction());
+            assertThat(dApp.getBalance(assetId)).isEqualTo(calcBalances.getDAppBalanceIssuedAssetsAfterTransaction());
         }
     }
 
-    private void checkBalancesAfterDAppToDAppInvoke(Account caller, Account dApp, Account acc) {
-        assertThat(caller.getWavesBalance()).isEqualTo(getCallerBalanceWavesAfterTransaction());
-        assertThat(dApp.getWavesBalance()).isEqualTo(getDAppBalanceWavesAfterTransaction());
-        assertThat(acc.getWavesBalance()).isEqualTo(getAccBalanceWavesAfterTransaction());
-        if (getAssetId() != null) {
-            assertThat(caller.getBalance(getAssetId())).isEqualTo(getCallerBalanceIssuedAssetsAfterTransaction());
-            assertThat(dApp.getBalance(getAssetId())).isEqualTo(getDAppBalanceIssuedAssetsAfterTransaction());
-            assertThat(acc.getBalance(getAssetId())).isEqualTo(getAccBalanceIssuedAssetsAfterTransaction());
+    private void checkBalancesAfterDAppToDAppInvoke
+            (Account caller, Account dApp, Account acc, InvokeCalculationsBalancesAfterTx calcBalances) {
+        assertThat(caller.getWavesBalance()).isEqualTo(calcBalances.getCallerBalanceWavesAfterTransaction());
+        assertThat(dApp.getWavesBalance()).isEqualTo(calcBalances.getDAppBalanceWavesAfterTransaction());
+        assertThat(acc.getWavesBalance()).isEqualTo(calcBalances.getAccBalanceWavesAfterTransaction());
+        if (assetId != null) {
+            assertThat(caller.getBalance(assetId)).isEqualTo(calcBalances.getCallerBalanceIssuedAssetsAfterTransaction());
+            assertThat(dApp.getBalance(assetId)).isEqualTo(calcBalances.getDAppBalanceIssuedAssetsAfterTransaction());
+            assertThat(acc.getBalance(assetId)).isEqualTo(calcBalances.getAccBalanceIssuedAssetsAfterTransaction());
         }
     }
 
     @AfterEach
     void after() {
-        if (getCallerAccount().getWavesBalance() < ONE_WAVES) {
-            node().faucet().transfer(getCallerAccount(), DEFAULT_FAUCET, WAVES);
+        if (caller.getWavesBalance() < ONE_WAVES) {
+            node().faucet().transfer(caller, DEFAULT_FAUCET, WAVES);
         }
     }
 }

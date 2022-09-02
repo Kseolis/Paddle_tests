@@ -19,6 +19,7 @@ import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateDataEntries;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Constants.*;
@@ -36,7 +37,7 @@ public class SubscribeInvokeDAppToDAppTest extends InvokeBaseTest {
     @Test
     @DisplayName("subscribe dApp to dApp")
     void subscribeInvokeWithDAppToDApp() {
-        testData.prepareDataForDAppToDAppTests(SUM_FEE + ONE_WAVES);
+        testData.prepareDataForDAppToDAppTests(SUM_FEE);
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
 
         final AssetId assetId = testData.getAssetId();
@@ -48,7 +49,6 @@ public class SubscribeInvokeDAppToDAppTest extends InvokeBaseTest {
 
         final InvokeScriptTransactionSender txSender =
                 new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
-
         setVersion(LATEST_VERSION);
         calcBalances.balancesAfterDAppToDApp(caller, dAppAccount, assetDAppAccount, amounts, assetId);
         txSender.invokeSender();
@@ -57,6 +57,7 @@ public class SubscribeInvokeDAppToDAppTest extends InvokeBaseTest {
 
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, dAppAccount, height, height, txId);
+        System.out.println(getAppend());
         prepareInvoke(dAppAccount, testData);
 
         assertionsCheck(

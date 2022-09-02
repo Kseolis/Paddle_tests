@@ -21,42 +21,42 @@ import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.ONE_WAVES;
 
 public class PrepareInvokeTestsData {
-    private static Account callerAccount;
-    private static String callerAddress;
-    private static String callerPublicKey;
-    private static String callerPublicKeyHash;
-    private static byte[] callerAddressBase58;
-    private static DataDApp dAppAccount;
-    private static String dAppAddress;
-    private static String dAppPublicKey;
-    private static byte[] dAppAddressBase58;
+    private Account callerAccount;
+    private String callerAddress;
+    private String callerPublicKey;
+    private String callerPublicKeyHash;
+    private byte[] callerAddressBase58;
+    private DataDApp dAppAccount;
+    private String dAppAddress;
+    private String dAppPublicKey;
+    private byte[] dAppAddressBase58;
 
-    private static AssetDAppAccount assetDAppAccount;
-    private static String assetDAppAddress;
-    private static String assetDAppPublicKey;
-    private static byte[] assetDAppAddressBase58;
-    private static AssetId assetId;
+    private AssetDAppAccount assetDAppAccount;
+    private String assetDAppAddress;
+    private String assetDAppPublicKey;
+    private byte[] assetDAppAddressBase58;
+    private AssetId assetId;
 
-    private static int intArg;
-    private static Base64String base64String;
-    private static boolean boolArg;
-    private static String stringArg;
-    private static byte[] leaseId;
+    private int intArg;
+    private Base64String base64String;
+    private boolean boolArg;
+    private String stringArg;
+    private byte[] leaseId;
 
-    private static Amount wavesAmount;
-    private static Amount assetAmount;
-    private static long amountAfterInvokeIssuedAsset;
-    private static long amountAfterInvokeDAppIssuedAsset;
+    private long amountAfterInvokeIssuedAsset;
+    private long amountAfterInvokeDAppIssuedAsset;
+    private DAppCall dAppCall;
+    private long invokeFee;
 
-    private static final String args = "assetId:ByteVector";
-    private static final String key1ForDAppEqualBar = "bar";
-    private static final String key2ForDAppEqualBalance = "balance";
-    private static DAppCall dAppCall;
-    private static long invokeFee;
+    private final Amount wavesAmount;
+    private final Amount assetAmount;
+    private final String args = "assetId:ByteVector";
+    private final String key1ForDAppEqualBar = "bar";
+    private final String key2ForDAppEqualBalance = "balance";
 
-    private static final Map<String, String> assetData = new HashMap<>();
-    private static final Map<String, String> assetDataForIssue = new HashMap<>();
-    private static final List<Amount> amounts = new ArrayList<>();
+    private final Map<String, String> assetData = new HashMap<>();
+    private final Map<String, String> assetDataForIssue = new HashMap<>();
+    private final List<Amount> amounts = new ArrayList<>();
 
     public PrepareInvokeTestsData() {
         String name = randomNumAndLetterString(3) + "_asset";
@@ -316,8 +316,8 @@ public class PrepareInvokeTestsData {
         setExtraFee(ONE_WAVES);
     }
 
-    public void prepareDataForDAppToDAppTests() {
-        invokeFee = SUM_FEE + ONE_WAVES;
+    public void prepareDataForDAppToDAppTests(long fee) {
+        invokeFee = fee;
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
 
         final String functionArgsDApp1 = "dapp2:ByteVector, a:Int, key1:String, key2:String, assetId:ByteVector";
@@ -351,123 +351,123 @@ public class PrepareInvokeTestsData {
         amounts.add(assetAmount);
     }
 
-    public static DAppCall getDAppCall() {
+    public DAppCall getDAppCall() {
         return dAppCall;
     }
 
-    public static List<Amount> getAmounts() {
+    public List<Amount> getAmounts() {
         return amounts;
     }
 
-    public static AssetId getAssetId() {
+    public AssetId getAssetId() {
         return assetId;
     }
 
-    public static long getInvokeFee() {
+    public long getInvokeFee() {
         return invokeFee;
     }
 
-    public static int getIntArg() {
+    public int getIntArg() {
         return intArg;
     }
 
-    public static Base64String getBase64String() {
+    public Base64String getBase64String() {
         return base64String;
     }
 
-    public static boolean getBoolArg() {
+    public boolean getBoolArg() {
         return boolArg;
     }
 
-    public static String getStringArg() {
+    public String getStringArg() {
         return stringArg;
     }
 
-    public static byte[] getLeaseId() {
+    public byte[] getLeaseId() {
         return leaseId;
     }
 
-    public static Account getCallerAccount() {
+    public Account getCallerAccount() {
         return callerAccount;
     }
 
-    public static DataDApp getDAppAccount() {
+    public DataDApp getDAppAccount() {
         return dAppAccount;
     }
 
-    public static AssetDAppAccount getAssetDAppAccount() {
+    public AssetDAppAccount getAssetDAppAccount() {
         return assetDAppAccount;
     }
 
-    public static Amount getWavesAmount() {
+    public Amount getWavesAmount() {
         return wavesAmount;
     }
 
-    public static Amount getAssetAmount() {
+    public Amount getAssetAmount() {
         return assetAmount;
     }
 
-    public static long getAmountAfterInvokeIssuedAsset() {
+    public long getAmountAfterInvokeIssuedAsset() {
         return amountAfterInvokeIssuedAsset;
     }
 
-    public static long getAmountAfterInvokeDAppIssuedAsset() {
+    public long getAmountAfterInvokeDAppIssuedAsset() {
         return amountAfterInvokeDAppIssuedAsset;
     }
 
-    public static String getCallerAddress() {
+    public String getCallerAddress() {
         return callerAddress;
     }
 
-    public static String getDAppAddress() {
+    public String getDAppAddress() {
         return dAppAddress;
     }
 
-    public static String getAssetDAppAddress() {
+    public String getAssetDAppAddress() {
         return assetDAppAddress;
     }
 
-    public static String getCallerPublicKey() {
+    public String getCallerPublicKey() {
         return callerPublicKey;
     }
 
-    public static String getCallerPublicKeyHash() {
+    public String getCallerPublicKeyHash() {
         return callerPublicKeyHash;
     }
 
-    public static String getDAppPublicKey() {
+    public String getDAppPublicKey() {
         return dAppPublicKey;
     }
 
-    public static String getAssetDAppPublicKey() {
+    public String getAssetDAppPublicKey() {
         return assetDAppPublicKey;
     }
 
-    public static Map<String, String> getAssetData() {
+    public Map<String, String> getAssetData() {
         return assetData;
     }
 
-    public static Map<String, String> getAssetDataForIssue() {
+    public Map<String, String> getAssetDataForIssue() {
         return assetDataForIssue;
     }
 
-    public static byte[] getDAppAddressBase58() {
+    public byte[] getDAppAddressBase58() {
         return dAppAddressBase58;
     }
 
-    public static String getKey1ForDAppEqualBar() {
+    public String getKey1ForDAppEqualBar() {
         return key1ForDAppEqualBar;
     }
 
-    public static String getKey2ForDAppEqualBalance() {
+    public String getKey2ForDAppEqualBalance() {
         return key2ForDAppEqualBalance;
     }
 
-    public static byte[] getCallerAddressBase58() {
+    public byte[] getCallerAddressBase58() {
         return callerAddressBase58;
     }
 
-    public static byte[] getAssetDAppAddressBase58() {
+    public byte[] getAssetDAppAddressBase58() {
         return assetDAppAddressBase58;
     }
 

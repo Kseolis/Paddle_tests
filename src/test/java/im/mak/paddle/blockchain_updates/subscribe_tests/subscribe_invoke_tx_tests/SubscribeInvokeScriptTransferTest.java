@@ -21,6 +21,7 @@ import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetVolume;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Constants.*;
@@ -51,7 +52,6 @@ public class SubscribeInvokeScriptTransferTest extends InvokeBaseTest {
         final Account assetDAppAccount = testData.getAssetDAppAccount();
         final Account dAppAccount = testData.getDAppAccount();
         final List<Amount> amounts = testData.getAmounts();
-        testData.prepareDataForLeaseCancelTests();
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, assetDAppAccount, dAppCall);
 
@@ -64,6 +64,8 @@ public class SubscribeInvokeScriptTransferTest extends InvokeBaseTest {
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, caller, height, height, txId);
         prepareInvoke(assetDAppAccount, testData);
+
+        System.out.println(getAppend());
 
         long dAppAssetAmountAfter = Long.parseLong(getIssueAssetData().get(VOLUME)) - assetAmountValue;
         assertionsCheck(dAppAssetAmountAfter, assetAmountValue, txId);
@@ -79,15 +81,15 @@ public class SubscribeInvokeScriptTransferTest extends InvokeBaseTest {
                 () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
 
                 () -> checkTransfersMetadata(0, 0,
-                        testData.getDAppAddressBase58(),
+                        testData.getDAppAddress(),
                         assetIdToStr,
                         testData.getAssetAmount().value()),
                 () -> checkTransfersMetadata(0, 1,
-                        testData.getDAppAddressBase58(),
+                        testData.getDAppAddress(),
                         null,
                         testData.getAssetAmount().value()),
                 () -> checkTransfersMetadata(0, 2,
-                        testData.getDAppAddressBase58(),
+                        testData.getDAppAddress(),
                         WAVES_STRING_ID,
                         testData.getWavesAmount().value()),
 

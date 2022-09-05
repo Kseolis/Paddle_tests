@@ -240,6 +240,9 @@ public class PrepareInvokeTestsData {
 
         amounts.clear();
         amounts.add(wavesAmount);
+
+        setFee(SUM_FEE);
+        setExtraFee(ONE_WAVES);
     }
 
     public void prepareDataForLeaseCancelTests() {
@@ -257,6 +260,9 @@ public class PrepareInvokeTestsData {
 
         leaseId = Base58.decode(dAppAccount.lease(callerAccount, wavesAmount.value()).tx().id().toString());
         dAppCall = dAppAccount.setData(leaseId);
+
+        setFee(SUM_FEE);
+        setExtraFee(ONE_WAVES);
     }
 
     public void prepareDataForSponsorFeeTests() {

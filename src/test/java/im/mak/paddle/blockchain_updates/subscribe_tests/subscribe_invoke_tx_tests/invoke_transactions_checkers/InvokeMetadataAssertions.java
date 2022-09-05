@@ -141,13 +141,12 @@ public class InvokeMetadataAssertions {
         );
     }
 
-    public static void checkTransfersMetadata(int metadataIndex, int dataIndex, byte[] address, String assetId, long amount) {
-        byte[] hash = convertAddressToHash(address);
+    public static void checkTransfersMetadata(int metadataIndex, int dataIndex, String address, String assetId, long amount) {
         if (assetId != null) {
             assertThat(getInvokeMetadataResultTransfersAssetId(metadataIndex, dataIndex)).isEqualTo(assetId);
         }
         assertAll(
-                () -> assertThat(getInvokeMetadataResultTransfersAddress(metadataIndex, dataIndex)).isEqualTo(hash),
+                () -> assertThat(getInvokeMetadataResultTransfersAddress(metadataIndex, dataIndex)).isEqualTo(address),
                 () -> assertThat(getInvokeMetadataResultTransfersAmount(metadataIndex, dataIndex)).isEqualTo(amount)
         );
     }
@@ -170,9 +169,7 @@ public class InvokeMetadataAssertions {
 
     public static void checkResultInvokesMetadataStateChanges(int metadataIndex, int dataIndex,
                                                               int payIndex, String assetId,
-                                                              byte[] address, long amount) {
-        byte[] hash = convertAddressToHash(address);
-
+                                                              String address, long amount) {
         if (assetId != null) {
             assertThat(getInvokeMetadataResultInvokesStateChangesTransferAssetId(metadataIndex, dataIndex, payIndex))
                     .isEqualTo(assetId);
@@ -180,7 +177,7 @@ public class InvokeMetadataAssertions {
         assertAll(
                 () -> assertThat(
                         getInvokeMetadataResultInvokesStateChangesTransferAddress(metadataIndex, dataIndex, payIndex))
-                        .isEqualTo(hash),
+                        .isEqualTo(address),
                 () -> assertThat(
                         getInvokeMetadataResultInvokesStateChangesTransferAmount(metadataIndex, dataIndex, payIndex))
                         .isEqualTo(amount)

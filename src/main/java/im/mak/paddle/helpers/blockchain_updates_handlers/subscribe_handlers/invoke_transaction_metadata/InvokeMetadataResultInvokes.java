@@ -27,13 +27,13 @@ public class InvokeMetadataResultInvokes extends BaseInvokeMetadata {
                 .getAmount();
     }
 
-    public static byte[] getInvokeMetadataResultInvokesStateChangesTransferAddress
+    public static String getInvokeMetadataResultInvokesStateChangesTransferAddress
             (int metadataIndex, int dataIndex, int transferIndex) {
-        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
+        return Base58.encode(getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
                 .getStateChanges()
                 .getTransfers(transferIndex)
                 .getAddress()
-                .toByteArray();
+                .toByteArray());
     }
 
     public static long getInvokeMetadataResultInvokesStateChangesTransferAmount

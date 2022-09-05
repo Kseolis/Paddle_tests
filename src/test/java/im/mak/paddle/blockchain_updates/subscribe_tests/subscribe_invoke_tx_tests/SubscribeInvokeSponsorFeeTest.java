@@ -69,9 +69,9 @@ public class SubscribeInvokeSponsorFeeTest extends InvokeBaseTest {
         assertAll(
                 () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId),
                 () -> checkMainMetadata(0),
-                () -> checkArgumentsMetadata(0, 0, BINARY_BASE58, testData.getAssetId().toString()),
+                () -> checkArgumentsMetadata(0, 0, BINARY_BASE58, assetIdToStr),
                 () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
-                () -> checkSponsorFeeMetadata(0, 0, testData.getAssetId().toString(), testData.getAssetAmount().value()),
+                () -> checkSponsorFeeMetadata(0, 0, assetIdToStr, testData.getAssetAmount().value()),
                 () -> checkSponsorFeeMetadata(0, 1, null, testData.getAssetAmount().value()),
 
                 () -> checkStateUpdateBalance(0,

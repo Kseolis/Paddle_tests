@@ -40,13 +40,13 @@ public class SubscribeInvokeLeaseCancelTest extends InvokeBaseTest {
     void subscribeInvokeWithLeaseCancel() {
         long amountValue = testData.getWavesAmount().value();
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+        testData.prepareDataForLeaseCancelTests();
 
         final AssetId assetId = testData.getAssetId();
         final DAppCall dAppCall = testData.getDAppCall();
         final Account caller = testData.getCallerAccount();
         final Account dAppAccount = testData.getDAppAccount();
         final List<Amount> amounts = testData.getAmounts();
-        testData.prepareDataForLeaseCancelTests();
 
         InvokeScriptTransactionSender txSender =
                 new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, amounts);

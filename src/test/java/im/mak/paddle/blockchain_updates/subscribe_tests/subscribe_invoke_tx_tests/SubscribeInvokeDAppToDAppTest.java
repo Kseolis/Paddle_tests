@@ -37,7 +37,7 @@ public class SubscribeInvokeDAppToDAppTest extends InvokeBaseTest {
     @Test
     @DisplayName("subscribe dApp to dApp")
     void subscribeInvokeWithDAppToDApp() {
-        testData.prepareDataForDAppToDAppTests(SUM_FEE);
+        testData.prepareDataForDAppToDAppTests(SUM_FEE + ONE_WAVES);
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
 
         final AssetId assetId = testData.getAssetId();
@@ -57,13 +57,12 @@ public class SubscribeInvokeDAppToDAppTest extends InvokeBaseTest {
 
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, dAppAccount, height, height, txId);
-        System.out.println(getAppend());
         prepareInvoke(dAppAccount, testData);
 
         assertionsCheck(
                 testData.getKey1ForDAppEqualBar(),
                 testData.getKey2ForDAppEqualBalance(),
-                testData.getAssetId().toString(),
+                assetId.toString(),
                 txId
         );
     }
@@ -93,7 +92,7 @@ public class SubscribeInvokeDAppToDAppTest extends InvokeBaseTest {
                 () -> checkResultInvokesMetadataPayments(0, 0, 0, assetId, testData.getAssetAmount().value()),
                 () -> checkResultInvokesMetadataStateChanges(0, 0, 0,
                         WAVES_STRING_ID,
-                        testData.getDAppAddressBase58(),
+                        testData.getDAppAddress(),
                         testData.getWavesAmount().value()),
 
                 () -> checkStateUpdateBalance(0,

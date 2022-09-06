@@ -113,8 +113,6 @@ public class MassTransferTransactionTest {
         for (int v = 1; v <= LATEST_VERSION; v++) {
             int amount = getRandomInt(MIN_TRANSACTION_SUM, 100);
 
-            System.out.println(amount);
-
             MassTransferTransactionSender txSender =
                     new MassTransferTransactionSender(dAppAccount, issuedSmartAssetId, amount, maximumAccountsList);
             checkedAsset = AssetId.as(txSender.getAssetId());

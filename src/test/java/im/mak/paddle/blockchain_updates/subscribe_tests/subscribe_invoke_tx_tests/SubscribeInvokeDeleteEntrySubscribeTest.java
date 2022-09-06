@@ -16,16 +16,18 @@ import java.util.List;
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeMetadataAssertions.*;
-import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateAssets;
+import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeMetadataAssertions.checkDataMetadata;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
-import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.*;
-import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
+import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateDataEntries;
+import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
+import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.checkPaymentsSubscribe;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
+import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.WAVES_STRING_ID;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SubscribeInvokeReissueTest extends InvokeBaseTest {
+public class SubscribeInvokeDeleteEntrySubscribeTest extends InvokeBaseSubscribeTest {
     private static PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
 
@@ -35,47 +37,46 @@ public class SubscribeInvokeReissueTest extends InvokeBaseTest {
     }
 
     @Test
-    @DisplayName("subscribe invoke with Reissue")
-    void subscribeInvokeWithReissue() {
-        testData.prepareDataForReissueTests();
+    @DisplayName("subscribe invoke with DeleteEntry")
+    void subscribeInvokeWithDeleteEntry() {
+        String intValueAfter = String.valueOf(0);
+        testData.prepareDataForDeleteEntryTests();
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
 
         final AssetId assetId = testData.getAssetId();
         final DAppCall dAppCall = testData.getDAppCall();
         final Account caller = testData.getCallerAccount();
-        final Account assetDAppAccount = testData.getAssetDAppAccount();
+        final Account dAppAccount = testData.getDAppAccount();
         final List<Amount> amounts = testData.getAmounts();
 
-        InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, assetDAppAccount, dAppCall);
+        InvokeScriptTransactionSender txSender =
+                new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, amounts);
 
         setVersion(LATEST_VERSION);
-        calcBalances.balancesAfterReissueAssetInvoke(caller, assetDAppAccount, amounts, assetId);
-        txSender.invokeSender();
+        calcBalances.balancesAfterPaymentInvoke(caller, dAppAccount, amounts, assetId);
+        txSender.invokeSenderWithPayment();
 
-        String txId = txSender.getInvokeScriptId();
+        final String txId = txSender.getInvokeScriptId();
 
         height = node().getHeight();
+        subscribeResponseHandler(CHANNEL, dAppAccount, height, height, txId);
+        prepareInvoke(dAppAccount, testData);
 
-        subscribeResponseHandler(CHANNEL, assetDAppAccount, height, height, txId);
-        prepareInvoke(assetDAppAccount, testData);
-
-        assertionsCheck(txId);
+        assertionsCheck(testData.getWavesAmount().value(),
+                String.valueOf(testData.getIntArg()),
+                intValueAfter,
+                txId);
     }
 
-    private void assertionsCheck(String txId) {
+    private void assertionsCheck(long payment, String intVal, String valAfter, String txId) {
         assertAll(
                 () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId),
-                () -> checkMainMetadata(0),
-                () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
-                () -> checkReissueMetadata(0, 0,
-                        testData.getAssetId().toString(),
-                        testData.getAssetAmount().value(),
-                        true),
+                () -> checkPaymentsSubscribe(0, 0, payment, ""),
 
-                () -> checkReissueMetadata(0, 1,
-                        null,
-                        testData.getAssetAmount().value(),
-                        true),
+                () -> checkMainMetadata(0),
+                () -> checkArgumentsMetadata(0, 0, INTEGER, intVal),
+                () -> checkPaymentMetadata(0, 0, null, payment),
+                () -> checkDataMetadata(0, 0, INTEGER, DATA_ENTRY_INT, intVal),
 
                 () -> checkStateUpdateBalance(0,
                         0,
@@ -86,19 +87,12 @@ public class SubscribeInvokeReissueTest extends InvokeBaseTest {
 
                 () -> checkStateUpdateBalance(0,
                         1,
-                        testData.getAssetDAppAddress(),
-                        null,
-                        0, testData.getAmountAfterInvokeIssuedAsset()),
+                        getDAppAccountAddress(),
+                        "",
+                        calcBalances.getDAppBalanceWavesBeforeTransaction(),
+                        calcBalances.getDAppBalanceWavesAfterTransaction()),
 
-                () -> checkStateUpdateBalance(0,
-                        2,
-                        testData.getAssetDAppAddress(),
-                        testData.getAssetId().toString(),
-                        calcBalances.getDAppBalanceIssuedAssetsBeforeTransaction(),
-                        calcBalances.getDAppBalanceIssuedAssetsAfterTransaction()),
-
-                () -> checkStateUpdateAssets(0, 0, getIssueAssetData(), testData.getAmountAfterInvokeIssuedAsset()),
-                () -> checkStateUpdateAssets(0, 1, testData.getAssetData(), testData.getAmountAfterInvokeDAppIssuedAsset())
+                () -> checkStateUpdateDataEntries(0, 0, getDAppAccountAddress(), DATA_ENTRY_INT, valAfter)
         );
     }
 }

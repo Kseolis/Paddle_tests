@@ -23,7 +23,7 @@ import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.se
 import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SubscribeInvokeLeaseTest extends InvokeBaseTest {
+public class SubscribeInvokeLeaseSubscribeTest extends InvokeBaseSubscribeTest {
     private static PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
 

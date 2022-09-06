@@ -2,8 +2,11 @@ package im.mak.paddle.blockchain_updates;
 
 import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
-public class BaseTest {
+@Execution(ExecutionMode.SAME_THREAD)
+public class BaseSubscribeTest {
     protected int height;
     public static final long CHAIN_ID = 68;
 

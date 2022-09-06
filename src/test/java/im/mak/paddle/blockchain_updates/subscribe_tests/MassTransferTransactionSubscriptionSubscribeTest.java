@@ -4,7 +4,7 @@ import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.common.Base58String;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseTest;
+import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
 import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
 import im.mak.paddle.helpers.transaction_senders.MassTransferTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,7 +27,7 @@ import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class MassTransferTransactionSubscriptionTest extends BaseTest {
+public class MassTransferTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
     private static Account senderAccount;
     private static String senderAddress;
     private static String senderPublicKey;

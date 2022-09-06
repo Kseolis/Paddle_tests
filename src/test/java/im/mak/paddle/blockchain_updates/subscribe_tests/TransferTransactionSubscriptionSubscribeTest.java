@@ -5,7 +5,7 @@ import com.wavesplatform.transactions.IssueTransaction;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseTest;
+import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
 import im.mak.paddle.helpers.transaction_senders.TransferTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +25,7 @@ import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class TransferTransactionSubscriptionTest extends BaseTest {
+public class TransferTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
     private Account senderAccount;
     private String sender;
     private String senderPublicKey;

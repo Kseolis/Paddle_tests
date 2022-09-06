@@ -27,7 +27,7 @@ import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.se
 import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SubscribeInvokeScriptTransferTest extends InvokeBaseTest {
+public class SubscribeInvokeScriptTransferSubscribeTest extends InvokeBaseSubscribeTest {
     private static PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
     private String assetIdToStr;
@@ -64,8 +64,6 @@ public class SubscribeInvokeScriptTransferTest extends InvokeBaseTest {
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, caller, height, height, txId);
         prepareInvoke(assetDAppAccount, testData);
-
-        System.out.println(getAppend());
 
         long dAppAssetAmountAfter = Long.parseLong(getIssueAssetData().get(VOLUME)) - assetAmountValue;
         assertionsCheck(dAppAssetAmountAfter, assetAmountValue, txId);

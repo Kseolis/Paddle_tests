@@ -6,11 +6,12 @@ import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.exchange.Order;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseTest;
+import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
 import im.mak.paddle.helpers.transaction_senders.ExchangeTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 
 import static com.wavesplatform.transactions.ExchangeTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
@@ -29,7 +30,7 @@ import static im.mak.paddle.util.Constants.ORDER_V_4;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class ExchangeTransactionSubscriptionTest extends BaseTest {
+public class ExchangeTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
     private Account buyer;
     private PrivateKey buyerPrivateKey;
     private String buyerPublicKey;

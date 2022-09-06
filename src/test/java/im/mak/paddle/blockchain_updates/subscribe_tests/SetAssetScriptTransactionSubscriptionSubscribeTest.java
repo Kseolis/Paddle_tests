@@ -6,7 +6,7 @@ import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.common.Base64String;
 import com.wavesplatform.wavesj.info.IssueTransactionInfo;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseTest;
+import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import static im.mak.paddle.util.ScriptUtil.fromFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SetAssetScriptTransactionSubscriptionTest extends BaseTest {
+public class SetAssetScriptTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
     private int assetQuantity;
     private int assetDecimals;
     private String address;

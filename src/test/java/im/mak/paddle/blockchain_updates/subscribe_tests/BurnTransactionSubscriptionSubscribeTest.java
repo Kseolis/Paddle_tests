@@ -4,7 +4,7 @@ import com.wavesplatform.transactions.IssueTransaction;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseTest;
+import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
 import im.mak.paddle.helpers.transaction_senders.BurnTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +26,7 @@ import static im.mak.paddle.util.Constants.MIN_FEE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class BurnTransactionSubscriptionTest extends BaseTest {
+public class BurnTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
     private static int assetQuantity;
     private static int assetDecimals;
     private static String assetName;

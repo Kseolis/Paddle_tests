@@ -3,7 +3,7 @@ package im.mak.paddle.blockchain_updates.subscribe_tests;
 import com.wavesplatform.transactions.IssueTransaction;
 import com.wavesplatform.wavesj.info.IssueTransactionInfo;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseTest;
+import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ import static im.mak.paddle.util.Constants.DEFAULT_FAUCET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class IssueTransactionSubscriptionTest extends BaseTest {
+public class IssueTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
     private static int assetDecimals;
     private static String address;
     private static String publicKey;

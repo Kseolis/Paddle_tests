@@ -7,7 +7,7 @@ import im.mak.paddle.dapp.DAppCall;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTx;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -25,36 +25,34 @@ import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.se
 import static im.mak.paddle.util.Constants.WAVES_STRING_ID;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SubscribeInvokeBurnTest extends InvokeBaseTest {
-    private PrepareInvokeTestsData testData;
+public class SubscribeInvokeReissueSubscribeTest extends InvokeBaseSubscribeTest {
+    private static PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
-    private AssetId assetId;
 
-    @BeforeEach
-    void before() {
+    @BeforeAll
+    static void before() {
         testData = new PrepareInvokeTestsData();
     }
 
     @Test
-    @DisplayName("subscribe invoke with Burn")
-    void subscribeInvokeWithBurn() {
-        testData.prepareDataForBurnTests();
-        assetId = testData.getAssetId();
+    @DisplayName("subscribe invoke with Reissue")
+    void subscribeInvokeWithReissue() {
+        testData.prepareDataForReissueTests();
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+
+        final AssetId assetId = testData.getAssetId();
         final DAppCall dAppCall = testData.getDAppCall();
         final Account caller = testData.getCallerAccount();
         final Account assetDAppAccount = testData.getAssetDAppAccount();
         final List<Amount> amounts = testData.getAmounts();
 
-        final InvokeScriptTransactionSender txSender =
-                new InvokeScriptTransactionSender(caller, assetDAppAccount, dAppCall);
+        InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, assetDAppAccount, dAppCall);
 
         setVersion(LATEST_VERSION);
-        calcBalances.balancesAfterBurnAssetInvoke(caller, assetDAppAccount, amounts, assetId);
-
+        calcBalances.balancesAfterReissueAssetInvoke(caller, assetDAppAccount, amounts, assetId);
         txSender.invokeSender();
 
-        final String txId = txSender.getInvokeScriptId();
+        String txId = txSender.getInvokeScriptId();
 
         height = node().getHeight();
 
@@ -69,8 +67,15 @@ public class SubscribeInvokeBurnTest extends InvokeBaseTest {
                 () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId),
                 () -> checkMainMetadata(0),
                 () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
-                () -> checkBurnMetadata(0, 0, assetId.toString(), testData.getAssetAmount().value()),
-                () -> checkBurnMetadata(0, 1, null, testData.getAssetAmount().value()),
+                () -> checkReissueMetadata(0, 0,
+                        testData.getAssetId().toString(),
+                        testData.getAssetAmount().value(),
+                        true),
+
+                () -> checkReissueMetadata(0, 1,
+                        null,
+                        testData.getAssetAmount().value(),
+                        true),
 
                 () -> checkStateUpdateBalance(0,
                         0,
@@ -88,12 +93,12 @@ public class SubscribeInvokeBurnTest extends InvokeBaseTest {
                 () -> checkStateUpdateBalance(0,
                         2,
                         testData.getAssetDAppAddress(),
-                        assetId.toString(),
+                        testData.getAssetId().toString(),
                         calcBalances.getDAppBalanceIssuedAssetsBeforeTransaction(),
-                        calcBalances.getDAppBalanceIssuedAssetsAfterTransaction())
-        );
+                        calcBalances.getDAppBalanceIssuedAssetsAfterTransaction()),
 
-        checkStateUpdateAssets(0, 0, getIssueAssetData(), testData.getAmountAfterInvokeIssuedAsset());
-        checkStateUpdateAssets(0, 1, testData.getAssetData(), testData.getAmountAfterInvokeDAppIssuedAsset());
+                () -> checkStateUpdateAssets(0, 0, getIssueAssetData(), testData.getAmountAfterInvokeIssuedAsset()),
+                () -> checkStateUpdateAssets(0, 1, testData.getAssetData(), testData.getAmountAfterInvokeDAppIssuedAsset())
+        );
     }
 }

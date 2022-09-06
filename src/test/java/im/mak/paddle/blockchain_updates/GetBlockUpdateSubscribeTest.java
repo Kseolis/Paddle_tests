@@ -1,26 +1,26 @@
 package im.mak.paddle.blockchain_updates;
 
-import com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdates.GetBlockUpdatesRangeRequest;
-import com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdates.GetBlockUpdatesRangeResponse;
-
+import com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdates.GetBlockUpdateRequest;
+import com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdates.GetBlockUpdateResponse;
 import com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdatesApiGrpc.BlockchainUpdatesApiBlockingStub;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.Truth.assertThat;
+
 import static com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdatesApiGrpc.newBlockingStub;
 
-class GetBlockUpdatesRangeTest extends BaseTest {
+class GetBlockUpdateSubscribeTest extends BaseSubscribeTest {
+
     @Test
-    void getBlockUpdatesRangeTest() {
-        GetBlockUpdatesRangeRequest request = GetBlockUpdatesRangeRequest
+    void getBlockUpdateBaseTest() throws UnsupportedOperationException {
+        GetBlockUpdateRequest request = GetBlockUpdateRequest
                 .newBuilder()
-                .setFromHeight(height - 10)
-                .setToHeight(height)
+                .setHeight(height)
                 .build();
 
         BlockchainUpdatesApiBlockingStub stub = newBlockingStub(CHANNEL);
 
-        GetBlockUpdatesRangeResponse response = stub.getBlockUpdatesRange(request);
+        GetBlockUpdateResponse response = stub.getBlockUpdate(request);
 
         assertThat(response).isNotNull();
     }

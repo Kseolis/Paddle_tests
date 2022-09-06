@@ -16,18 +16,19 @@ import java.util.List;
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeMetadataAssertions.*;
-import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateAssets;
-import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
-import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
-import static im.mak.paddle.helpers.ConstructorRideFunctions.*;
+import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeStateUpdateAssertions.*;
+import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.*;
+import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
+import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetVolume;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SubscribeInvokeIssueTest extends InvokeBaseTest {
+public class SubscribeInvokeSponsorFeeSubscribeTest extends InvokeBaseSubscribeTest {
     private static PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
+    private String assetIdToStr;
 
     @BeforeAll
     static void before() {
@@ -35,43 +36,43 @@ public class SubscribeInvokeIssueTest extends InvokeBaseTest {
     }
 
     @Test
-    @DisplayName("subscribe invoke with Issue")
-    void prepareDataForIssueTests() {
-        testData.prepareDataForIssueTests();
+    @DisplayName("subscribe invoke with SponsorFee")
+    void subscribeInvokeWithSponsorFee() {
+        testData.prepareDataForSponsorFeeTests();
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
 
         final AssetId assetId = testData.getAssetId();
+        assetIdToStr = assetId.toString();
+
         final DAppCall dAppCall = testData.getDAppCall();
         final Account caller = testData.getCallerAccount();
         final Account assetDAppAccount = testData.getAssetDAppAccount();
         final List<Amount> amounts = testData.getAmounts();
+        final long assetAmountValue = testData.getAssetAmount().value();
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, assetDAppAccount, dAppCall);
 
         setVersion(LATEST_VERSION);
-        calcBalances.balancesAfterReissueAssetInvoke(caller, assetDAppAccount, amounts, assetId);
+        calcBalances.balancesAfterPaymentInvoke(caller, assetDAppAccount, amounts, assetId);
         txSender.invokeSender();
 
-        final String txId = txSender.getInvokeScriptId();
+        String txId = txSender.getInvokeScriptId();
 
         height = node().getHeight();
-
         subscribeResponseHandler(CHANNEL, assetDAppAccount, height, height, txId);
         prepareInvoke(assetDAppAccount, testData);
 
-        assertionsCheck(
-                Long.parseLong(getIssueAssetData().get(VOLUME)),
-                Long.parseLong(testData.getAssetDataForIssue().get(VOLUME)),
-                txId
-        );
+        assertionsCheck(assetAmountValue, txId);
     }
 
-    private void assertionsCheck(long issueAssetDataVolume, long assetDataForIssueVolume, String txId) {
+    private void assertionsCheck(long sponsorship, String txId) {
         assertAll(
                 () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId),
                 () -> checkMainMetadata(0),
+                () -> checkArgumentsMetadata(0, 0, BINARY_BASE58, assetIdToStr),
                 () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
-                () -> checkIssueAssetMetadata(0, 1, testData.getAssetDataForIssue()),
+                () -> checkSponsorFeeMetadata(0, 0, assetIdToStr, testData.getAssetAmount().value()),
+                () -> checkSponsorFeeMetadata(0, 1, null, testData.getAssetAmount().value()),
 
                 () -> checkStateUpdateBalance(0,
                         0,
@@ -84,15 +85,15 @@ public class SubscribeInvokeIssueTest extends InvokeBaseTest {
                         1,
                         testData.getAssetDAppAddress(),
                         null,
-                        0, issueAssetDataVolume),
-                () -> checkStateUpdateBalance(0,
-                        2,
-                        testData.getAssetDAppAddress(),
-                        null,
-                        0, assetDataForIssueVolume),
+                        0, Long.parseLong(getIssueAssetData().get(VOLUME))),
 
-                () -> checkStateUpdateAssets(0, 0, getIssueAssetData(), issueAssetDataVolume),
-                () -> checkStateUpdateAssets(0, 1, testData.getAssetDataForIssue(), assetDataForIssueVolume)
+                () -> checkStateUpdateAssets(0, 0, getIssueAssetData(), getIssueAssetVolume()),
+                () -> checkStateUpdateAssets(0, 1,
+                        testData.getAssetData(),
+                        Long.parseLong(testData.getAssetData().get(VOLUME))),
+
+                () -> checkStateUpdateAssetsSponsorship(0, 0, sponsorship),
+                () -> checkStateUpdateAssetsSponsorship(0, 1, sponsorship)
         );
     }
 }

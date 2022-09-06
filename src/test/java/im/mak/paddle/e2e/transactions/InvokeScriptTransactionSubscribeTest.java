@@ -3,7 +3,6 @@ package im.mak.paddle.e2e.transactions;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.InvokeBaseTest;
 import im.mak.paddle.dapp.DAppCall;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTx;
@@ -23,7 +22,7 @@ import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.se
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InvokeScriptTransactionTest extends InvokeBaseTest {
+public class InvokeScriptTransactionSubscribeTest {
     private PrepareInvokeTestsData testData;
     private Account caller;
     private Account dAppAccount;

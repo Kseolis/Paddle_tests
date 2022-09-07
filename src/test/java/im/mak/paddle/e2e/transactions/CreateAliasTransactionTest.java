@@ -1,17 +1,17 @@
 package im.mak.paddle.e2e.transactions;
 
-import com.wavesplatform.transactions.CreateAliasTransaction;
 import com.wavesplatform.transactions.common.AssetId;
-import com.wavesplatform.wavesj.info.TransactionInfo;
 import im.mak.paddle.Account;
+import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
+import im.mak.paddle.helpers.transaction_senders.CreateAliasTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static com.wavesplatform.transactions.CreateAliasTransaction.LATEST_VERSION;
 import static com.wavesplatform.wavesj.ApplicationStatus.SUCCEEDED;
-import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.randomNumAndLetterString;
+import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.MIN_FEE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,10 +20,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class CreateAliasTransactionTest {
     private static Account account;
     private static String accountAlias;
+    private static DefaultDApp420Complexity dAppAccount;
 
     @BeforeAll
     static void before() {
-        account = new Account(DEFAULT_FAUCET);
+        async(
+                () -> dAppAccount = new DefaultDApp420Complexity(DEFAULT_FAUCET),
+                () -> account = new Account(DEFAULT_FAUCET)
+        );
     }
 
     @Test
@@ -31,7 +35,11 @@ public class CreateAliasTransactionTest {
     void createMinShortAlias() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
             accountAlias = randomNumAndLetterString(4);
-            createAliasTransaction(accountAlias, v);
+            CreateAliasTransactionSender txSender =
+                    new CreateAliasTransactionSender(account, accountAlias, MIN_FEE, v);
+
+            txSender.createAliasTransactionSender();
+            checkAssertsForCreateAliasTransaction(accountAlias, account, MIN_FEE, txSender);
         }
     }
 
@@ -40,30 +48,37 @@ public class CreateAliasTransactionTest {
     void createMaxLongAlias() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
             accountAlias = randomNumAndLetterString(30);
-            createAliasTransaction(accountAlias, v);
+            CreateAliasTransactionSender txSender =
+                    new CreateAliasTransactionSender(account, accountAlias, MIN_FEE, v);
+
+            txSender.createAliasTransactionSender();
+            checkAssertsForCreateAliasTransaction(accountAlias, account, MIN_FEE, txSender);
         }
     }
 
-    private void createAliasTransaction(String alias, int version) {
-        long accountWavesBalance = account.getWavesBalance();
-        long balanceAfterCreateAlias = accountWavesBalance - MIN_FEE;
+    @Test
+    @DisplayName("test create alias for DApp account")
+    void createAliasForDAppAccount() {
+        accountAlias = randomNumAndLetterString(17);
+        CreateAliasTransactionSender txSender =
+                new CreateAliasTransactionSender(dAppAccount, accountAlias, SUM_FEE, LATEST_VERSION);
 
-        CreateAliasTransaction tx = CreateAliasTransaction
-                .builder(alias)
-                .version(version)
-                .getSignedWith(account.privateKey());
+        txSender.createAliasTransactionSender();
+        checkAssertsForCreateAliasTransaction(accountAlias, dAppAccount, SUM_FEE, txSender);
+    }
 
-        node().waitForTransaction(node().broadcast(tx).id());
-        TransactionInfo txInfo = node().getTransactionInfo(tx.id());
+    private void checkAssertsForCreateAliasTransaction
+            (String alias, Account acc, long fee, CreateAliasTransactionSender txSender) {
+
+        assertThat(acc.getWavesBalance()).isEqualTo(txSender.getBalanceAfterTransaction());
 
         assertAll(
-                () -> assertThat(txInfo.applicationStatus()).isEqualTo(SUCCEEDED),
-                () -> assertThat(account.getWavesBalance()).isEqualTo(balanceAfterCreateAlias),
-                () -> assertThat(tx.sender()).isEqualTo(account.publicKey()),
-                () -> assertThat(tx.alias().name()).isEqualTo(alias),
-                () -> assertThat(tx.fee().assetId()).isEqualTo(AssetId.WAVES),
-                () -> assertThat(tx.fee().value()).isEqualTo(MIN_FEE),
-                () -> assertThat(tx.type()).isEqualTo(10)
+                () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
+                () -> assertThat(txSender.getCreateAliasTx().sender()).isEqualTo(acc.publicKey()),
+                () -> assertThat(txSender.getCreateAliasTx().alias().name()).isEqualTo(alias),
+                () -> assertThat(txSender.getCreateAliasTx().fee().assetId()).isEqualTo(AssetId.WAVES),
+                () -> assertThat(txSender.getCreateAliasTx().fee().value()).isEqualTo(fee),
+                () -> assertThat(txSender.getCreateAliasTx().type()).isEqualTo(10)
         );
     }
 }

@@ -1,19 +1,16 @@
 package im.mak.paddle.e2e.transactions;
 
-import com.wavesplatform.transactions.ReissueTransaction;
-
 import static com.wavesplatform.transactions.ReissueTransaction.LATEST_VERSION;
 
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
-import com.wavesplatform.wavesj.info.TransactionInfo;
 import im.mak.paddle.Account;
+import im.mak.paddle.helpers.transaction_senders.ReissueTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static com.wavesplatform.wavesj.ApplicationStatus.SUCCEEDED;
-import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.randomNumAndLetterString;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
@@ -25,7 +22,6 @@ public class ReissueTransactionTest {
     private static long accountWavesBalance;
     private static AssetId issuedAssetId;
     private static AssetId issuedSmartAssetId;
-    long feeForSmartAssetReissue = MIN_FEE + EXTRA_FEE;
 
     @BeforeAll
     static void before() {
@@ -43,7 +39,10 @@ public class ReissueTransactionTest {
     void reissueMinimumAssets() {
         Amount amount = Amount.of(ASSET_QUANTITY_MIN, issuedAssetId);
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            reissueTransaction(amount, issuedAssetId, MIN_FEE, v);
+            accountWavesBalance = account.getBalance(AssetId.WAVES);
+            ReissueTransactionSender txSender = new ReissueTransactionSender(account, amount, issuedAssetId);
+            txSender.reissueTransactionSender(MIN_FEE, v);
+            checkReissueTransaction(txSender, MIN_FEE, v);
         }
     }
 
@@ -53,7 +52,10 @@ public class ReissueTransactionTest {
         long reissueSum = ASSET_QUANTITY_MAX - account.getAssetBalance(issuedAssetId) - ASSET_QUANTITY_MIN;
         Amount amount = Amount.of(reissueSum, issuedAssetId);
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            reissueTransaction(amount, issuedAssetId, MIN_FEE, v);
+            accountWavesBalance = account.getBalance(AssetId.WAVES);
+            ReissueTransactionSender txSender = new ReissueTransactionSender(account, amount, issuedAssetId);
+            txSender.reissueTransactionSender(MIN_FEE, v);
+            checkReissueTransaction(txSender, MIN_FEE, v);
             account.burn(reissueSum, issuedAssetId);
         }
     }
@@ -63,7 +65,10 @@ public class ReissueTransactionTest {
     void reissueMinimumSmartAssets() {
         Amount amount = Amount.of(ASSET_QUANTITY_MIN, issuedSmartAssetId);
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            reissueTransaction(amount, issuedSmartAssetId, feeForSmartAssetReissue, v);
+            accountWavesBalance = account.getBalance(AssetId.WAVES);
+            ReissueTransactionSender txSender = new ReissueTransactionSender(account, amount, issuedSmartAssetId);
+            txSender.reissueTransactionSender(SUM_FEE, v);
+            checkReissueTransaction(txSender, SUM_FEE, v);
         }
     }
 
@@ -73,34 +78,29 @@ public class ReissueTransactionTest {
         long reissueSum = ASSET_QUANTITY_MAX - account.getAssetBalance(issuedSmartAssetId);
         Amount amount = Amount.of(reissueSum, issuedSmartAssetId);
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            reissueTransaction(amount, issuedSmartAssetId, feeForSmartAssetReissue, v);
+            accountWavesBalance = account.getBalance(AssetId.WAVES);
+
+
+            ReissueTransactionSender txSender = new ReissueTransactionSender(account, amount, issuedSmartAssetId);
+            txSender.reissueTransactionSender(SUM_FEE, v);
+
+            checkReissueTransaction(txSender, SUM_FEE, v);
             account.burn(reissueSum, issuedSmartAssetId);
         }
     }
 
-    private void reissueTransaction(Amount amount, AssetId assetId, long fee, int version) {
-        accountWavesBalance = account.getBalance(AssetId.WAVES);
-        long balanceAfterReissue = account.getBalance(assetId) + amount.value();
-
-        ReissueTransaction tx = ReissueTransaction.builder(amount)
-                .version(version)
-                .fee(fee)
-                .getSignedWith(account.privateKey());
-        node().waitForTransaction(node().broadcast(tx).id());
-
-        TransactionInfo txInfo = node().getTransactionInfo(tx.id());
-
+    private void checkReissueTransaction(ReissueTransactionSender txSender, long fee, int version) {
         assertAll(
-                () -> assertThat(txInfo.applicationStatus()).isEqualTo(SUCCEEDED),
-                () -> assertThat(account.getAssetBalance(assetId)).isEqualTo(balanceAfterReissue),
+                () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
+                () -> assertThat(account.getAssetBalance(txSender.getAssetId())).isEqualTo(txSender.getBalanceAfterTransaction()),
                 () -> assertThat(account.getWavesBalance()).isEqualTo(accountWavesBalance - fee),
-                () -> assertThat(tx.fee().assetId()).isEqualTo(AssetId.WAVES),
-                () -> assertThat(tx.fee().value()).isEqualTo(fee),
-                () -> assertThat(tx.sender()).isEqualTo(account.publicKey()),
-                () -> assertThat(tx.amount().value()).isEqualTo(amount.value()),
-                () -> assertThat(tx.amount().assetId()).isEqualTo(assetId),
-                () -> assertThat(tx.version()).isEqualTo(version),
-                () -> assertThat(tx.type()).isEqualTo(5)
+                () -> assertThat(txSender.getReissueTx().fee().assetId()).isEqualTo(AssetId.WAVES),
+                () -> assertThat(txSender.getReissueTx().fee().value()).isEqualTo(fee),
+                () -> assertThat(txSender.getReissueTx().sender()).isEqualTo(account.publicKey()),
+                () -> assertThat(txSender.getReissueTx().amount().value()).isEqualTo(txSender.getAmount().value()),
+                () -> assertThat(txSender.getReissueTx().amount().assetId()).isEqualTo(txSender.getAssetId()),
+                () -> assertThat(txSender.getReissueTx().version()).isEqualTo(version),
+                () -> assertThat(txSender.getReissueTx().type()).isEqualTo(5)
         );
     }
 }

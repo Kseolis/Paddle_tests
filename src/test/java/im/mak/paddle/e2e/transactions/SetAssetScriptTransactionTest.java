@@ -1,10 +1,9 @@
 package im.mak.paddle.e2e.transactions;
 
-import com.wavesplatform.transactions.SetAssetScriptTransaction;
 import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.common.Base64String;
-import com.wavesplatform.wavesj.info.TransactionInfo;
 import im.mak.paddle.Account;
+import im.mak.paddle.helpers.transaction_senders.SetAssetScriptTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,7 @@ public class SetAssetScriptTransactionTest {
     static void before() {
         alice = new Account(DEFAULT_FAUCET);
         issuedAssetId = alice.issue(i -> i.name("Test_Asset")
-                .script("{-# SCRIPT_TYPE ASSET #-} true")
+                .script(SCRIPT_PERMITTING_OPERATIONS)
                 .quantity(1000_00000000L)).tx().assetId();
     }
 
@@ -34,28 +33,27 @@ public class SetAssetScriptTransactionTest {
     @DisplayName("set asset script 'ban on updating key values'")
     void setAssetScriptTransactionTest() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            Base64String script = node().compileScript(fromFile("/permissionOnUpdatingKeyValues.ride")).script();
-            setAssetScriptTransaction(alice, script, issuedAssetId, v);
+            Base64String script = node()
+                    .compileScript(fromFile("ride_scripts/permissionOnUpdatingKeyValues.ride")).script();
+
+            SetAssetScriptTransactionSender txSender = new SetAssetScriptTransactionSender(alice, script, issuedAssetId);
+            txSender.setAssetScriptTransactionSender(v);
+
+            checkSetAssetScriptTransaction(v, txSender);
         }
     }
 
-    private void setAssetScriptTransaction(Account account, Base64String script, AssetId assetId, int version) {
-        long balanceAfterTransaction = account.getWavesBalance() - ONE_WAVES;
-        SetAssetScriptTransaction setAssetScriptTx = SetAssetScriptTransaction
-                .builder(issuedAssetId, script).version(version).getSignedWith(account.privateKey());
-        node().waitForTransaction(node().broadcast(setAssetScriptTx).id());
-        TransactionInfo setAssetScriptTxInfo = node().getTransactionInfo(setAssetScriptTx.id());
-
+    private void checkSetAssetScriptTransaction(int version, SetAssetScriptTransactionSender txSender) {
         assertAll(
-                () -> assertThat(setAssetScriptTxInfo.applicationStatus()).isEqualTo(SUCCEEDED),
-                () -> assertThat(setAssetScriptTx.fee().value()).isEqualTo(ONE_WAVES),
-                () -> assertThat(setAssetScriptTx.fee().value()).isEqualTo(ONE_WAVES),
-                () -> assertThat(setAssetScriptTx.sender()).isEqualTo(account.publicKey()),
-                () -> assertThat(setAssetScriptTx.script()).isEqualTo(script),
-                () -> assertThat(setAssetScriptTx.assetId()).isEqualTo(assetId),
-                () -> assertThat(setAssetScriptTx.version()).isEqualTo(version),
-                () -> assertThat(setAssetScriptTx.type()).isEqualTo(15),
-                () -> assertThat(account.getWavesBalance()).isEqualTo(balanceAfterTransaction)
+                () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
+                () -> assertThat(txSender.getSetAssetScriptTx().fee().value()).isEqualTo(ONE_WAVES),
+                () -> assertThat(txSender.getSetAssetScriptTx().fee().value()).isEqualTo(ONE_WAVES),
+                () -> assertThat(txSender.getSetAssetScriptTx().sender()).isEqualTo(txSender.getAccount().publicKey()),
+                () -> assertThat(txSender.getSetAssetScriptTx().script()).isEqualTo(txSender.getScript()),
+                () -> assertThat(txSender.getSetAssetScriptTx().assetId()).isEqualTo(txSender.getAssetId()),
+                () -> assertThat(txSender.getSetAssetScriptTx().version()).isEqualTo(version),
+                () -> assertThat(txSender.getSetAssetScriptTx().type()).isEqualTo(15),
+                () -> assertThat(txSender.getAccount().getWavesBalance()).isEqualTo(txSender.getBalanceAfterTransaction())
         );
     }
 }

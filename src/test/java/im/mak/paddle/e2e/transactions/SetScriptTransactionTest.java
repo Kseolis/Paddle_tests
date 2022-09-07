@@ -1,10 +1,9 @@
 package im.mak.paddle.e2e.transactions;
 
-import com.wavesplatform.transactions.SetScriptTransaction;
 import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.common.Base64String;
-import com.wavesplatform.wavesj.info.TransactionInfo;
 import im.mak.paddle.Account;
+import im.mak.paddle.helpers.transaction_senders.SetScriptTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SetScriptTransactionTest {
-
     private static Account stan;
     private static Account eric;
     private static Account kenny;
@@ -38,10 +36,13 @@ public class SetScriptTransactionTest {
     @Test
     @DisplayName("set script transaction Account STDLIB V3")
     void setLibScriptTransaction() {
-            Base64String setScript = node().compileScript("{-# STDLIB_VERSION 3 #-}\n" +
-                    "{-# SCRIPT_TYPE ACCOUNT #-}\n" +
-                    "{-# CONTENT_TYPE LIBRARY #-}").script();
-            setScriptTransaction(stan, setScript, 0, LATEST_VERSION);
+        Base64String setScript = node().compileScript("{-# STDLIB_VERSION 3 #-}\n" +
+                "{-# SCRIPT_TYPE ACCOUNT #-}\n" +
+                "{-# CONTENT_TYPE LIBRARY #-}").script();
+
+        SetScriptTransactionSender txSender = new SetScriptTransactionSender(stan, setScript);
+        txSender.setScriptTransactionSender(0, LATEST_VERSION);
+        checkSetScriptTransaction(txSender);
     }
 
     @Test
@@ -51,17 +52,22 @@ public class SetScriptTransactionTest {
             Base64String setScript = node().compileScript("{-# STDLIB_VERSION 4 #-}\n" +
                     "{-# SCRIPT_TYPE ACCOUNT #-}\n" +
                     "{-# CONTENT_TYPE DAPP #-}").script();
-            setScriptTransaction(eric, setScript, 0, v);
+
+            SetScriptTransactionSender txSender = new SetScriptTransactionSender(eric, setScript);
+            txSender.setScriptTransactionSender(0, v);
+            checkSetScriptTransaction(txSender);
         }
     }
 
     @Test
     @DisplayName("set script transaction SNDLIB V5")
-    void setScriptTransaction() {
+    void setScriptTransactionLibV5() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            Base64String setScript = node().compileScript("{-# STDLIB_VERSION 5 #-}\n" +
-                    "{-# SCRIPT_TYPE ASSET #-} true").script();
-            setScriptTransaction(kenny, setScript, 0, v);
+            Base64String setScript = node().compileScript(SCRIPT_PERMITTING_OPERATIONS).script();
+
+            SetScriptTransactionSender txSender = new SetScriptTransactionSender(kenny, setScript);
+            txSender.setScriptTransactionSender(0, v);
+            checkSetScriptTransaction(txSender);
         }
     }
 
@@ -70,32 +76,24 @@ public class SetScriptTransactionTest {
     void set32KbScript() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
             long minimalValSetScriptFee = 2200000;
-            Base64String setScript = node().compileScript(fromFile("/scriptSize32kb.ride")).script();
-            setScriptTransaction(kyle, setScript, minimalValSetScriptFee, v);
+            Base64String setScript = node().compileScript(fromFile("ride_scripts/scriptSize32kb.ride")).script();
+
+            SetScriptTransactionSender txSender = new SetScriptTransactionSender(kyle, setScript);
+            txSender.setScriptTransactionSender(minimalValSetScriptFee, v);
+            checkSetScriptTransaction(txSender);
         }
     }
 
-    private void setScriptTransaction(Account account, Base64String script, long moreFee, int version) {
-        long fee = MIN_FEE_FOR_SET_SCRIPT + moreFee + EXTRA_FEE_FOR_SET_SCRIPT;
-        long balanceAfterTransaction = account.getWavesBalance() - fee;
-
-        SetScriptTransaction tx = SetScriptTransaction
-                .builder(script)
-                .fee(fee)
-                .version(version)
-                .getSignedWith(account.privateKey());
-        node().waitForTransaction(node().broadcast(tx).id());
-
-        TransactionInfo txInfo = node().getTransactionInfo(tx.id());
-
+    private void checkSetScriptTransaction(SetScriptTransactionSender txSender) {
         assertAll(
-                () -> assertThat(txInfo.applicationStatus()).isEqualTo(SUCCEEDED),
-                () -> assertThat(account.getWavesBalance()).isEqualTo(balanceAfterTransaction),
-                () -> assertThat(tx.sender()).isEqualTo(account.publicKey()),
-                () -> assertThat(tx.script()).isEqualTo(script),
-                () -> assertThat(tx.fee().assetId()).isEqualTo(AssetId.WAVES),
-                () -> assertThat(tx.fee().value()).isEqualTo(fee),
-                () -> assertThat(tx.type()).isEqualTo(13)
+                () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
+                () -> assertThat(txSender.getAccount().getWavesBalance())
+                        .isEqualTo(txSender.getBalanceAfterTransaction()),
+                () -> assertThat(txSender.getSetScriptTx().sender()).isEqualTo(txSender.getAccount().publicKey()),
+                () -> assertThat(txSender.getSetScriptTx().script()).isEqualTo(txSender.getScript()),
+                () -> assertThat(txSender.getSetScriptTx().fee().assetId()).isEqualTo(AssetId.WAVES),
+                () -> assertThat(txSender.getSetScriptTx().fee().value()).isEqualTo(txSender.getFee()),
+                () -> assertThat(txSender.getSetScriptTx().type()).isEqualTo(13)
         );
     }
 }

@@ -2,7 +2,7 @@ package im.mak.paddle.e2e;
 
 import com.wavesplatform.transactions.common.Amount;
 import im.mak.paddle.Account;
-import im.mak.paddle.dapps.WalletDApp;
+import im.mak.paddle.helpers.dapps.WalletDApp;
 import org.junit.jupiter.api.*;
 
 import static im.mak.paddle.token.Waves.WAVES;
@@ -27,7 +27,7 @@ class WalletTest {
 
     @Nested
     @TestMethodOrder(OrderAnnotation.class)
-    class Positive {
+    class PositiveTest {
 
         @Test @Order(10)
         void canDepositWaves() {

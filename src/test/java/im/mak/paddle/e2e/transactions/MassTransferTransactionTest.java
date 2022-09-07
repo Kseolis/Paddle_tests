@@ -1,12 +1,9 @@
 package im.mak.paddle.e2e.transactions;
 
-import com.wavesplatform.transactions.MassTransferTransaction;
-import com.wavesplatform.transactions.account.Address;
 import com.wavesplatform.transactions.common.AssetId;
-import com.wavesplatform.transactions.common.Base58String;
-import com.wavesplatform.transactions.mass.Transfer;
-import com.wavesplatform.wavesj.info.TransactionInfo;
 import im.mak.paddle.Account;
+import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
+import im.mak.paddle.helpers.transaction_senders.MassTransferTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,9 +13,8 @@ import java.util.*;
 import static com.wavesplatform.transactions.MassTransferTransaction.LATEST_VERSION;
 import static com.wavesplatform.transactions.common.AssetId.WAVES;
 import static com.wavesplatform.wavesj.ApplicationStatus.SUCCEEDED;
-import static im.mak.paddle.Node.node;
-import static im.mak.paddle.helpers.Randomizer.accountListGenerator;
-import static im.mak.paddle.helpers.Randomizer.getRandomInt;
+import static im.mak.paddle.helpers.Calculations.getTransactionCommission;
+import static im.mak.paddle.helpers.Randomizer.*;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,119 +24,138 @@ public class MassTransferTransactionTest {
     private static Account account;
 
     private static AssetId issuedAsset;
-    private static Base58String base58StringAttachment;
-    private static List<Account> minimumAccountsForMassTransfer;
-    private static List<Account> maximumAccountsForMassTransfer;
+    private static List<Account> minimumAccountsList;
+    private static List<Account> maximumAccountsList;
 
-    long transactionCommission;
+    private static DefaultDApp420Complexity dAppAccount;
+    private static AssetId issuedSmartAssetId;
+    private static AssetId checkedAsset;
 
     @BeforeAll
     static void before() {
         async(
                 () -> {
-                    base58StringAttachment = new Base58String("attachment");
                     account = new Account(DEFAULT_FAUCET);
-                    issuedAsset = account.issue(i -> i.name("Test_Asset").quantity(900_000_000_000L)).tx().assetId();
+                    issuedAsset = account.issue(i -> i.name("Test_Asset").quantity(900_000_000_000L).script(null)
+                    ).tx().assetId();
                 },
-                () -> minimumAccountsForMassTransfer = accountListGenerator(MIN_NUM_ACCOUNT_FOR_MASS_TRANSFER),
-                () -> maximumAccountsForMassTransfer = accountListGenerator(MAX_NUM_ACCOUNT_FOR_MASS_TRANSFER)
+                () -> {
+                    dAppAccount = new DefaultDApp420Complexity(DEFAULT_FAUCET);
+                    dAppAccount.createAlias(randomNumAndLetterString(15));
+                    issuedSmartAssetId = dAppAccount.issue(i -> i.name("Smart")
+                            .quantity(900_000_000_000L)
+                            .script(SCRIPT_PERMITTING_OPERATIONS)).tx().assetId();
+                },
+                () -> minimumAccountsList = accountListGenerator(MIN_NUM_ACCOUNT_FOR_MASS_TRANSFER),
+                () -> maximumAccountsList = accountListGenerator(MAX_NUM_ACCOUNT_FOR_MASS_TRANSFER)
         );
     }
 
     @Test
-    @DisplayName("transfer in a 'mass transfer transaction' for maximum Accounts")
+    @DisplayName("for maximum Accounts")
     void massTransferForMaximumCountAccounts() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            int amount = getRandomInt(MIN_TRANSFER_SUM, 100);
-            massTransferTransaction(WAVES, amount, maximumAccountsForMassTransfer, v);
+            int amount = getRandomInt(MIN_TRANSACTION_SUM, 100);
+
+            MassTransferTransactionSender txSender =
+                    new MassTransferTransactionSender(account, WAVES, amount, maximumAccountsList);
+            checkedAsset = AssetId.as(txSender.getAssetId());
+            txSender.massTransferTransactionSender(v);
+            checkMassTransferTransaction(txSender);
         }
     }
 
     @Test
-    @DisplayName("transfer in a 'mass transfer transaction' for minimum Accounts")
+    @DisplayName("for minimum Accounts")
     void massTransferForMinimumCountAccounts() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            int amount = getRandomInt(MIN_TRANSFER_SUM, 100);
-            massTransferTransaction(WAVES, amount, minimumAccountsForMassTransfer, v);
+            int amount = getRandomInt(MIN_TRANSACTION_SUM, 100);
+
+            MassTransferTransactionSender txSender =
+                    new MassTransferTransactionSender(account, WAVES, amount, minimumAccountsList);
+            checkedAsset = AssetId.as(txSender.getAssetId());
+            txSender.massTransferTransactionSender(v);
+            checkMassTransferTransaction(txSender);
         }
     }
 
     @Test
-    @DisplayName("transfer in a 'mass transfer transaction' issued asset for maximum Accounts")
+    @DisplayName("issued asset for maximum Accounts")
     void massTransferForMaximumAccountsForIssueAsset() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            int amount = getRandomInt(MIN_TRANSFER_SUM, 100);
-            massTransferTransaction(issuedAsset, amount, maximumAccountsForMassTransfer, v);
+            int amount = getRandomInt(MIN_TRANSACTION_SUM, 100);
+
+            MassTransferTransactionSender txSender =
+                    new MassTransferTransactionSender(account, issuedAsset, amount, maximumAccountsList);
+            checkedAsset = AssetId.as(txSender.getAssetId());
+            txSender.massTransferTransactionSender(v);
+            checkMassTransferTransaction(txSender);
         }
     }
 
     @Test
-    @DisplayName("transfer in a 'mass transfer transaction' issued asset for minimum Accounts")
+    @DisplayName("issued asset for minimum Accounts")
     void massTransferForMinimumAccountsForIssueAsset() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            int amount = getRandomInt(MIN_TRANSFER_SUM, 100);
-            massTransferTransaction(issuedAsset, amount, minimumAccountsForMassTransfer, v);
+            int amount = getRandomInt(MIN_TRANSACTION_SUM, 100);
+
+            MassTransferTransactionSender txSender =
+                    new MassTransferTransactionSender(account, issuedAsset, amount, minimumAccountsList);
+            checkedAsset = AssetId.as(txSender.getAssetId());
+            txSender.massTransferTransactionSender(v);
+            checkMassTransferTransaction(txSender);
         }
     }
 
-    private void massTransferTransaction(AssetId assetId, long amount, List<Account> accountsList, int version) {
-        List<Transfer> transfers = new ArrayList<>();
-        Map<Address, Long> balancesAfterTransaction = new HashMap<>();
+    @Test
+    @DisplayName("issued smart asset for maximum Accounts")
+    void massTransferForMaximumAccountsForIssueSmartAsset() {
+        for (int v = 1; v <= LATEST_VERSION; v++) {
+            int amount = getRandomInt(MIN_TRANSACTION_SUM, 100);
 
-        accountsList.forEach(a -> transfers.add(Transfer.to(a.address(), amount)));
-        accountsList.forEach(a -> balancesAfterTransaction.put(a.address(), a.getBalance(assetId) + amount));
+            System.out.println(amount);
 
-        int numberOfAccounts = accountsList.size();
+            MassTransferTransactionSender txSender =
+                    new MassTransferTransactionSender(dAppAccount, issuedSmartAssetId, amount, maximumAccountsList);
+            checkedAsset = AssetId.as(txSender.getAssetId());
+            txSender.massTransferTransactionSender(v);
+            checkMassTransferTransaction(txSender);
+        }
+    }
 
-        long senderBalanceAfterMassTransfer = calculateSenderBalanceAfterTransfer(assetId, amount, numberOfAccounts);
+    @Test
+    @DisplayName("issued smart asset for minimum Accounts")
+    void massTransferForMinimumAccountsForIssueSmartAsset() {
+        for (int v = 1; v <= LATEST_VERSION; v++) {
+            int amount = getRandomInt(MIN_TRANSACTION_SUM, 100);
 
-        MassTransferTransaction tx = MassTransferTransaction
-                .builder(transfers)
-                .assetId(assetId)
-                .attachment(base58StringAttachment)
-                .version(version)
-                .getSignedWith(account.privateKey());
+            MassTransferTransactionSender txSender =
+                    new MassTransferTransactionSender(dAppAccount, issuedSmartAssetId, amount, minimumAccountsList);
+            checkedAsset = AssetId.as(txSender.getAssetId());
+            txSender.massTransferTransactionSender(v);
+            checkMassTransferTransaction(txSender);
+        }
+    }
 
-        node().waitForTransaction(node().broadcast(tx).id());
-
-        TransactionInfo txInfo = node().getTransactionInfo(tx.id());
-
+    private void checkMassTransferTransaction(MassTransferTransactionSender txSender) {
         assertAll(
-                () -> assertThat(txInfo.applicationStatus()).isEqualTo(SUCCEEDED),
-                () -> assertThat(account.getBalance(assetId)).isEqualTo(senderBalanceAfterMassTransfer),
-                () -> assertThat(tx.attachment()).isEqualTo(base58StringAttachment),
-                () -> assertThat(tx.assetId()).isEqualTo(assetId),
-                () -> assertThat(tx.fee().assetId()).isEqualTo(WAVES),
-                () -> assertThat(tx.fee().value()).isEqualTo(transactionCommission),
-                () -> assertThat(tx.sender()).isEqualTo(account.publicKey()),
-                () -> assertThat(tx.transfers().size()).isEqualTo(numberOfAccounts),
-                () -> assertThat(tx.type()).isEqualTo(11),
-                () -> tx.transfers().forEach(transfer -> assertThat(transfer.amount()).isEqualTo(amount)),
-                () -> accountsList.forEach(
-                        account -> assertThat(
-                                balancesAfterTransaction.get(account.address())).isEqualTo(account.getBalance(assetId)
-                        )
-                )
+                () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
+                () -> assertThat(txSender.getSender().getBalance(checkedAsset))
+                        .isEqualTo(txSender.getSenderBalanceAfterMassTransfer()),
+                () -> assertThat(txSender.getMassTransferTx().attachment()).isEqualTo(txSender.getAttach()),
+                () -> assertThat(txSender.getMassTransferTx().assetId().toString()).isEqualTo(checkedAsset.toString()),
+                () -> assertThat(txSender.getMassTransferTx().fee().assetId()).isEqualTo(WAVES),
+                () -> assertThat(txSender.getMassTransferTx().fee().value()).isEqualTo(getTransactionCommission()),
+                () -> assertThat(txSender.getMassTransferTx().sender()).isEqualTo(txSender.getSender().publicKey()),
+                () -> assertThat(txSender.getMassTransferTx().transfers().size()).isEqualTo(txSender.getAccountsSize()),
+                () -> assertThat(txSender.getMassTransferTx().type()).isEqualTo(11),
+                () -> txSender.getMassTransferTx().transfers().forEach(
+                        transfer -> assertThat(transfer.amount()).isEqualTo(txSender.getAmount())),
+                () -> txSender.getAccounts().forEach(account ->
+                        assertThat(txSender.getBalancesAfterTransaction().get(account.address()))
+                                .isEqualTo(account.getBalance(checkedAsset)))
         );
     }
-
-    private long calculateSenderBalanceAfterTransfer(AssetId assetId, long amount, int numberOfAccounts) {
-        long senderBalance = account.getBalance(assetId);
-        long numForRoundCheck = 100000;
-        long additionalFeeForMassTransfer = FEE_FOR_MASS_TRANSFER * numberOfAccounts;
-        if (additionalFeeForMassTransfer % numForRoundCheck != 0) { // The fee value is rounded up to three decimals.
-            additionalFeeForMassTransfer = (long) Math.ceil(
-                    (float) additionalFeeForMassTransfer / numForRoundCheck
-            ) * numForRoundCheck;
-        }
-
-        transactionCommission = MIN_FEE + additionalFeeForMassTransfer;
-        long transactionSum = amount * numberOfAccounts;
-
-        if (assetId.equals(WAVES)) {
-            return senderBalance - transactionCommission - transactionSum;
-        }
-        return senderBalance - transactionSum;
-    }
 }
+
 

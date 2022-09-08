@@ -2,13 +2,13 @@ package im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.tra
 
 import com.google.protobuf.ByteString;
 import com.wavesplatform.crypto.base.Base58;
-import com.wavesplatform.protobuf.transaction.TransactionOuterClass;
+import com.wavesplatform.protobuf.transaction.TransactionOuterClass.Transaction;
 
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getMicroBlockInfo;
 
 public class TransactionsHandler {
 
-    public static TransactionOuterClass.Transaction getWavesTransactionAtIndex(int index) {
+    public static Transaction getWavesTransactionAtIndex(int index) {
         return getMicroBlockInfo().getTransactions(index).getWavesTransaction();
     }
 

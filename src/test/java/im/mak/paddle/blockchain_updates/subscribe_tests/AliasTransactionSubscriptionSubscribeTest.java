@@ -58,8 +58,11 @@ public class AliasTransactionSubscriptionSubscribeTest extends BaseSubscribeTest
                 new CreateAliasTransactionSender(account, newAlias, MIN_FEE, LATEST_VERSION);
 
         txSender.createAliasTransactionSender();
+
+        String txId = txSender.getCreateAliasTx().id().toString();
+
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, account, height, height, txSender.getCreateAliasTx().id().toString());
+        subscribeResponseHandler(CHANNEL, account, height, height, txId);
         checkAliasSubscribe(amountBefore, amountAfter, accountAddress, accountPublicKey, MIN_FEE);
     }
 
@@ -73,9 +76,11 @@ public class AliasTransactionSubscriptionSubscribeTest extends BaseSubscribeTest
         CreateAliasTransactionSender txSender =
                 new CreateAliasTransactionSender(dAppAccount, newAlias, SUM_FEE, LATEST_VERSION);
 
+        String txId = txSender.getCreateAliasTx().id().toString();
+
         txSender.createAliasTransactionSender();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, account, height, height, txSender.getCreateAliasTx().id().toString());
+        subscribeResponseHandler(CHANNEL, account, height, height, txId);
         checkAliasSubscribe(amountBefore, amountAfter, dAppAccountAddress, dAppAccountPublicKey, SUM_FEE);
     }
 

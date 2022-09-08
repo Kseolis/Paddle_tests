@@ -46,7 +46,6 @@ public class SubscribeInvokeBurnSubscribeTest extends BaseSubscribeTest {
         final Account caller = testData.getCallerAccount();
         final Account assetDAppAccount = testData.getAssetDAppAccount();
         final List<Amount> amounts = testData.getAmounts();
-
         final InvokeScriptTransactionSender txSender =
                 new InvokeScriptTransactionSender(caller, assetDAppAccount, dAppCall);
 

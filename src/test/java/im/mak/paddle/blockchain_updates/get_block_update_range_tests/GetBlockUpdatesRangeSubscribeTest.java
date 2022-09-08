@@ -1,9 +1,10 @@
-package im.mak.paddle.blockchain_updates;
+package im.mak.paddle.blockchain_updates.get_block_update_range_tests;
 
 import com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdates.GetBlockUpdatesRangeRequest;
 import com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdates.GetBlockUpdatesRangeResponse;
 
 import com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdatesApiGrpc.BlockchainUpdatesApiBlockingStub;
+import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.Truth.assertThat;

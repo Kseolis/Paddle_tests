@@ -1,6 +1,8 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests;
 
+import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -22,11 +24,18 @@ import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeScriptTransferTest extends InvokeBaseTest {
+    private PrepareInvokeTestsData testsData;
+
+    @BeforeEach
+    void before() {
+        testsData = new PrepareInvokeTestsData();
+    }
+
     @Test
     @DisplayName("subscribe invoke with ScriptTransfer")
     void subscribeInvokeWithScriptTransfer() {
         long assetAmountValue = getAssetAmount().value();
-        getTestsData().prepareDataForScriptTransferTests();
+        testsData.prepareDataForScriptTransferTests();
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender
                 (getCallerAccount(), getAssetDAppAccount(), getDAppCall());
@@ -46,7 +55,7 @@ public class SubscribeInvokeScriptTransferTest extends InvokeBaseTest {
 
     private void assertionsCheck(String assetId, long dAppAssetAmountAfter, long recipientAmountValueAfter) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(getFee(), getCallerPublicKey()),
+                () -> checkInvokeSubscribeTransaction(getInvokeFee(), getCallerPublicKey()),
 
                 () -> checkMainMetadata(0),
                 () -> checkArgumentsMetadata(0, 0, BINARY_BASE58, assetId),

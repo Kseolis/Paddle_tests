@@ -26,7 +26,6 @@ public class PrepareInvokeTestsData {
     private static String callerPublicKey;
     private static String callerPublicKeyHash;
     private static byte[] callerAddressBase58;
-
     private static DataDApp dAppAccount;
     private static String dAppAddress;
     private static String dAppPublicKey;
@@ -53,7 +52,7 @@ public class PrepareInvokeTestsData {
     private static final String key1ForDAppEqualBar = "bar";
     private static final String key2ForDAppEqualBalance = "balance";
     private static DAppCall dAppCall;
-    private static long fee;
+    private static long invokeFee;
 
     private static final Map<String, String> assetData = new HashMap<>();
     private static final Map<String, String> assetDataForIssue = new HashMap<>();
@@ -112,7 +111,7 @@ public class PrepareInvokeTestsData {
     }
 
     public void prepareDataForDataDAppTests() {
-        fee = SUM_FEE + ONE_WAVES;
+        invokeFee = SUM_FEE + ONE_WAVES;
 
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
 
@@ -128,12 +127,12 @@ public class PrepareInvokeTestsData {
         amounts.clear();
         amounts.add(wavesAmount);
 
-        setFee(fee);
+        setFee(invokeFee);
         setExtraFee(ONE_WAVES);
     }
 
     public void prepareDataForDeleteEntryTests() {
-        fee = SUM_FEE;
+        invokeFee = SUM_FEE;
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
 
         final String functionArgs = "intVal:Int";
@@ -146,12 +145,12 @@ public class PrepareInvokeTestsData {
         amounts.clear();
         amounts.add(wavesAmount);
 
-        setFee(fee);
+        setFee(invokeFee);
         setExtraFee(0);
     }
 
     public void prepareDataForBurnTests() {
-        fee = ONE_WAVES + SUM_FEE;
+        invokeFee = ONE_WAVES + SUM_FEE;
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
 
         final String functions = "Burn(assetId, " + assetAmount.value() + ")," +
@@ -172,7 +171,7 @@ public class PrepareInvokeTestsData {
 
     public void prepareDataForIssueTests() {
         final long extraFee = ONE_WAVES * 2;
-        fee = SUM_FEE + extraFee;
+        invokeFee = SUM_FEE + extraFee;
         final String assetName = randomNumAndLetterString(3) + "assetName";
         final String assetDesc = randomNumAndLetterString(3) + "assetDescription";
         final int vol = getRandomInt(700_000_000, 900_000_000);
@@ -207,7 +206,7 @@ public class PrepareInvokeTestsData {
     }
 
     public void prepareDataForReissueTests() {
-        fee = ONE_WAVES + SUM_FEE;
+        invokeFee = ONE_WAVES + SUM_FEE;
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
 
         final String functions = "Reissue(assetId," + assetAmount.value() + ",true),\n" +
@@ -229,7 +228,7 @@ public class PrepareInvokeTestsData {
 
     public void prepareDataForLeaseTests() {
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
-        fee = SUM_FEE + ONE_WAVES;
+        invokeFee = SUM_FEE + ONE_WAVES;
 
         final String functionArgs = "address:ByteVector";
         final String functions = "[\nLease(Address(address), " + wavesAmount.value() + ")\n]\n";
@@ -245,7 +244,7 @@ public class PrepareInvokeTestsData {
 
     public void prepareDataForLeaseCancelTests() {
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
-        fee = SUM_FEE + ONE_WAVES;
+        invokeFee = SUM_FEE + ONE_WAVES;
 
         final String functionArgs = "leaseId:ByteVector";
         final String functions = "[\nLeaseCancel(leaseId)\n]\n";
@@ -261,7 +260,7 @@ public class PrepareInvokeTestsData {
     }
 
     public void prepareDataForSponsorFeeTests() {
-        fee = ONE_WAVES + SUM_FEE;
+        invokeFee = ONE_WAVES + SUM_FEE;
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
 
         final String functions = "SponsorFee(assetId, " + assetAmount.value() + ")," +
@@ -278,7 +277,7 @@ public class PrepareInvokeTestsData {
     }
 
     public void prepareDataForScriptTransferTests() {
-        fee = ONE_WAVES + SUM_FEE;
+        invokeFee = ONE_WAVES + SUM_FEE;
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
 
         final String currentArgs = args + ", " + "address:ByteVector";
@@ -299,7 +298,7 @@ public class PrepareInvokeTestsData {
     }
 
     public void prepareDataForPaymentsTests() {
-        fee = ONE_WAVES + SUM_FEE;
+        invokeFee = ONE_WAVES + SUM_FEE;
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
 
         final String arg = "intVal:Int";
@@ -318,7 +317,7 @@ public class PrepareInvokeTestsData {
     }
 
     public void prepareDataForDAppToDAppTests() {
-        fee = SUM_FEE + ONE_WAVES;
+        invokeFee = SUM_FEE + ONE_WAVES;
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
 
         final String functionArgsDApp1 = "dapp2:ByteVector, a:Int, key1:String, key2:String, assetId:ByteVector";
@@ -364,8 +363,8 @@ public class PrepareInvokeTestsData {
         return assetId;
     }
 
-    public static long getFee() {
-        return fee;
+    public static long getInvokeFee() {
+        return invokeFee;
     }
 
     public static int getIntArg() {
@@ -462,6 +461,14 @@ public class PrepareInvokeTestsData {
 
     public static String getKey2ForDAppEqualBalance() {
         return key2ForDAppEqualBalance;
+    }
+
+    public static byte[] getCallerAddressBase58() {
+        return callerAddressBase58;
+    }
+
+    public static byte[] getAssetDAppAddressBase58() {
+        return assetDAppAddressBase58;
     }
 
 }

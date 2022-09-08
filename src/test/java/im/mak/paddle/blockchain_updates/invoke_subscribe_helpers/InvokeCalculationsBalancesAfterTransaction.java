@@ -1,4 +1,4 @@
-package im.mak.paddle.helpers.transaction_senders.invoke;
+package im.mak.paddle.blockchain_updates.invoke_subscribe_helpers;
 
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
@@ -6,8 +6,8 @@ import im.mak.paddle.Account;
 
 import java.util.List;
 
-import static im.mak.paddle.helpers.PrepareInvokeTestsData.getInvokeFee;
 import static im.mak.paddle.helpers.PrepareInvokeTestsData.getIntArg;
+import static im.mak.paddle.helpers.PrepareInvokeTestsData.getInvokeFee;
 
 public class InvokeCalculationsBalancesAfterTransaction {
     private static long callerBalanceWavesBeforeTransaction;

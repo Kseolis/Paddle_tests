@@ -1,6 +1,8 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests;
 
+import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -23,11 +25,18 @@ import static im.mak.paddle.util.Constants.WAVES_STRING_ID;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeDeleteEntryTest extends InvokeBaseTest {
+    private PrepareInvokeTestsData testsData;
+
+    @BeforeEach
+    void before() {
+        testsData = new PrepareInvokeTestsData();
+    }
+
     @Test
     @DisplayName("subscribe invoke with DeleteEntry")
     void subscribeInvokeWithDeleteEntry() {
         String intValueAfter = String.valueOf(0);
-        getTestsData().prepareDataForDeleteEntryTests();
+        testsData.prepareDataForDeleteEntryTests();
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender
                 (getCallerAccount(), getDAppAccount(), getDAppCall(), getAmounts());
@@ -45,7 +54,7 @@ public class SubscribeInvokeDeleteEntryTest extends InvokeBaseTest {
 
     private void assertionsCheck(long payment, String intVal, String valAfter) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(getFee(), getCallerPublicKey()),
+                () -> checkInvokeSubscribeTransaction(getInvokeFee(), getCallerPublicKey()),
                 () -> checkPaymentsSubscribe(0, 0, payment, ""),
 
                 () -> checkMainMetadata(0),

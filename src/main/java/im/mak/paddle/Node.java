@@ -19,7 +19,6 @@ import com.wavesplatform.transactions.common.*;
 import com.wavesplatform.transactions.data.DataEntry;
 import im.mak.paddle.internal.Settings;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -28,13 +27,13 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
 
-import static im.mak.paddle.util.ScriptUtil.fromFile;
 import static java.util.Collections.singletonList;
 
 @SuppressWarnings("WeakerAccess")
 public class Node extends com.wavesplatform.wavesj.Node {
 
     private static Node instance;
+    private static final int GRPCPort = 6888;
 
     public static Node node() {
         if (instance == null) synchronized (Node.class) {
@@ -78,19 +77,22 @@ public class Node extends com.wavesplatform.wavesj.Node {
                 URL apiUrl = new URL(conf.apiUrl);
                 int port = apiUrl.getPort() <= 0 ? 80 : apiUrl.getPort();
                 Map<String, List<PortBinding>> portBindings = new HashMap<>();
-                portBindings.put("6869", singletonList(PortBinding
+                portBindings.put("6863", singletonList(PortBinding
                         .of("0.0.0.0", port)));
-                HostConfig hostConfig = HostConfig.builder().portBindings(portBindings).build();
+                portBindings.put(String.valueOf(GRPCPort), singletonList(PortBinding
+                        .of("0.0.0.0", GRPCPort)));
+                HostConfig hostConfig = HostConfig.builder()
+                        .binds(HostConfig.Bind
+                                .from("/Users/vnikolaenko/projects/Paddle_tests/src/main/resources/docker")
+                                .to("/etc/waves")
+                                .build())
+                        .portBindings(portBindings)
+                        .build();
+
                 ContainerConfig containerConfig = ContainerConfig.builder()
                         .hostConfig(hostConfig)
                         .image(conf.dockerImage)
-                        .exposedPorts("6869", "6888")
-                        .env(
-                                "WAVES_WALLET_SEED=TBXHUUcVx2n3Rgszpu5MCybRaR86JGmqCWp7XKh7czU57ox5dgjdX4K4",
-                                "WAVES_WALLET_PASSWORD=myWalletSuperPassword",
-                                "WAVES_NETWORK=testnet"
-                        )
-                        .volumes("/Users/vnikolaenko/projects/Paddle_tests/src/docker/:/etc/waves/")
+                        .exposedPorts("6863", String.valueOf(GRPCPort))
                         .build();
 
                 containerId = docker.createContainer(containerConfig).id();
@@ -543,6 +545,10 @@ public class Node extends com.wavesplatform.wavesj.Node {
     @Override
     public int waitBlocks(int blocksCount) {
         return throwErrorOrGet(() -> super.waitBlocks(blocksCount));
+    }
+
+    public static int getGRPCPort() {
+        return GRPCPort;
     }
 
 }

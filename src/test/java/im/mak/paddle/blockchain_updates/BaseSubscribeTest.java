@@ -17,7 +17,7 @@ public class BaseSubscribeTest {
     private static String dAppFunctionName;
 
     protected final Channel CHANNEL = ManagedChannelBuilder
-            .forAddress("devnet1-htz-nbg1-3.wavesnodes.com", 6881)
+            .forAddress("0.0.0.0", 6888)
             .usePlaintext()
             .build();
 

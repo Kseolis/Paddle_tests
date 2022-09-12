@@ -19,6 +19,7 @@ import com.wavesplatform.transactions.common.*;
 import com.wavesplatform.transactions.data.DataEntry;
 import im.mak.paddle.internal.Settings;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -27,6 +28,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
 
+import static im.mak.paddle.util.ScriptUtil.fromFile;
 import static java.util.Collections.singletonList;
 
 @SuppressWarnings("WeakerAccess")
@@ -39,7 +41,7 @@ public class Node extends com.wavesplatform.wavesj.Node {
             if (instance == null) {
                 try {
                     instance = new Node();
-                } catch (IOException|URISyntaxException e) {
+                } catch (IOException | URISyntaxException e) {
                     throw new NodeError(e);
                 } catch (NodeException e) {
                     throw new ApiError(e.getErrorCode(), e.getMessage());
@@ -70,7 +72,8 @@ public class Node extends com.wavesplatform.wavesj.Node {
                 docker = DefaultDockerClient.fromEnv().build();
                 try {
                     docker.pull(conf.dockerImage);
-                } catch (DockerException | InterruptedException ignore) {}
+                } catch (DockerException | InterruptedException ignore) {
+                }
 
                 URL apiUrl = new URL(conf.apiUrl);
                 int port = apiUrl.getPort() <= 0 ? 80 : apiUrl.getPort();
@@ -81,7 +84,13 @@ public class Node extends com.wavesplatform.wavesj.Node {
                 ContainerConfig containerConfig = ContainerConfig.builder()
                         .hostConfig(hostConfig)
                         .image(conf.dockerImage)
-                        .exposedPorts("6869")
+                        .exposedPorts("6869", "6888")
+                        .env(
+                                "WAVES_WALLET_SEED=TBXHUUcVx2n3Rgszpu5MCybRaR86JGmqCWp7XKh7czU57ox5dgjdX4K4",
+                                "WAVES_WALLET_PASSWORD=myWalletSuperPassword",
+                                "WAVES_NETWORK=testnet"
+                        )
+                        .volumes("/Users/vnikolaenko/projects/Paddle_tests/src/docker/:/etc/waves/")
                         .build();
 
                 containerId = docker.createContainer(containerConfig).id();
@@ -93,15 +102,18 @@ public class Node extends com.wavesplatform.wavesj.Node {
                     try {
                         try {
                             com.wavesplatform.wavesj.Node node = new com.wavesplatform.wavesj.Node(conf.apiUrl);
-                        } catch (URISyntaxException|IOException e) {
+                        } catch (URISyntaxException | IOException e) {
                             throw new NodeError(e);
                         } catch (NodeException e) {
                             throw new ApiError(e.getErrorCode(), e.getMessage());
                         }
                         isNodeReady = true;
                         break;
-                    } catch (NodeError|ApiError e) {
-                        try { Thread.sleep(1000); } catch (InterruptedException ignore) {}
+                    } catch (NodeError | ApiError e) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ignore) {
+                        }
                     }
                 }
                 if (!isNodeReady) throw new NodeError("Could not wait for node readiness");
@@ -117,7 +129,9 @@ public class Node extends com.wavesplatform.wavesj.Node {
                             docker.removeContainer(containerId);
                             docker.close();
                         }
-                    } catch (DockerException | InterruptedException e) { e.printStackTrace(); }
+                    } catch (DockerException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }));
         }
         return conf.apiUrl;

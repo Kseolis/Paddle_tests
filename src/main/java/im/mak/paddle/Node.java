@@ -33,13 +33,14 @@ import static java.util.Collections.singletonList;
 public class Node extends com.wavesplatform.wavesj.Node {
 
     private static Node instance;
+    private static final int GRPCPort = 6888;
 
     public static Node node() {
         if (instance == null) synchronized (Node.class) {
             if (instance == null) {
                 try {
                     instance = new Node();
-                } catch (IOException|URISyntaxException e) {
+                } catch (IOException | URISyntaxException e) {
                     throw new NodeError(e);
                 } catch (NodeException e) {
                     throw new ApiError(e.getErrorCode(), e.getMessage());
@@ -70,18 +71,28 @@ public class Node extends com.wavesplatform.wavesj.Node {
                 docker = DefaultDockerClient.fromEnv().build();
                 try {
                     docker.pull(conf.dockerImage);
-                } catch (DockerException | InterruptedException ignore) {}
+                } catch (DockerException | InterruptedException ignore) {
+                }
 
                 URL apiUrl = new URL(conf.apiUrl);
                 int port = apiUrl.getPort() <= 0 ? 80 : apiUrl.getPort();
                 Map<String, List<PortBinding>> portBindings = new HashMap<>();
-                portBindings.put("6869", singletonList(PortBinding
+                portBindings.put("6863", singletonList(PortBinding
                         .of("0.0.0.0", port)));
-                HostConfig hostConfig = HostConfig.builder().portBindings(portBindings).build();
+                portBindings.put(String.valueOf(GRPCPort), singletonList(PortBinding
+                        .of("0.0.0.0", GRPCPort)));
+                HostConfig hostConfig = HostConfig.builder()
+                        .binds(HostConfig.Bind
+                                .from("/Users/vnikolaenko/projects/Paddle_tests/src/main/resources/docker")
+                                .to("/etc/waves")
+                                .build())
+                        .portBindings(portBindings)
+                        .build();
+
                 ContainerConfig containerConfig = ContainerConfig.builder()
                         .hostConfig(hostConfig)
                         .image(conf.dockerImage)
-                        .exposedPorts("6869")
+                        .exposedPorts("6863", String.valueOf(GRPCPort))
                         .build();
 
                 containerId = docker.createContainer(containerConfig).id();
@@ -93,15 +104,18 @@ public class Node extends com.wavesplatform.wavesj.Node {
                     try {
                         try {
                             com.wavesplatform.wavesj.Node node = new com.wavesplatform.wavesj.Node(conf.apiUrl);
-                        } catch (URISyntaxException|IOException e) {
+                        } catch (URISyntaxException | IOException e) {
                             throw new NodeError(e);
                         } catch (NodeException e) {
                             throw new ApiError(e.getErrorCode(), e.getMessage());
                         }
                         isNodeReady = true;
                         break;
-                    } catch (NodeError|ApiError e) {
-                        try { Thread.sleep(1000); } catch (InterruptedException ignore) {}
+                    } catch (NodeError | ApiError e) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ignore) {
+                        }
                     }
                 }
                 if (!isNodeReady) throw new NodeError("Could not wait for node readiness");
@@ -117,7 +131,9 @@ public class Node extends com.wavesplatform.wavesj.Node {
                             docker.removeContainer(containerId);
                             docker.close();
                         }
-                    } catch (DockerException | InterruptedException e) { e.printStackTrace(); }
+                    } catch (DockerException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }));
         }
         return conf.apiUrl;
@@ -529,6 +545,10 @@ public class Node extends com.wavesplatform.wavesj.Node {
     @Override
     public int waitBlocks(int blocksCount) {
         return throwErrorOrGet(() -> super.waitBlocks(blocksCount));
+    }
+
+    public static int getGRPCPort() {
+        return GRPCPort;
     }
 
 }

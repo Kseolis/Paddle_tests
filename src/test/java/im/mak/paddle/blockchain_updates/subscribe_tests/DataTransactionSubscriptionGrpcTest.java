@@ -4,7 +4,7 @@ import com.wavesplatform.transactions.DataTransaction;
 import com.wavesplatform.transactions.common.Base64String;
 import com.wavesplatform.transactions.data.*;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.helpers.transaction_senders.DataTransactionsSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,7 +27,7 @@ import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class DataTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
+public class DataTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private String senderAddress;
     private String senderPublicKey;
     private Account senderAccount;

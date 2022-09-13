@@ -2,7 +2,7 @@ package im.mak.paddle.blockchain_updates.subscribe_tests;
 
 import com.wavesplatform.crypto.base.Base58;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
 import im.mak.paddle.helpers.transaction_senders.LeaseTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +26,7 @@ import static im.mak.paddle.util.Constants.DEFAULT_FAUCET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class LeaseTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
+public class LeaseTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private Account sender;
     private String senderPublicKey;
     private String senderAddress;

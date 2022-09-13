@@ -1,7 +1,7 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests;
 
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
 import im.mak.paddle.helpers.transaction_senders.CreateAliasTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,7 +21,7 @@ import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class AliasTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
+public class AliasTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private static Account account;
     private static String accountAddress;
     private static String accountPublicKey;

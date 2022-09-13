@@ -4,13 +4,13 @@ import com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdates.GetBlockUpda
 import com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdates.GetBlockUpdatesRangeResponse;
 
 import com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdatesApiGrpc.BlockchainUpdatesApiBlockingStub;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdatesApiGrpc.newBlockingStub;
 
-class GetBlockUpdatesRangeSubscribeTest extends BaseSubscribeTest {
+class GetBlockUpdatesRangeGrpcTest extends BaseGrpcTest {
     @Test
     void getBlockUpdatesRangeTest() {
         GetBlockUpdatesRangeRequest request = GetBlockUpdatesRangeRequest

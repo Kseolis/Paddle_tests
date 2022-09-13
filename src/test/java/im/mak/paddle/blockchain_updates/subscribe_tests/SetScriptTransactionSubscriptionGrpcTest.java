@@ -2,7 +2,7 @@ package im.mak.paddle.blockchain_updates.subscribe_tests;
 
 import com.wavesplatform.transactions.common.Base64String;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.helpers.transaction_senders.SetScriptTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +21,7 @@ import static im.mak.paddle.util.ScriptUtil.fromFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SetScriptTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
+public class SetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private Account account;
     private String address;
     private String publicKey;

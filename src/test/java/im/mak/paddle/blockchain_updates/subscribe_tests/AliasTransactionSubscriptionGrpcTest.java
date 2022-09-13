@@ -56,7 +56,6 @@ public class AliasTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         CreateAliasTransactionSender txSender =
                 new CreateAliasTransactionSender(account, newAlias, MIN_FEE, LATEST_VERSION);
-
         txSender.createAliasTransactionSender();
 
         String txId = txSender.getCreateAliasTx().id().toString();
@@ -75,10 +74,9 @@ public class AliasTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         CreateAliasTransactionSender txSender =
                 new CreateAliasTransactionSender(dAppAccount, newAlias, SUM_FEE, LATEST_VERSION);
+        txSender.createAliasTransactionSender();
 
         String txId = txSender.getCreateAliasTx().id().toString();
-
-        txSender.createAliasTransactionSender();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, account, height, height, txId);
         checkAliasSubscribe(amountBefore, amountAfter, dAppAccountAddress, dAppAccountPublicKey, SUM_FEE);

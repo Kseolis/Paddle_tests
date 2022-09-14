@@ -37,7 +37,6 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static PrivateKey recipientPrivateKey;
     protected static PublicKey recipientPublicKey;
 
-    protected static Account secondRecipient;
     protected static Amount wavesAmount;
 
     protected static Amount orderAmount;
@@ -83,6 +82,10 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static InvokeScriptTransactionSender invokeTx;
     protected static Id invokeTxId;
 
+    protected static AssetId assetIdForSponsorFee;
+    protected static SponsorFeeTransactionSender sponsorFeeTx;
+    protected static Id sponsorFeeTxId;
+
     protected static int height;
 
     private static final Base64String base64String = new Base64String(randomNumAndLetterString(6));
@@ -90,16 +93,21 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     private static final BooleanEntry booleanEntry = BooleanEntry.as("Boolean", true);
     private static final IntegerEntry integerEntry = IntegerEntry.as("Integer", getRandomInt(100, 100000));
     private static final StringEntry stringEntry = StringEntry.as("String", "string");
-    private static final String scriptFromFile = fromFile("ride_scripts/permissionOnUpdatingKeyValues.ride");
+    private static final String scriptFromFile = fromFile("ride_scripts/defaultAssetExpression.ride");
     protected static final Base64String script = node().compileScript(scriptFromFile).script();
 
     @BeforeAll
     static void setUp() {
         mainSetUp();
         async(
+                // Create Alias transaction
                 BaseGetBlockUpdateTest::aliasSetUp,
+                // Data transaction
                 BaseGetBlockUpdateTest::dataSetUp,
+                // Invoke transaction
                 BaseGetBlockUpdateTest::invokeSetUp,
+                // SponsorFee transaction
+                BaseGetBlockUpdateTest::sponsorFeeSetUp,
                 () -> {
                     // Issue transaction
                     issueSetUp();
@@ -140,7 +148,6 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                     recipientPrivateKey = recipient.privateKey();
                     recipientPublicKey = recipient.publicKey();
                 },
-                () -> secondRecipient = new Account(DEFAULT_FAUCET),
                 () -> newAlias = randomNumAndLetterString(15),
                 () -> {
                     assetName = getRandomInt(1, 900000) + "asset";
@@ -178,7 +185,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         burnTx = new BurnTransactionSender(
                 sender,
                 assetAmount,
-                issueTx.assetId(),
+                assetId,
                 SUM_FEE,
                 BurnTransaction.LATEST_VERSION
         );
@@ -213,7 +220,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void massTransferSetUp() {
-        accountList = accountListGenerator(MAX_NUM_ACCOUNT_FOR_MASS_TRANSFER);
+        accountList = accountListGenerator(MIN_NUM_ACCOUNT_FOR_MASS_TRANSFER);
         massTransferTx = new MassTransferTransactionSender(sender, assetId, assetAmount.value(), accountList);
         massTransferTx.massTransferTransactionSender(MassTransferTransaction.LATEST_VERSION);
         massTransferTxId = massTransferTx.getMassTransferTx().id();
@@ -237,8 +244,16 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         setScriptTxId = setScriptTx.getSetScriptTx().id();
     }
 
+    private static void sponsorFeeSetUp() {
+        assetIdForSponsorFee = sender.issue(i -> i.name("sponsorFeeAsset")).tx().assetId();
+
+        sponsorFeeTx = new SponsorFeeTransactionSender(sender, wavesAmount.value(), assetIdForSponsorFee);
+        sponsorFeeTx.sponsorFeeTransactionSender(SUM_FEE, SponsorFeeTransaction.LATEST_VERSION);
+        sponsorFeeTxId = sponsorFeeTx.getSponsorTx().id();
+    }
+
     private static void exchangeSetUp() {
-        long sumSellerTokens = sender.getWavesBalance() - MIN_FEE_FOR_EXCHANGE;
+        long sumSellerTokens = wavesAmount.value();
         long offerForToken = 1000;
         long amountBefore = sender.getWavesBalance() - ONE_WAVES;
 

@@ -18,11 +18,13 @@ import im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalanc
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.wavesplatform.transactions.TransferTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
@@ -87,6 +89,10 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static Id sponsorFeeTxId;
 
     protected static int height;
+    protected static List<Integer> heightsList = new ArrayList<>();
+
+    protected static int indexCountTransactions = -1;
+    protected static List<Integer> transactionsIndexList = new ArrayList<>();
 
     private static final Base64String base64String = new Base64String(randomNumAndLetterString(6));
     private static final BinaryEntry binaryEntry = BinaryEntry.as("BinEntry", base64String);
@@ -99,52 +105,52 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     @BeforeAll
     static void setUp() {
         mainSetUp();
-        async(
-                // Create Alias transaction
-                BaseGetBlockUpdateTest::aliasSetUp,
-                // Data transaction
-                BaseGetBlockUpdateTest::dataSetUp,
-                // Invoke transaction
-                BaseGetBlockUpdateTest::invokeSetUp,
-                // SponsorFee transaction
-                BaseGetBlockUpdateTest::sponsorFeeSetUp,
-                () -> {
-                    // Issue transaction
-                    issueSetUp();
-                    // Burn transaction
-                    burnSetUp();
-                    // Reissue transaction
-                    reissueSetUp();
-                    // SetAssetScript transaction
-                    setAssetScriptSetUp();
-                    // SetScript transaction
-                    setScriptSetUp();
-                    // Transfer transaction
-                    transferSetUp();
-                    // MassTransfer transaction
-                    massTransferSetUp();
-                    // Exchange transaction
-                    exchangeSetUp();
-                },
-                () -> {
-                    // Lease transaction
-                    leaseSetUp();
-                    // LeaseCancel transaction
-                    leaseCancelSetUp();
-                }
-        );
+        // Issue transaction
+        issueSetUp();
+        // Transfer transaction
+        transferSetUp();
+        // Burn transaction
+        burnSetUp();
+        // Reissue transaction
+        reissueSetUp();
+        // Exchange transaction
+        exchangeSetUp();
+        // Lease transaction
+        leaseSetUp();
+        // LeaseCancel transaction
+        leaseCancelSetUp();
+        // Create Alias transaction
+        aliasSetUp();
+        // MassTransfer transaction
+        massTransferSetUp();
+        // Data transaction
+        dataSetUp();
+        // SetScript transaction
+        setScriptSetUp();
+        // SponsorFee transaction
+        sponsorFeeSetUp();
+        // SetAssetScript transaction
+        setAssetScriptSetUp();
+        // Invoke transaction
+    //     invokeSetUp();
     }
-
 
     private static void mainSetUp() {
         async(
                 () -> {
-                    sender = new Account(DEFAULT_FAUCET);
+                    sender = new Account(DEFAULT_FAUCET * 2);
+                    indexCountTransactions += 1;
+
                     senderPrivateKey = sender.privateKey();
                     senderPublicKey = sender.publicKey();
+
+                    assetIdForSponsorFee = sender.issue(i -> i.name("sponsorFeeAsset")).tx().assetId();
+                    indexCountTransactions += 1;
                 },
                 () -> {
                     recipient = new Account(DEFAULT_FAUCET);
+                    indexCountTransactions += 1;
+
                     recipientPrivateKey = recipient.privateKey();
                     recipientPublicKey = recipient.publicKey();
                 },
@@ -156,6 +162,8 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                 },
                 () -> wavesAmount = Amount.of(10)
         );
+        height = node().getHeight();
+        heightsList.add(height);
     }
 
     private static void issueSetUp() {
@@ -169,16 +177,19 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         ).tx();
         assetId = issueTx.assetId();
         assetAmount = Amount.of(50_000, assetId);
+        checkHeight();
     }
 
     private static void transferSetUp() {
         transferTx = new TransferTransactionSender(assetAmount, sender, recipient, SUM_FEE);
         transferTx.transferTransactionSender(ADDRESS, LATEST_VERSION);
+        checkHeight();
     }
 
     private static void reissueSetUp() {
         reissueTx = new ReissueTransactionSender(sender, assetAmount, assetId);
         reissueTx.reissueTransactionSender(SUM_FEE, ReissueTransaction.LATEST_VERSION);
+        checkHeight();
     }
 
     private static void burnSetUp() {
@@ -190,12 +201,14 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                 BurnTransaction.LATEST_VERSION
         );
         burnTx.burnTransactionSender();
+        checkHeight();
     }
 
     private static void leaseSetUp() {
         leaseTx = new LeaseTransactionSender(sender, recipient);
         leaseTx.leaseTransactionSender(MIN_TRANSACTION_SUM, MIN_FEE, LeaseTransaction.LATEST_VERSION);
         leaseTxId = leaseTx.getTxInfo().tx().id();
+        checkHeight();
     }
 
     private static void leaseCancelSetUp() {
@@ -206,17 +219,19 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                 MIN_FEE,
                 LeaseCancelTransaction.LATEST_VERSION
         );
+        checkHeight();
     }
 
     private static void aliasSetUp() {
         aliasTx = new CreateAliasTransactionSender(
                 sender,
                 newAlias,
-                SUM_FEE,
+                123456789,
                 CreateAliasTransaction.LATEST_VERSION
         );
         aliasTx.createAliasTransactionSender();
         aliasTxId = aliasTx.getCreateAliasTx().id();
+        checkHeight();
     }
 
     private static void massTransferSetUp() {
@@ -224,11 +239,12 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         massTransferTx = new MassTransferTransactionSender(sender, assetId, assetAmount.value(), accountList);
         massTransferTx.massTransferTransactionSender(MassTransferTransaction.LATEST_VERSION);
         massTransferTxId = massTransferTx.getMassTransferTx().id();
+        checkHeight();
     }
 
     private static void setAssetScriptSetUp() {
         setAssetScriptTx = sender.setAssetScript(assetId, script).tx();
-        height = node().getHeight();
+        checkHeight();
     }
 
     private static void dataSetUp() {
@@ -236,20 +252,21 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         dataTx = new DataTransactionsSender(sender, dataEntries);
         dataTx.dataEntryTransactionSender(sender, DataTransaction.LATEST_VERSION);
         dataTransferTxId = dataTx.getTxInfo().tx().id();
+        checkHeight();
     }
 
     private static void setScriptSetUp() {
         setScriptTx = new SetScriptTransactionSender(sender, script);
         setScriptTx.setScriptTransactionSender(MIN_FEE, SetScriptTransaction.LATEST_VERSION);
         setScriptTxId = setScriptTx.getSetScriptTx().id();
+        checkHeight();
     }
 
     private static void sponsorFeeSetUp() {
-        assetIdForSponsorFee = sender.issue(i -> i.name("sponsorFeeAsset")).tx().assetId();
-
         sponsorFeeTx = new SponsorFeeTransactionSender(sender, wavesAmount.value(), assetIdForSponsorFee);
         sponsorFeeTx.sponsorFeeTransactionSender(SUM_FEE, SponsorFeeTransaction.LATEST_VERSION);
         sponsorFeeTxId = sponsorFeeTx.getSponsorTx().id();
+        checkHeight();
     }
 
     private static void exchangeSetUp() {
@@ -276,25 +293,20 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                 EXTRA_FEE,
                 ExchangeTransaction.LATEST_VERSION
         );
+        checkHeight();
     }
 
-    private static void invokeSetUp() {
-        testData = new PrepareInvokeTestsData();
-        testData.prepareDataForReissueTests();
-        calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+    private static void checkHeight() {
+        indexCountTransactions += 1;
+        if (height < node().getHeight()) {
+            indexCountTransactions = 0;
+            height = node().getHeight();
+            heightsList.add(height);
+        }
+        transactionsIndexList.add(indexCountTransactions);
+    }
 
-        final AssetId assetId = testData.getAssetId();
-        final DAppCall dAppCall = testData.getDAppCall();
-        final Account caller = testData.getCallerAccount();
-        final Account assetDAppAccount = testData.getAssetDAppAccount();
-        final List<Amount> amounts = testData.getAmounts();
-
-        invokeTx = new InvokeScriptTransactionSender(caller, assetDAppAccount, dAppCall);
-
-        setVersion(InvokeScriptTransaction.LATEST_VERSION);
-        calcBalances.balancesAfterReissueAssetInvoke(caller, assetDAppAccount, amounts, assetId);
-        invokeTx.invokeSender();
-
-        invokeTxId = invokeTx.getInvokeScriptTx().id();
+    public static List<Integer> getTransactionsIndexList() {
+        return transactionsIndexList;
     }
 }

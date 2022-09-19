@@ -7,9 +7,16 @@ import com.wavesplatform.protobuf.transaction.TransactionOuterClass.Transaction;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getMicroBlockInfo;
 
 public class TransactionsHandler {
+    private static Transaction wavesTx;
+    private static Transaction ethTx;
 
     public static Transaction getWavesTransactionAtIndex(int index) {
-        return getMicroBlockInfo().getTransactions(index).getWavesTransaction();
+        return wavesTx;
+    }
+
+    public static void setWavesTransactionAtIndex(Transaction tx) {
+        wavesTx = tx;
+        // getMicroBlockInfo().getTransactions(index).getWavesTransaction()
     }
 
     public static ByteString getEthereumTransactionAtIndex(int index) {

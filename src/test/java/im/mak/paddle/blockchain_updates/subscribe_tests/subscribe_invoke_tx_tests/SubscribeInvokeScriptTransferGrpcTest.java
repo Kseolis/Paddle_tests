@@ -62,7 +62,7 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
         String txId = txSender.getInvokeScriptId();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, caller, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         prepareInvoke(assetDAppAccount, testData);
 
         long dAppAssetAmountAfter = Long.parseLong(getIssueAssetData().get(VOLUME)) - assetAmountValue;

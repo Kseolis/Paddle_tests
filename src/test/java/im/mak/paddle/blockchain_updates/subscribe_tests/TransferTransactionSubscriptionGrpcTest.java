@@ -71,7 +71,7 @@ public class TransferTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         String txId = txSender.getTransferTx().id().toString();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, senderAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkTransferSubscribe(txSender, DEFAULT_FAUCET, 0, MIN_FEE);
     }
 
@@ -93,7 +93,7 @@ public class TransferTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         txSender.transferTransactionSender(ADDRESS, LATEST_VERSION);
         String txId = txSender.getTransferTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, senderAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkTransferSubscribe(txSender, issuedAsset.quantity(), assetAmount, MIN_FEE);
     }
 
@@ -118,7 +118,7 @@ public class TransferTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         txSender.transferTransactionSender(ADDRESS, LATEST_VERSION);
         String txId = txSender.getTransferTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, senderAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkTransferSubscribe(txSender, issuedAsset.quantity(), assetAmount, SUM_FEE);
     }
 

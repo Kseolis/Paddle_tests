@@ -79,7 +79,7 @@ public class SetAssetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest 
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkSetAssetSubscribe(setAssetScriptTx, assetIdToString);
 
     }

@@ -57,7 +57,7 @@ public class SubscribeInvokeIssueGrpcTest extends BaseGrpcTest {
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, assetDAppAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         prepareInvoke(assetDAppAccount, testData);
 
         assertionsCheck(

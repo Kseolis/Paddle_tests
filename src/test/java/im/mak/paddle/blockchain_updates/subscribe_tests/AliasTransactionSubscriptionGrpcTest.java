@@ -10,16 +10,11 @@ import org.junit.jupiter.api.Test;
 
 import static com.wavesplatform.transactions.CreateAliasTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
+import static im.mak.paddle.blockchain_updates.GrpcTransactionsCheckers.checkAliasSubscribe;
 import static im.mak.paddle.helpers.Randomizer.randomNumAndLetterString;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.AliasTransactionHandler.getAliasFromAliasTransaction;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class AliasTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private static Account account;
@@ -61,8 +56,8 @@ public class AliasTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         String txId = txSender.getCreateAliasTx().id().toString();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
-        checkAliasSubscribe(amountBefore, amountAfter, accountAddress, accountPublicKey, MIN_FEE);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
+        checkAliasSubscribe(newAlias, amountBefore, amountAfter, accountAddress, accountPublicKey, MIN_FEE);
     }
 
     @Test
@@ -78,21 +73,7 @@ public class AliasTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         String txId = txSender.getCreateAliasTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
-        checkAliasSubscribe(amountBefore, amountAfter, dAppAccountAddress, dAppAccountPublicKey, SUM_FEE);
-    }
-
-    private void checkAliasSubscribe(long amountBefore, long amountAfter, String address, String publicKey, long fee) {
-        assertAll(
-                () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
-                () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(publicKey),
-                () -> assertThat(getAliasFromAliasTransaction(0)).isEqualTo(newAlias),
-                () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),
-                () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(fee),
-                () -> assertThat(getAddress(0, 0)).isEqualTo(address),
-                () -> assertThat(getAmountBefore(0, 0)).isEqualTo(amountBefore),
-                () -> assertThat(getAmountAfter(0, 0)).isEqualTo(amountAfter),
-                () -> assertThat(getTransactionId()).isEqualTo(getTransactionId())
-        );
+        subscribeResponseHandler(CHANNEL, height, height, txId);
+        checkAliasSubscribe(newAlias, amountBefore, amountAfter, dAppAccountAddress, dAppAccountPublicKey, SUM_FEE);
     }
 }

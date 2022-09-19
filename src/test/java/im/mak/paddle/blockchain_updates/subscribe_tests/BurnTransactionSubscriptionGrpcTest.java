@@ -80,7 +80,7 @@ public class BurnTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         quantityAfterBurn = assetQuantity - amount.value();
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkBurnSubscribe(assetId.toString(), amount.value(), SUM_FEE, compileScript);
     }
 
@@ -108,7 +108,7 @@ public class BurnTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         quantityAfterBurn = assetQuantity - amount.value();
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkBurnSubscribe(assetId.toString(), amount.value(), MIN_FEE, script);
     }
 

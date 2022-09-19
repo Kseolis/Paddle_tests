@@ -69,7 +69,7 @@ public class LeaseTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         String leaseId = txSender.getLeaseTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, sender, height, height, leaseId);
+        subscribeResponseHandler(CHANNEL, height, height, leaseId);
         checkLeaseSubscribe(leaseId, MIN_TRANSACTION_SUM, MIN_FEE);
     }
 
@@ -87,7 +87,7 @@ public class LeaseTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         String leaseId = txSender.getLeaseTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, accWithDApp, height, height, leaseId);
+        subscribeResponseHandler(CHANNEL, height, height, leaseId);
         checkLeaseSubscribe(leaseId, amountLease, SUM_FEE);
     }
 

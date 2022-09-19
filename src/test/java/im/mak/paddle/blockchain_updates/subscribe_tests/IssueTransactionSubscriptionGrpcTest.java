@@ -78,7 +78,7 @@ public class IssueTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkIssueTransactionSubscribe(assetQuantity, reissue);
     }
 
@@ -105,7 +105,7 @@ public class IssueTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkIssueTransactionSubscribe(assetQuantity, reissue);
     }
 
@@ -127,7 +127,7 @@ public class IssueTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkIssueTransactionSubscribe(1, false);
     }
 

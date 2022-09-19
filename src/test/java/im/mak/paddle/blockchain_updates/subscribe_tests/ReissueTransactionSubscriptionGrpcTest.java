@@ -79,7 +79,7 @@ public class ReissueTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkReissueSubscribe(txSender);
     }
 
@@ -106,7 +106,7 @@ public class ReissueTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkReissueSubscribe(txSender);
     }
 

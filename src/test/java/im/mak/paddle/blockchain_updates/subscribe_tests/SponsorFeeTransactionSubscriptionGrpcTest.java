@@ -74,7 +74,7 @@ public class SponsorFeeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         String txId = txSender.getSponsorTx().id().toString();
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkSponsorFeeSubscribe(txSender, SUM_FEE);
     }
 
@@ -100,7 +100,7 @@ public class SponsorFeeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         String txId = txSender.getSponsorTx().id().toString();
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, dAppAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkSponsorFeeSubscribe(txSender, SUM_FEE);
     }
 
@@ -128,7 +128,7 @@ public class SponsorFeeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         String txId = txSender.getSponsorTx().id().toString();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
 
         checkSponsorFeeSubscribe(txSender, MIN_FEE);
     }

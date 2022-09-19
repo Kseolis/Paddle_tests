@@ -78,7 +78,7 @@ public class MassTransferTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         String txId = txSender.getMassTransferTx().id().toString();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, senderAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
 
         checkMassTransferSubscribe(senderPublicKey, senderAddress, txSender);
     }
@@ -96,7 +96,7 @@ public class MassTransferTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         String txId = txSender.getMassTransferTx().id().toString();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, dAppAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
 
         checkMassTransferSubscribe(dAppAccountPublicKey, dAppAccountAddress, txSender);
     }

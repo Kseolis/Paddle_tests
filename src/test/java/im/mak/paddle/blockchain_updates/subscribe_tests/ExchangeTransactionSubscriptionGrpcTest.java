@@ -98,7 +98,7 @@ public class ExchangeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         txSender.exchangeTransactionSender(amount.value(), price.value(), 0, LATEST_VERSION);
         String txId = txSender.getTxInfo().tx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, buyer, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
 
         checkExchangeSubscribe(MIN_FEE_FOR_EXCHANGE, "");
         checkBalancesForExchangeWithWaves(amountBefore);
@@ -126,7 +126,7 @@ public class ExchangeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         txSender.exchangeTransactionSender(amount.value(), price.value(), EXCHANGE_FEE_FOR_SMART_ASSETS, LATEST_VERSION);
         String txId = txSender.getTxInfo().tx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, buyer, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkExchangeSubscribe(fee, amount.assetId().toString());
         checkBalancesForExchangeWithAssets(wavesBuyerAmountBefore, wavesSellerAmountBefore, EXCHANGE_FEE_FOR_SMART_ASSETS);
     }
@@ -151,7 +151,7 @@ public class ExchangeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         txSender.exchangeTransactionSender(amount.value(), price.value(), EXTRA_FEE, LATEST_VERSION);
         String txId = txSender.getTxInfo().tx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, buyer, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkExchangeSubscribe(fee, amount.assetId().toString());
         checkBalancesForExchangeWithAssets(wavesBuyerAmountBefore, wavesSellerAmountBefore, EXTRA_FEE);
     }

@@ -59,7 +59,7 @@ public class DataTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         String txId = txSender.getTxInfo().tx().id().toString();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, senderAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkDataTransactionSubscribe(txSender);
         checkDataEntries(txSender.getDataTx());
     }

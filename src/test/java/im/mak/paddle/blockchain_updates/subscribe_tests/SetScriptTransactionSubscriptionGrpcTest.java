@@ -47,7 +47,7 @@ public class SetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         wavesAmountAfterSetAssetScript = DEFAULT_FAUCET - txSender.getFee();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkSetScriptSubscribe(txSender);
     }
 
@@ -63,7 +63,7 @@ public class SetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         wavesAmountAfterSetAssetScript = DEFAULT_FAUCET - txSender.getFee();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkSetScriptSubscribe(txSender);
     }
 
@@ -80,7 +80,7 @@ public class SetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         wavesAmountAfterSetAssetScript = DEFAULT_FAUCET - txSender.getFee();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkSetScriptSubscribe(txSender);
     }
 
@@ -97,7 +97,7 @@ public class SetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         wavesAmountAfterSetAssetScript = DEFAULT_FAUCET - txSender.getFee();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkSetScriptSubscribe(txSender);
     }
 

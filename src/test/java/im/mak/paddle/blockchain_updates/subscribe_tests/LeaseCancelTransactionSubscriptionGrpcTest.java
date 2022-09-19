@@ -65,7 +65,7 @@ public class LeaseCancelTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         txSender.leaseCancelTransactionSender(leaseId, amountLease, MIN_FEE, LATEST_VERSION);
         final String leaseCancelId = txSender.getLeaseCancelTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, sender, height, height, leaseCancelId);
+        subscribeResponseHandler(CHANNEL, height, height, leaseCancelId);
         checkLeaseCancelSubscribe(leaseIdString, leaseCancelId, MIN_FEE);
     }
 
@@ -84,7 +84,7 @@ public class LeaseCancelTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         txSender.leaseCancelTransactionSender(leaseId, amountLease, SUM_FEE, LATEST_VERSION);
         final String leaseCancelId = txSender.getLeaseCancelTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, accWithDApp, height, height, leaseCancelId);
+        subscribeResponseHandler(CHANNEL, height, height, leaseCancelId);
         checkLeaseCancelSubscribe(leaseIdString, leaseCancelId, SUM_FEE);
     }
 

@@ -59,7 +59,7 @@ public class SubscribeInvokeLeaseCancelGrpcTest extends BaseGrpcTest {
         final String txId = txSender.getInvokeScriptId();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, dAppAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         prepareInvoke(dAppAccount, testData);
 
         assertionsCheck(amountValue, txId);

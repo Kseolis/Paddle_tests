@@ -60,7 +60,7 @@ public class SubscribeInvokeSponsorFeeGrpcTest extends BaseGrpcTest {
         String txId = txSender.getInvokeScriptId();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, assetDAppAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         prepareInvoke(assetDAppAccount, testData);
 
         assertionsCheck(assetAmountValue, txId);

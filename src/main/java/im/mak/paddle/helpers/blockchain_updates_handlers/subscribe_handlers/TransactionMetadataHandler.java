@@ -3,7 +3,7 @@ package im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers;
 import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.events.protobuf.Events;
 
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getAppend;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.getAppend;
 
 public class TransactionMetadataHandler {
     public static Events.TransactionMetadata getElementTransactionMetadata(int metadataIndex) {

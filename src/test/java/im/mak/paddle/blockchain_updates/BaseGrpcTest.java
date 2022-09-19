@@ -11,7 +11,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 @Execution(ExecutionMode.SAME_THREAD)
 public class BaseGrpcTest {
     protected int height;
-    protected static final long CHAIN_ID = 68;
+    public static final long CHAIN_ID = 68;
     private static String dAppAccountPublicKeyHash;
     private static String dAppAccountAddress;
     private static String dAppFunctionName;

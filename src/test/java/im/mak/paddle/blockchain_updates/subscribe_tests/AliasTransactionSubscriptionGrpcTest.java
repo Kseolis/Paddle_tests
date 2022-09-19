@@ -2,7 +2,7 @@ package im.mak.paddle.blockchain_updates.subscribe_tests;
 
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
-import im.mak.paddle.blockchain_updates.GrpcTransactionsCheckers;
+import im.mak.paddle.blockchain_updates.transactions_checkers.GrpcAliasCheckers;
 import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
 import im.mak.paddle.helpers.transaction_senders.CreateAliasTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
@@ -58,9 +58,8 @@ public class AliasTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
 
-        GrpcTransactionsCheckers grpcTransactionsCheckers =
-                new GrpcTransactionsCheckers(0, accountAddress, accountPublicKey, txId);
-        grpcTransactionsCheckers.checkAliasGrpc(newAlias, amountBefore, amountAfter, MIN_FEE);
+        GrpcAliasCheckers grpcAliasCheckers = new GrpcAliasCheckers(0, accountAddress, accountPublicKey, txId);
+        grpcAliasCheckers.checkAliasGrpc(newAlias, amountBefore, amountAfter, MIN_FEE);
     }
 
     @Test
@@ -77,8 +76,7 @@ public class AliasTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         String txId = txSender.getCreateAliasTx().id().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        GrpcTransactionsCheckers grpcTransactionsCheckers =
-                new GrpcTransactionsCheckers(0, dAppAccountAddress, dAppAccountPublicKey, txId);
-        grpcTransactionsCheckers.checkAliasGrpc(newAlias, amountBefore, amountAfter, SUM_FEE);
+        GrpcAliasCheckers grpcAliasCheckers = new GrpcAliasCheckers(0, dAppAccountAddress, dAppAccountPublicKey, txId);
+        grpcAliasCheckers.checkAliasGrpc(newAlias, amountBefore, amountAfter, SUM_FEE);
     }
 }

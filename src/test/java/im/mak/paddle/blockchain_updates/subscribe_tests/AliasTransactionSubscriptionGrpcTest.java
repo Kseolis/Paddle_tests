@@ -12,7 +12,7 @@ import static com.wavesplatform.transactions.CreateAliasTransaction.LATEST_VERSI
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.blockchain_updates.GrpcTransactionsCheckers.checkAliasSubscribe;
 import static im.mak.paddle.helpers.Randomizer.randomNumAndLetterString;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 

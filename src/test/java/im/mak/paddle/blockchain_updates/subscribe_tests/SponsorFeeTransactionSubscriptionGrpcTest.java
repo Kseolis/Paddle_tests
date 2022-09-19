@@ -3,7 +3,7 @@ package im.mak.paddle.blockchain_updates.subscribe_tests;
 import com.wavesplatform.transactions.IssueTransaction;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
 import im.mak.paddle.helpers.transaction_senders.SponsorFeeTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.SponsorFeeTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTransactionId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.SponsorFeeTransactionHandler.getAmountFromSponsorFee;
@@ -25,7 +25,7 @@ import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SponsorFeeTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
+public class SponsorFeeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private static int assetQuantity;
     private static int assetDecimals;
 
@@ -74,7 +74,7 @@ public class SponsorFeeTransactionSubscriptionSubscribeTest extends BaseSubscrib
         String txId = txSender.getSponsorTx().id().toString();
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkSponsorFeeSubscribe(txSender, SUM_FEE);
     }
 
@@ -100,7 +100,7 @@ public class SponsorFeeTransactionSubscriptionSubscribeTest extends BaseSubscrib
         String txId = txSender.getSponsorTx().id().toString();
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, dAppAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkSponsorFeeSubscribe(txSender, SUM_FEE);
     }
 
@@ -128,7 +128,7 @@ public class SponsorFeeTransactionSubscriptionSubscribeTest extends BaseSubscrib
         String txId = txSender.getSponsorTx().id().toString();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
 
         checkSponsorFeeSubscribe(txSender, MIN_FEE);
     }

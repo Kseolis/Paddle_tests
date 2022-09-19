@@ -3,7 +3,7 @@ package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tes
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.dapp.DAppCall;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTx;
@@ -16,19 +16,18 @@ import java.util.List;
 
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
-import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeMetadataAssertions.*;
-import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeMetadataAssertions.checkDataMetadata;
-import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
-import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateDataEntries;
-import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
-import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.checkPaymentsSubscribe;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeMetadataAssertions.checkMainMetadata;
+import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeMetadataAssertions.checkPaymentMetadata;
+import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeStateUpdateAssertions.*;
+import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultLease.getInvokeMetadataCancelLeaseId;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Constants.*;
-import static im.mak.paddle.util.Constants.WAVES_STRING_ID;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SubscribeInvokeDeleteEntrySubscribeTest extends BaseSubscribeTest {
+public class SubscribeInvokeLeaseCancelGrpcTest extends BaseGrpcTest {
     private static PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
 
@@ -38,11 +37,11 @@ public class SubscribeInvokeDeleteEntrySubscribeTest extends BaseSubscribeTest {
     }
 
     @Test
-    @DisplayName("subscribe invoke with DeleteEntry")
-    void subscribeInvokeWithDeleteEntry() {
-        String intValueAfter = String.valueOf(0);
-        testData.prepareDataForDeleteEntryTests();
+    @DisplayName("subscribe invoke with LeaseCancel and WAVES payment")
+    void subscribeInvokeWithLeaseCancel() {
+        long amountValue = testData.getWavesAmount().value();
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+        testData.prepareDataForLeaseCancelTests();
 
         final AssetId assetId = testData.getAssetId();
         final DAppCall dAppCall = testData.getDAppCall();
@@ -60,24 +59,19 @@ public class SubscribeInvokeDeleteEntrySubscribeTest extends BaseSubscribeTest {
         final String txId = txSender.getInvokeScriptId();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, dAppAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         prepareInvoke(dAppAccount, testData);
 
-        assertionsCheck(testData.getWavesAmount().value(),
-                String.valueOf(testData.getIntArg()),
-                intValueAfter,
-                txId);
+        assertionsCheck(amountValue, txId);
     }
 
-    private void assertionsCheck(long payment, String intVal, String valAfter, String txId) {
+    private void assertionsCheck(long amountValue, String txId) {
         assertAll(
                 () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId),
-                () -> checkPaymentsSubscribe(0, 0, payment, ""),
-
                 () -> checkMainMetadata(0),
-                () -> checkArgumentsMetadata(0, 0, INTEGER, intVal),
-                () -> checkPaymentMetadata(0, 0, null, payment),
-                () -> checkDataMetadata(0, 0, INTEGER, DATA_ENTRY_INT, intVal),
+                () -> checkPaymentsSubscribe(0, 0, amountValue, ""),
+                () -> checkPaymentMetadata(0, 0, null, amountValue),
+                () -> assertThat(getInvokeMetadataCancelLeaseId(0, 0)).isEqualTo(testData.getLeaseId()),
 
                 () -> checkStateUpdateBalance(0,
                         0,
@@ -88,12 +82,22 @@ public class SubscribeInvokeDeleteEntrySubscribeTest extends BaseSubscribeTest {
 
                 () -> checkStateUpdateBalance(0,
                         1,
-                        getDAppAccountAddress(),
-                        "",
+                        testData.getDAppAddress(),
+                        null,
                         calcBalances.getDAppBalanceWavesBeforeTransaction(),
                         calcBalances.getDAppBalanceWavesAfterTransaction()),
 
-                () -> checkStateUpdateDataEntries(0, 0, getDAppAccountAddress(), DATA_ENTRY_INT, valAfter)
+                () -> checkStateUpdateBeforeLeasing(0, 0, testData.getCallerAddress(), amountValue, 0),
+                () -> checkStateUpdateBeforeLeasing(0, 1, testData.getDAppAddress(), 0, amountValue),
+
+                () -> checkStateUpdateAfterLeasing(0, 0, testData.getCallerAddress(), 0, 0),
+                () -> checkStateUpdateAfterLeasing(0, 1, testData.getDAppAddress(), 0, 0),
+
+                () -> checkStateUpdateIndividualLeases(0, 0,
+                        amountValue,
+                        testData.getDAppPublicKey(),
+                        testData.getCallerAddress(),
+                        INACTIVE_STATUS_LEASE)
         );
     }
 }

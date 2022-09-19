@@ -3,7 +3,7 @@ package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tes
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.dapp.DAppCall;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTx;
@@ -19,14 +19,14 @@ import static im.mak.paddle.Node.node;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeMetadataAssertions.*;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateAssets;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
-import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
-import static im.mak.paddle.helpers.ConstructorRideFunctions.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.*;
+import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
-import static im.mak.paddle.util.Constants.*;
+import static im.mak.paddle.util.Constants.WAVES_STRING_ID;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SubscribeInvokeIssueSubscribeTest extends BaseSubscribeTest {
+public class SubscribeInvokeReissueGrpcTest extends BaseGrpcTest {
     private static PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
 
@@ -36,9 +36,9 @@ public class SubscribeInvokeIssueSubscribeTest extends BaseSubscribeTest {
     }
 
     @Test
-    @DisplayName("subscribe invoke with Issue")
-    void prepareDataForIssueTests() {
-        testData.prepareDataForIssueTests();
+    @DisplayName("subscribe invoke with Reissue")
+    void subscribeInvokeWithReissue() {
+        testData.prepareDataForReissueTests();
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
 
         final AssetId assetId = testData.getAssetId();
@@ -53,26 +53,30 @@ public class SubscribeInvokeIssueSubscribeTest extends BaseSubscribeTest {
         calcBalances.balancesAfterReissueAssetInvoke(caller, assetDAppAccount, amounts, assetId);
         txSender.invokeSender();
 
-        final String txId = txSender.getInvokeScriptId();
+        String txId = txSender.getInvokeScriptId();
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, assetDAppAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         prepareInvoke(assetDAppAccount, testData);
 
-        assertionsCheck(
-                Long.parseLong(getIssueAssetData().get(VOLUME)),
-                Long.parseLong(testData.getAssetDataForIssue().get(VOLUME)),
-                txId
-        );
+        assertionsCheck(txId);
     }
 
-    private void assertionsCheck(long issueAssetDataVolume, long assetDataForIssueVolume, String txId) {
+    private void assertionsCheck(String txId) {
         assertAll(
                 () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId),
                 () -> checkMainMetadata(0),
                 () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
-                () -> checkIssueAssetMetadata(0, 1, testData.getAssetDataForIssue()),
+                () -> checkReissueMetadata(0, 0,
+                        testData.getAssetId().toString(),
+                        testData.getAssetAmount().value(),
+                        true),
+
+                () -> checkReissueMetadata(0, 1,
+                        null,
+                        testData.getAssetAmount().value(),
+                        true),
 
                 () -> checkStateUpdateBalance(0,
                         0,
@@ -85,15 +89,17 @@ public class SubscribeInvokeIssueSubscribeTest extends BaseSubscribeTest {
                         1,
                         testData.getAssetDAppAddress(),
                         null,
-                        0, issueAssetDataVolume),
+                        0, testData.getAmountAfterInvokeIssuedAsset()),
+
                 () -> checkStateUpdateBalance(0,
                         2,
                         testData.getAssetDAppAddress(),
-                        null,
-                        0, assetDataForIssueVolume),
+                        testData.getAssetId().toString(),
+                        calcBalances.getDAppBalanceIssuedAssetsBeforeTransaction(),
+                        calcBalances.getDAppBalanceIssuedAssetsAfterTransaction()),
 
-                () -> checkStateUpdateAssets(0, 0, getIssueAssetData(), issueAssetDataVolume),
-                () -> checkStateUpdateAssets(0, 1, testData.getAssetDataForIssue(), assetDataForIssueVolume)
+                () -> checkStateUpdateAssets(0, 0, getIssueAssetData(), testData.getAmountAfterInvokeIssuedAsset()),
+                () -> checkStateUpdateAssets(0, 1, testData.getAssetData(), testData.getAmountAfterInvokeDAppIssuedAsset())
         );
     }
 }

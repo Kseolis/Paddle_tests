@@ -3,7 +3,7 @@ package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tes
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.dapp.DAppCall;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTx;
@@ -22,12 +22,12 @@ import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetVolume;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SubscribeInvokeScriptTransferSubscribeTest extends BaseSubscribeTest {
+public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
     private static PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
     private String assetIdToStr;
@@ -62,7 +62,7 @@ public class SubscribeInvokeScriptTransferSubscribeTest extends BaseSubscribeTes
         String txId = txSender.getInvokeScriptId();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, caller, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         prepareInvoke(assetDAppAccount, testData);
 
         long dAppAssetAmountAfter = Long.parseLong(getIssueAssetData().get(VOLUME)) - assetAmountValue;

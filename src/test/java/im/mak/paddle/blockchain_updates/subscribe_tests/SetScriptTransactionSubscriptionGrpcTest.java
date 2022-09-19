@@ -2,7 +2,7 @@ package im.mak.paddle.blockchain_updates.subscribe_tests;
 
 import com.wavesplatform.transactions.common.Base64String;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.helpers.transaction_senders.SetScriptTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import static com.wavesplatform.transactions.SetScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTransactionId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.SetScriptTransactionHandler.getScriptFromSetScript;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
@@ -21,7 +21,7 @@ import static im.mak.paddle.util.ScriptUtil.fromFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SetScriptTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
+public class SetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private Account account;
     private String address;
     private String publicKey;
@@ -47,7 +47,7 @@ public class SetScriptTransactionSubscriptionSubscribeTest extends BaseSubscribe
 
         wavesAmountAfterSetAssetScript = DEFAULT_FAUCET - txSender.getFee();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkSetScriptSubscribe(txSender);
     }
 
@@ -63,7 +63,7 @@ public class SetScriptTransactionSubscriptionSubscribeTest extends BaseSubscribe
 
         wavesAmountAfterSetAssetScript = DEFAULT_FAUCET - txSender.getFee();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkSetScriptSubscribe(txSender);
     }
 
@@ -80,7 +80,7 @@ public class SetScriptTransactionSubscriptionSubscribeTest extends BaseSubscribe
 
         wavesAmountAfterSetAssetScript = DEFAULT_FAUCET - txSender.getFee();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkSetScriptSubscribe(txSender);
     }
 
@@ -97,7 +97,7 @@ public class SetScriptTransactionSubscriptionSubscribeTest extends BaseSubscribe
 
         wavesAmountAfterSetAssetScript = DEFAULT_FAUCET - txSender.getFee();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkSetScriptSubscribe(txSender);
     }
 

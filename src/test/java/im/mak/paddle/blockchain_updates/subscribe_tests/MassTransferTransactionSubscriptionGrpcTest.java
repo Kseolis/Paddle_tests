@@ -4,7 +4,7 @@ import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.common.Base58String;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
 import im.mak.paddle.helpers.transaction_senders.MassTransferTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
@@ -17,7 +17,7 @@ import static com.wavesplatform.transactions.MassTransferTransaction.LATEST_VERS
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Calculations.getTransactionCommission;
 import static im.mak.paddle.helpers.Randomizer.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.TransactionMetadataHandler.getMassTransferFromTransactionMetadata;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.MassTransferTransactionHandler.*;
@@ -27,7 +27,7 @@ import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class MassTransferTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
+public class MassTransferTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private static Account senderAccount;
     private static String senderAddress;
     private static String senderPublicKey;
@@ -78,7 +78,7 @@ public class MassTransferTransactionSubscriptionSubscribeTest extends BaseSubscr
         String txId = txSender.getMassTransferTx().id().toString();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, senderAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
 
         checkMassTransferSubscribe(senderPublicKey, senderAddress, txSender);
     }
@@ -96,7 +96,7 @@ public class MassTransferTransactionSubscriptionSubscribeTest extends BaseSubscr
         String txId = txSender.getMassTransferTx().id().toString();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, dAppAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
 
         checkMassTransferSubscribe(dAppAccountPublicKey, dAppAccountAddress, txSender);
     }

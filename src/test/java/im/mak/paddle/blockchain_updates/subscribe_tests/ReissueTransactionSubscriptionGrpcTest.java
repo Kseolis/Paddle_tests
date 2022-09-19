@@ -4,7 +4,7 @@ import com.wavesplatform.transactions.IssueTransaction;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.helpers.transaction_senders.ReissueTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.ReissueTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTransactionId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.ReissueTransactionHandler.getReissueAssetAmount;
@@ -25,7 +25,7 @@ import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class ReissueTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
+public class ReissueTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private Amount amount;
     private long quantityAfterReissue;
     private long wavesAmountAfterReissue;
@@ -79,7 +79,7 @@ public class ReissueTransactionSubscriptionSubscribeTest extends BaseSubscribeTe
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkReissueSubscribe(txSender);
     }
 
@@ -106,7 +106,7 @@ public class ReissueTransactionSubscriptionSubscribeTest extends BaseSubscribeTe
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkReissueSubscribe(txSender);
     }
 

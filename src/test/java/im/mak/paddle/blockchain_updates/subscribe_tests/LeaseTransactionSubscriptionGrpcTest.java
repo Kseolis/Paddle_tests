@@ -2,7 +2,7 @@ package im.mak.paddle.blockchain_updates.subscribe_tests;
 
 import com.wavesplatform.crypto.base.Base58;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
 import im.mak.paddle.helpers.transaction_senders.LeaseTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.LeaseTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTransactionId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.TransactionMetadataHandler.getLeaseTransactionMetadata;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Leasing.*;
@@ -26,7 +26,7 @@ import static im.mak.paddle.util.Constants.DEFAULT_FAUCET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class LeaseTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
+public class LeaseTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private Account sender;
     private String senderPublicKey;
     private String senderAddress;
@@ -69,7 +69,7 @@ public class LeaseTransactionSubscriptionSubscribeTest extends BaseSubscribeTest
 
         String leaseId = txSender.getLeaseTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, sender, height, height, leaseId);
+        subscribeResponseHandler(CHANNEL, height, height, leaseId);
         checkLeaseSubscribe(leaseId, MIN_TRANSACTION_SUM, MIN_FEE);
     }
 
@@ -87,7 +87,7 @@ public class LeaseTransactionSubscriptionSubscribeTest extends BaseSubscribeTest
 
         String leaseId = txSender.getLeaseTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, accWithDApp, height, height, leaseId);
+        subscribeResponseHandler(CHANNEL, height, height, leaseId);
         checkLeaseSubscribe(leaseId, amountLease, SUM_FEE);
     }
 

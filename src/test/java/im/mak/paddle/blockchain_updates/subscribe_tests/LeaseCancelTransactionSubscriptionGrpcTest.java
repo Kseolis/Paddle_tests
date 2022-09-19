@@ -3,7 +3,7 @@ package im.mak.paddle.blockchain_updates.subscribe_tests;
 import com.wavesplatform.transactions.LeaseTransaction;
 import com.wavesplatform.transactions.common.Id;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
 import im.mak.paddle.helpers.transaction_senders.LeaseCancelTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.LeaseCancelTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTransactionId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Leasing.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.LeaseCancelTransactionHandler.getLeaseCancelLeaseId;
@@ -24,7 +24,7 @@ import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class LeaseCancelTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
+public class LeaseCancelTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private Account sender;
     private String senderPublicKey;
     private String senderAddress;
@@ -65,7 +65,7 @@ public class LeaseCancelTransactionSubscriptionSubscribeTest extends BaseSubscri
         txSender.leaseCancelTransactionSender(leaseId, amountLease, MIN_FEE, LATEST_VERSION);
         final String leaseCancelId = txSender.getLeaseCancelTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, sender, height, height, leaseCancelId);
+        subscribeResponseHandler(CHANNEL, height, height, leaseCancelId);
         checkLeaseCancelSubscribe(leaseIdString, leaseCancelId, MIN_FEE);
     }
 
@@ -84,7 +84,7 @@ public class LeaseCancelTransactionSubscriptionSubscribeTest extends BaseSubscri
         txSender.leaseCancelTransactionSender(leaseId, amountLease, SUM_FEE, LATEST_VERSION);
         final String leaseCancelId = txSender.getLeaseCancelTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, accWithDApp, height, height, leaseCancelId);
+        subscribeResponseHandler(CHANNEL, height, height, leaseCancelId);
         checkLeaseCancelSubscribe(leaseIdString, leaseCancelId, SUM_FEE);
     }
 

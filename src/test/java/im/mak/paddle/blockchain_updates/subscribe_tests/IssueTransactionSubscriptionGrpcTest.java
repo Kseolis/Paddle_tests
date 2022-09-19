@@ -3,14 +3,14 @@ package im.mak.paddle.blockchain_updates.subscribe_tests;
 import com.wavesplatform.transactions.IssueTransaction;
 import com.wavesplatform.wavesj.info.IssueTransactionInfo;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.IssueTransactionHandler.*;
@@ -23,7 +23,7 @@ import static im.mak.paddle.util.Constants.DEFAULT_FAUCET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class IssueTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
+public class IssueTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private static int assetDecimals;
     private static String address;
     private static String publicKey;
@@ -78,7 +78,7 @@ public class IssueTransactionSubscriptionSubscribeTest extends BaseSubscribeTest
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkIssueTransactionSubscribe(assetQuantity, reissue);
     }
 
@@ -105,7 +105,7 @@ public class IssueTransactionSubscriptionSubscribeTest extends BaseSubscribeTest
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkIssueTransactionSubscribe(assetQuantity, reissue);
     }
 
@@ -127,7 +127,7 @@ public class IssueTransactionSubscriptionSubscribeTest extends BaseSubscribeTest
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkIssueTransactionSubscribe(1, false);
     }
 

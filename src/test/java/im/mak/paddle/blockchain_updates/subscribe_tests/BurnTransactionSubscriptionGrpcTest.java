@@ -4,7 +4,7 @@ import com.wavesplatform.transactions.IssueTransaction;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.helpers.transaction_senders.BurnTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.BurnTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTransactionId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.BurnTransactionHandler.getBurnAssetAmount;
@@ -26,7 +26,7 @@ import static im.mak.paddle.util.Constants.MIN_FEE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class BurnTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
+public class BurnTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private static int assetQuantity;
     private static int assetDecimals;
     private static String assetName;
@@ -80,7 +80,7 @@ public class BurnTransactionSubscriptionSubscribeTest extends BaseSubscribeTest 
         quantityAfterBurn = assetQuantity - amount.value();
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkBurnSubscribe(assetId.toString(), amount.value(), SUM_FEE, compileScript);
     }
 
@@ -108,7 +108,7 @@ public class BurnTransactionSubscriptionSubscribeTest extends BaseSubscribeTest 
         quantityAfterBurn = assetQuantity - amount.value();
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkBurnSubscribe(assetId.toString(), amount.value(), MIN_FEE, script);
     }
 

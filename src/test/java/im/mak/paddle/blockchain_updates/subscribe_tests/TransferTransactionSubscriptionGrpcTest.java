@@ -5,7 +5,7 @@ import com.wavesplatform.transactions.IssueTransaction;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.helpers.transaction_senders.TransferTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.TransferTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTransactionId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.TransactionMetadataHandler.getTransferRecipientAddressFromTransactionMetadata;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
@@ -25,7 +25,7 @@ import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class TransferTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
+public class TransferTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private Account senderAccount;
     private String sender;
     private String senderPublicKey;
@@ -71,7 +71,7 @@ public class TransferTransactionSubscriptionSubscribeTest extends BaseSubscribeT
         String txId = txSender.getTransferTx().id().toString();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, senderAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkTransferSubscribe(txSender, DEFAULT_FAUCET, 0, MIN_FEE);
     }
 
@@ -93,7 +93,7 @@ public class TransferTransactionSubscriptionSubscribeTest extends BaseSubscribeT
         txSender.transferTransactionSender(ADDRESS, LATEST_VERSION);
         String txId = txSender.getTransferTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, senderAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkTransferSubscribe(txSender, issuedAsset.quantity(), assetAmount, MIN_FEE);
     }
 
@@ -118,7 +118,7 @@ public class TransferTransactionSubscriptionSubscribeTest extends BaseSubscribeT
         txSender.transferTransactionSender(ADDRESS, LATEST_VERSION);
         String txId = txSender.getTransferTx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, senderAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkTransferSubscribe(txSender, issuedAsset.quantity(), assetAmount, SUM_FEE);
     }
 

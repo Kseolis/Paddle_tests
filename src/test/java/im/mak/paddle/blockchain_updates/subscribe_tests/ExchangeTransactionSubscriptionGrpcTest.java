@@ -6,7 +6,7 @@ import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.exchange.Order;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.helpers.transaction_senders.ExchangeTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +18,8 @@ import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Calculations.*;
 import static im.mak.paddle.helpers.Calculations.getSellerBalanceAfterTransactionAmountAsset;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTransactionId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.ExchangeTransactionHandler.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
@@ -30,7 +30,7 @@ import static im.mak.paddle.util.Constants.ORDER_V_4;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class ExchangeTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
+public class ExchangeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private Account buyer;
     private PrivateKey buyerPrivateKey;
     private String buyerPublicKey;
@@ -98,7 +98,7 @@ public class ExchangeTransactionSubscriptionSubscribeTest extends BaseSubscribeT
         txSender.exchangeTransactionSender(amount.value(), price.value(), 0, LATEST_VERSION);
         String txId = txSender.getTxInfo().tx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, buyer, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
 
         checkExchangeSubscribe(MIN_FEE_FOR_EXCHANGE, "");
         checkBalancesForExchangeWithWaves(amountBefore);
@@ -126,7 +126,7 @@ public class ExchangeTransactionSubscriptionSubscribeTest extends BaseSubscribeT
         txSender.exchangeTransactionSender(amount.value(), price.value(), EXCHANGE_FEE_FOR_SMART_ASSETS, LATEST_VERSION);
         String txId = txSender.getTxInfo().tx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, buyer, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkExchangeSubscribe(fee, amount.assetId().toString());
         checkBalancesForExchangeWithAssets(wavesBuyerAmountBefore, wavesSellerAmountBefore, EXCHANGE_FEE_FOR_SMART_ASSETS);
     }
@@ -151,7 +151,7 @@ public class ExchangeTransactionSubscriptionSubscribeTest extends BaseSubscribeT
         txSender.exchangeTransactionSender(amount.value(), price.value(), EXTRA_FEE, LATEST_VERSION);
         String txId = txSender.getTxInfo().tx().id().toString();
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, buyer, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkExchangeSubscribe(fee, amount.assetId().toString());
         checkBalancesForExchangeWithAssets(wavesBuyerAmountBefore, wavesSellerAmountBefore, EXTRA_FEE);
     }

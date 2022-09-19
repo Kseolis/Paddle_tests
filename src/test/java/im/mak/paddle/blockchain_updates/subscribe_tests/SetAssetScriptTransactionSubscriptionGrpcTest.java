@@ -6,15 +6,15 @@ import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.common.Base64String;
 import com.wavesplatform.wavesj.info.IssueTransactionInfo;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTransactionId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.SetAssetScriptTransactionHandler.getAssetIdFromSetAssetScript;
@@ -27,7 +27,7 @@ import static im.mak.paddle.util.ScriptUtil.fromFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SetAssetScriptTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
+public class SetAssetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private int assetQuantity;
     private int assetDecimals;
     private String address;
@@ -79,7 +79,7 @@ public class SetAssetScriptTransactionSubscriptionSubscribeTest extends BaseSubs
 
         height = node().getHeight();
 
-        subscribeResponseHandler(CHANNEL, account, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkSetAssetSubscribe(setAssetScriptTx, assetIdToString);
 
     }

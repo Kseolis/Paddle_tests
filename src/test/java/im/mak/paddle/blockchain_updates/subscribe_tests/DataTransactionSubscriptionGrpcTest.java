@@ -4,7 +4,7 @@ import com.wavesplatform.transactions.DataTransaction;
 import com.wavesplatform.transactions.common.Base64String;
 import com.wavesplatform.transactions.data.*;
 import im.mak.paddle.Account;
-import im.mak.paddle.blockchain_updates.BaseSubscribeTest;
+import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.helpers.transaction_senders.DataTransactionsSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,8 +14,8 @@ import static com.wavesplatform.transactions.DataTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
 import static im.mak.paddle.helpers.Randomizer.randomNumAndLetterString;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.getTransactionId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTransactionId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.DataEntries.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.DataTransactionHandler.getKeyFromDataTx;
@@ -27,7 +27,7 @@ import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class DataTransactionSubscriptionSubscribeTest extends BaseSubscribeTest {
+public class DataTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private String senderAddress;
     private String senderPublicKey;
     private Account senderAccount;
@@ -59,7 +59,7 @@ public class DataTransactionSubscriptionSubscribeTest extends BaseSubscribeTest 
         String txId = txSender.getTxInfo().tx().id().toString();
 
         height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, senderAccount, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, height, txId);
         checkDataTransactionSubscribe(txSender);
         checkDataEntries(txSender.getDataTx());
     }

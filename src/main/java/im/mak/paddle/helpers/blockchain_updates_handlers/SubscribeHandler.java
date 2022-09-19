@@ -18,7 +18,6 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.se
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.setMicroBlockInfo;
 
 public class SubscribeHandler {
-    private static Transaction firstTransaction;
     private static String transactionId;
 
     public static void subscribeResponseHandler(Channel channel, int fromHeight, int toHeight, String txId) {
@@ -39,10 +38,6 @@ public class SubscribeHandler {
         }
     }
 
-    public static Transaction getFirstTransaction() {
-        return firstTransaction;
-    }
-
     public static String getTransactionId() {
         return transactionId;
     }
@@ -57,7 +52,6 @@ public class SubscribeHandler {
         if (microBlockInfo.getTransactionsCount() > 0) {
             transactionId = Base58.encode(append.getTransactionIds(0).toByteArray());
             if (transactionId.equals(txId)) {
-                firstTransaction = microBlockInfo.getTransactions(0).getWavesTransaction();
                 setMicroBlockInfo(microBlockInfo);
                 setAppend(append);
             }

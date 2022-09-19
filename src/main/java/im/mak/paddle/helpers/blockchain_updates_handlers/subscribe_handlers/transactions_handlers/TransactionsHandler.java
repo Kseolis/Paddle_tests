@@ -30,6 +30,14 @@ public class TransactionsHandler {
         return getWavesTransactionAtIndex(index).getChainId();
     }
 
+    public static long getTxVersion(int index) {
+        return getWavesTransactionAtIndex(index).getVersion();
+    }
+
+    public static long getTxFeeAmount(int index) {
+        return getWavesTransactionAtIndex(index).getFee().getAmount();
+    }
+
     public static String getSenderPublicKeyFromTransaction(int txIndex) {
         return Base58.encode(getWavesTransactionAtIndex(txIndex)
                 .getSenderPublicKey()

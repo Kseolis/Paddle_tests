@@ -52,6 +52,9 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static int assetDecimals;
 
     protected static IssueTransaction issueTx;
+    protected static Id issueTxId;
+    protected static long amountBeforeIssueTx;
+    protected static long amountAfterIssueTx;
     protected static AssetId assetId;
     protected static Amount assetAmount;
 
@@ -162,6 +165,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void issueSetUp() {
+        amountBeforeIssueTx = sender.getWavesBalance();
         issueTx = sender.issue(i -> i
                 .name(assetName)
                 .quantity(ASSET_QUANTITY_MAX)
@@ -170,6 +174,8 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                 .reissuable(true)
                 .script(SCRIPT_PERMITTING_OPERATIONS)
         ).tx();
+        amountAfterIssueTx = sender.getWavesBalance();
+        issueTxId = issueTx.id();
         assetId = issueTx.assetId();
         assetAmount = Amount.of(50_000, assetId);
         checkHeight();

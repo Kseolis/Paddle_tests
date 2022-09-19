@@ -2,6 +2,7 @@ package im.mak.paddle.blockchain_updates.subscribe_tests;
 
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
+import im.mak.paddle.blockchain_updates.GrpcTransactionsCheckers;
 import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
 import im.mak.paddle.helpers.transaction_senders.CreateAliasTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
@@ -10,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import static com.wavesplatform.transactions.CreateAliasTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
-import static im.mak.paddle.blockchain_updates.GrpcTransactionsCheckers.checkAliasSubscribe;
 import static im.mak.paddle.helpers.Randomizer.randomNumAndLetterString;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.util.Async.async;
@@ -57,7 +57,10 @@ public class AliasTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        checkAliasSubscribe(newAlias, amountBefore, amountAfter, accountAddress, accountPublicKey, MIN_FEE);
+
+        GrpcTransactionsCheckers grpcTransactionsCheckers =
+                new GrpcTransactionsCheckers(0, accountAddress, accountPublicKey, txId);
+        grpcTransactionsCheckers.checkAliasGrpc(newAlias, amountBefore, amountAfter, MIN_FEE);
     }
 
     @Test
@@ -74,6 +77,8 @@ public class AliasTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         String txId = txSender.getCreateAliasTx().id().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        checkAliasSubscribe(newAlias, amountBefore, amountAfter, dAppAccountAddress, dAppAccountPublicKey, SUM_FEE);
+        GrpcTransactionsCheckers grpcTransactionsCheckers =
+                new GrpcTransactionsCheckers(0, dAppAccountAddress, dAppAccountPublicKey, txId);
+        grpcTransactionsCheckers.checkAliasGrpc(newAlias, amountBefore, amountAfter, SUM_FEE);
     }
 }

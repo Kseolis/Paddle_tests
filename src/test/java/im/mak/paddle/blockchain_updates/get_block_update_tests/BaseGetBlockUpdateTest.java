@@ -1,6 +1,7 @@
 package im.mak.paddle.blockchain_updates.get_block_update_tests;
 
 import com.wavesplatform.transactions.*;
+import com.wavesplatform.transactions.account.Address;
 import com.wavesplatform.transactions.account.PrivateKey;
 import com.wavesplatform.transactions.account.PublicKey;
 import com.wavesplatform.transactions.common.Amount;
@@ -11,7 +12,6 @@ import com.wavesplatform.transactions.data.*;
 import com.wavesplatform.transactions.exchange.Order;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
-import im.mak.paddle.dapp.DAppCall;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.*;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTx;
@@ -24,14 +24,13 @@ import java.util.List;
 import static com.wavesplatform.transactions.TransferTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.ScriptUtil.fromFile;
 
 public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static Account sender;
+    protected static Address senderAddress;
     protected static PrivateKey senderPrivateKey;
     protected static PublicKey senderPublicKey;
 
@@ -62,7 +61,11 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
 
     protected static CreateAliasTransactionSender aliasTx;
     protected static Id aliasTxId;
+    protected static long amountBeforeAliasTx;
+    protected static long amountAfterAliasTx;
+
     protected static SetAssetScriptTransaction setAssetScriptTx;
+    protected static Id setAssetScriptTxId;
 
     protected static LeaseTransactionSender leaseTx;
     protected static Id leaseTxId;
@@ -90,9 +93,6 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
 
     protected static int height;
     protected static List<Integer> heightsList = new ArrayList<>();
-
-    protected static int indexCountTransactions = -1;
-    protected static List<Integer> transactionsIndexList = new ArrayList<>();
 
     private static final Base64String base64String = new Base64String(randomNumAndLetterString(6));
     private static final BinaryEntry binaryEntry = BinaryEntry.as("BinEntry", base64String);
@@ -139,18 +139,13 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         async(
                 () -> {
                     sender = new Account(DEFAULT_FAUCET * 2);
-                    indexCountTransactions += 1;
-
+                    senderAddress = sender.address();
                     senderPrivateKey = sender.privateKey();
                     senderPublicKey = sender.publicKey();
-
                     assetIdForSponsorFee = sender.issue(i -> i.name("sponsorFeeAsset")).tx().assetId();
-                    indexCountTransactions += 1;
                 },
                 () -> {
                     recipient = new Account(DEFAULT_FAUCET);
-                    indexCountTransactions += 1;
-
                     recipientPrivateKey = recipient.privateKey();
                     recipientPublicKey = recipient.publicKey();
                 },
@@ -223,13 +218,15 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void aliasSetUp() {
+        amountBeforeAliasTx = sender.getWavesBalance();
         aliasTx = new CreateAliasTransactionSender(
                 sender,
                 newAlias,
-                123456789,
+                MIN_FEE,
                 CreateAliasTransaction.LATEST_VERSION
         );
         aliasTx.createAliasTransactionSender();
+        amountAfterAliasTx = sender.getWavesBalance();
         aliasTxId = aliasTx.getCreateAliasTx().id();
         checkHeight();
     }
@@ -244,6 +241,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
 
     private static void setAssetScriptSetUp() {
         setAssetScriptTx = sender.setAssetScript(assetId, script).tx();
+        setAssetScriptTxId = setAssetScriptTx.id();
         checkHeight();
     }
 
@@ -297,16 +295,9 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void checkHeight() {
-        indexCountTransactions += 1;
         if (height < node().getHeight()) {
-            indexCountTransactions = 0;
             height = node().getHeight();
             heightsList.add(height);
         }
-        transactionsIndexList.add(indexCountTransactions);
-    }
-
-    public static List<Integer> getTransactionsIndexList() {
-        return transactionsIndexList;
     }
 }

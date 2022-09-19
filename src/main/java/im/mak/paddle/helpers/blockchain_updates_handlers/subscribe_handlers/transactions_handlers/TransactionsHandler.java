@@ -5,6 +5,8 @@ import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.protobuf.block.BlockOuterClass;
 import com.wavesplatform.protobuf.transaction.TransactionOuterClass.Transaction;
 
+import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.getAppend;
+
 public class TransactionsHandler {
     private static BlockOuterClass.Block blockInfo;
     private static BlockOuterClass.MicroBlock microBlockInfo;
@@ -18,6 +20,10 @@ public class TransactionsHandler {
 
     public static ByteString getEthereumTransactionAtIndex(int index) {
         return microBlockInfo.getTransactions(index).getEthereumTransaction();
+    }
+
+    public static String getTxId(int index) {
+        return Base58.encode(getAppend().getTransactionIds(index).toByteArray());
     }
 
     public static long getChainId(int index) {

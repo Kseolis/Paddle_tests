@@ -1,4 +1,4 @@
-package im.mak.paddle.blockchain_updates;
+package im.mak.paddle.blockchain_updates.transactions_checkers;
 
 import static com.wavesplatform.transactions.CreateAliasTransaction.LATEST_VERSION;
 import static im.mak.paddle.blockchain_updates.BaseGrpcTest.CHAIN_ID;
@@ -9,13 +9,13 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class GrpcTransactionsCheckers {
+public class GrpcAliasCheckers {
     private final int txIndex;
     private final String address;
     private final String publicKey;
     private final String aliasTxId;
 
-    public GrpcTransactionsCheckers(int txIndex, String address, String publicKey, String aliasTxId) {
+    public GrpcAliasCheckers(int txIndex, String address, String publicKey, String aliasTxId) {
         this.txIndex = txIndex;
         this.address = address;
         this.publicKey = publicKey;

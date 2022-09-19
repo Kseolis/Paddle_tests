@@ -1,4 +1,4 @@
-package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.invoke_transactions_checkers;
+package im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers;
 
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 

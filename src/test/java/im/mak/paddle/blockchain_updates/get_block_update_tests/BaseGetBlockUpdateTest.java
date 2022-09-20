@@ -58,7 +58,10 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static AssetId assetId;
     protected static Amount assetAmount;
 
-    protected static TransferTransactionSender transferTx;
+    protected static TransferTransactionSender transferSender;
+    protected static Id transferTxId;
+    protected static long assetBalanceBeforeTransfer;
+    protected static long wavesBalanceBeforeTransfer;
     protected static ReissueTransactionSender reissueTx;
     protected static BurnTransactionSender burnTx;
 
@@ -182,8 +185,11 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void transferSetUp() {
-        transferTx = new TransferTransactionSender(assetAmount, sender, recipient, SUM_FEE);
-        transferTx.transferTransactionSender(ADDRESS, LATEST_VERSION);
+        assetBalanceBeforeTransfer = sender.getBalance(assetId);
+        wavesBalanceBeforeTransfer = sender.getWavesBalance();
+        transferSender = new TransferTransactionSender(assetAmount, sender, recipient, SUM_FEE);
+        transferSender.transferTransactionSender(ADDRESS, LATEST_VERSION);
+        transferTxId = transferSender.getTransferTx().id();
         checkHeight();
     }
 

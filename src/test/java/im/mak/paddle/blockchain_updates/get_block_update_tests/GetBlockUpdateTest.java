@@ -1,6 +1,7 @@
 package im.mak.paddle.blockchain_updates.get_block_update_tests;
 
 import im.mak.paddle.blockchain_updates.transactions_checkers.GrpcAliasCheckers;
+import im.mak.paddle.blockchain_updates.transactions_checkers.GrpcBurnCheckers;
 import im.mak.paddle.blockchain_updates.transactions_checkers.GrpcIssueCheckers;
 import im.mak.paddle.blockchain_updates.transactions_checkers.GrpcTransferCheckers;
 import im.mak.paddle.helpers.blockchain_updates_handlers.GetBlockUpdateHandler;
@@ -53,4 +54,13 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
         );
     }
 
+    @Test
+    @DisplayName("Check getBlockUpdate response for Burn transaction")
+    void getBlockUpdateBurnTransactionTest() {
+        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, burnTxId.toString());
+        GrpcBurnCheckers grpcTransferCheckers =
+                new GrpcBurnCheckers(getBlockUpdateHandler.getTxIndex(), sender, burnTxSender, issueTx);
+        grpcTransferCheckers.checkBurnSubscribe(assetAmountBeforeBurnTx, assetAmountAfterBurnTx, assetAmountBeforeBurnTx);
+    }
 }

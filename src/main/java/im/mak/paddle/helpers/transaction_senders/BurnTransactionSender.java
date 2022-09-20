@@ -14,14 +14,13 @@ public class BurnTransactionSender extends BaseTransactionSender {
     private final long fee;
     private final int version;
 
-    public BurnTransactionSender(Account sender, Amount amount, AssetId assetId, long fee, int version) {
+    public BurnTransactionSender(Account sender, Amount amount, long fee, int version) {
         this.amount = amount;
         this.sender = sender;
         this.fee = fee;
         this.version = version;
 
         accountWavesBalance = sender.getBalance(AssetId.WAVES);
-        balanceAfterTransaction = sender.getBalance(assetId) - amount.value();
     }
 
     public void burnTransactionSender() {
@@ -54,6 +53,4 @@ public class BurnTransactionSender extends BaseTransactionSender {
     public int getVersion() {
         return version;
     }
-
-
 }

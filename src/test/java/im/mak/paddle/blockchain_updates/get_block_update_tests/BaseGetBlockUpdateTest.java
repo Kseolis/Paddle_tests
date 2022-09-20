@@ -62,8 +62,13 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static Id transferTxId;
     protected static long assetBalanceBeforeTransfer;
     protected static long wavesBalanceBeforeTransfer;
+
     protected static ReissueTransactionSender reissueTx;
-    protected static BurnTransactionSender burnTx;
+
+    protected static BurnTransactionSender burnTxSender;
+    protected static Id burnTxId;
+    protected static long assetAmountBeforeBurnTx;
+    protected static long assetAmountAfterBurnTx;
 
     protected static CreateAliasTransactionSender aliasTx;
     protected static Id aliasTxId;
@@ -193,21 +198,18 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         checkHeight();
     }
 
-    private static void reissueSetUp() {
-        reissueTx = new ReissueTransactionSender(sender, assetAmount, assetId);
-        reissueTx.reissueTransactionSender(SUM_FEE, ReissueTransaction.LATEST_VERSION);
+    private static void burnSetUp() {
+        assetAmountBeforeBurnTx = sender.getBalance(assetId);
+        assetAmountAfterBurnTx = assetAmountBeforeBurnTx - assetAmount.value();
+        burnTxSender = new BurnTransactionSender(sender, assetAmount, SUM_FEE, BurnTransaction.LATEST_VERSION);
+        burnTxSender.burnTransactionSender();
+        burnTxId = burnTxSender.getBurnTx().id();
         checkHeight();
     }
 
-    private static void burnSetUp() {
-        burnTx = new BurnTransactionSender(
-                sender,
-                assetAmount,
-                assetId,
-                SUM_FEE,
-                BurnTransaction.LATEST_VERSION
-        );
-        burnTx.burnTransactionSender();
+    private static void reissueSetUp() {
+        reissueTx = new ReissueTransactionSender(sender, assetAmount, assetId);
+        reissueTx.reissueTransactionSender(SUM_FEE, ReissueTransaction.LATEST_VERSION);
         checkHeight();
     }
 

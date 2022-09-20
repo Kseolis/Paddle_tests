@@ -1,10 +1,12 @@
 package im.mak.paddle.blockchain_updates.transactions_checkers;
 
 import com.wavesplatform.transactions.IssueTransaction;
+import im.mak.paddle.Account;
+import im.mak.paddle.helpers.transaction_senders.BurnTransactionSender;
 
 import static com.wavesplatform.transactions.BurnTransaction.LATEST_VERSION;
 import static im.mak.paddle.blockchain_updates.BaseGrpcTest.CHAIN_ID;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTransactionId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Assets.getScriptAfter;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
@@ -17,54 +19,70 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class GrpcBurnCheckers {
     private final int txIndex;
-    private final String address;
-    private final String publicKey;
     private final IssueTransaction issueTx;
 
-    public GrpcBurnCheckers(int txIndex, String address, String publicKey, IssueTransaction issueTx) {
+    private final String senderPublicKey;
+    private final String senderAddress;
+
+    private final String burnTxId;
+    private final long burnAssetFee;
+    private final String burnedAssetId;
+    private final long burnAssetAmount;
+    private final long wavesBeforeBurn;
+    private final long wavesAfterBurn;
+
+    public GrpcBurnCheckers(int txIndex, Account sender, BurnTransactionSender txSender, IssueTransaction issueTx) {
         this.txIndex = txIndex;
-        this.address = address;
-        this.publicKey = publicKey;
         this.issueTx = issueTx;
+
+        burnTxId = txSender.getBurnTx().id().toString();
+        burnAssetFee = txSender.getFee();
+        burnedAssetId = txSender.getAmount().assetId().toString();
+        burnAssetAmount = txSender.getAmount().value();
+
+        wavesBeforeBurn = txSender.getAccountWavesBalance();
+        wavesAfterBurn = wavesBeforeBurn - burnAssetFee;
+
+        senderPublicKey = sender.publicKey().toString();
+        senderAddress = sender.address().toString();
     }
 
-
-    private void checkBurnSubscribe(String assetId, long amount, long burnAssetFee, byte[] script) {
+    public void checkBurnSubscribe(long assetAmountBefore, long assetAmountAfter, long quantityAfter) {
         assertAll(
-                () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
-                () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(burnAssetFee),
-                () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(publicKey),
-                () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),
-                () -> assertThat(getBurnAssetId(0)).isEqualTo(assetId),
-                () -> assertThat(getBurnAssetAmount(0)).isEqualTo(amount),
-                () -> assertThat(getTransactionId()).isEqualTo(getTransactionId()),
+                () -> assertThat(getChainId(txIndex)).isEqualTo(CHAIN_ID),
+                () -> assertThat(getTransactionFeeAmount(txIndex)).isEqualTo(burnAssetFee),
+                () -> assertThat(getSenderPublicKeyFromTransaction(txIndex)).isEqualTo(senderPublicKey),
+                () -> assertThat(getTransactionVersion(txIndex)).isEqualTo(LATEST_VERSION),
+                () -> assertThat(getBurnAssetId(txIndex)).isEqualTo(burnedAssetId),
+                () -> assertThat(getBurnAssetAmount(txIndex)).isEqualTo(burnAssetAmount),
+                () -> assertThat(getTxId(txIndex)).isEqualTo(burnTxId),
                 // check waves balance
-                () -> assertThat(getAddress(0, 0)).isEqualTo(address),
-                () -> assertThat(getAmountBefore(0, 0)).isEqualTo(wavesAmountBeforeBurn),
-                () -> assertThat(getAmountAfter(0, 0)).isEqualTo(wavesAmountAfterBurn),
+                () -> assertThat(getAddress(txIndex, 0)).isEqualTo(senderAddress),
+                () -> assertThat(getAmountBefore(txIndex, 0)).isEqualTo(wavesBeforeBurn),
+                () -> assertThat(getAmountAfter(txIndex, 0)).isEqualTo(wavesAfterBurn),
                 // check asset balance
-                () -> assertThat(getAddress(0, 1)).isEqualTo(address),
-                () -> assertThat(getAssetIdAmountAfter(0, 1)).isEqualTo(assetId),
-                () -> assertThat(getAmountBefore(0, 1)).isEqualTo(assetQuantity),
-                () -> assertThat(getAmountAfter(0, 1)).isEqualTo(quantityAfterBurn),
+                () -> assertThat(getAddress(txIndex, 1)).isEqualTo(senderAddress),
+                () -> assertThat(getAssetIdAmountAfter(txIndex, 1)).isEqualTo(burnedAssetId),
+                () -> assertThat(getAmountBefore(txIndex, 1)).isEqualTo(assetAmountBefore),
+                () -> assertThat(getAmountAfter(txIndex, 1)).isEqualTo(assetAmountAfter),
                 // check asset before burn
-                () -> assertThat(getAssetIdFromAssetBefore(0, 0)).isEqualTo(assetId),
-                () -> assertThat(getIssuerBefore(0, 0)).isEqualTo(publicKey),
-                () -> assertThat(getQuantityBefore(0, 0)).isEqualTo(String.valueOf(assetQuantity)),
-                () -> assertThat(getReissueBefore(0, 0)).isEqualTo(String.valueOf(true)),
-                () -> assertThat(getNameBefore(0, 0)).isEqualTo(assetName),
-                () -> assertThat(getDescriptionBefore(0, 0)).isEqualTo(assetDescription),
-                () -> assertThat(getDecimalsBefore(0, 0)).isEqualTo(String.valueOf(assetDecimals)),
-                () -> assertThat(getScriptBefore(0, 0)).isEqualTo(script),
+                () -> assertThat(getAssetIdFromAssetBefore(txIndex, 0)).isEqualTo(burnedAssetId),
+                () -> assertThat(getIssuerBefore(txIndex, 0)).isEqualTo(senderPublicKey),
+                () -> assertThat(getQuantityBefore(txIndex, 0)).isEqualTo(String.valueOf(issueTx.quantity())),
+                () -> assertThat(getReissueBefore(txIndex, 0)).isEqualTo(String.valueOf(issueTx.reissuable())),
+                () -> assertThat(getNameBefore(txIndex, 0)).isEqualTo(issueTx.name()),
+                () -> assertThat(getDescriptionBefore(txIndex, 0)).isEqualTo(issueTx.description()),
+                () -> assertThat(getDecimalsBefore(txIndex, 0)).isEqualTo(String.valueOf(issueTx.decimals())),
+                () -> assertThat(getScriptBefore(txIndex, 0)).isEqualTo(issueTx.script().bytes()),
                 // check asset after burn
-                () -> assertThat(getAssetIdFromAssetAfter(0, 0)).isEqualTo(assetId),
-                () -> assertThat(getIssuerAfter(0, 0)).isEqualTo(publicKey),
-                () -> assertThat(getQuantityAfter(0, 0)).isEqualTo(String.valueOf(quantityAfterBurn)),
-                () -> assertThat(getReissueAfter(0, 0)).isEqualTo(String.valueOf(true)),
-                () -> assertThat(getNameAfter(0, 0)).isEqualTo(assetName),
-                () -> assertThat(getDescriptionAfter(0, 0)).isEqualTo(assetDescription),
-                () -> assertThat(getDecimalsAfter(0, 0)).isEqualTo(String.valueOf(assetDecimals)),
-                () -> assertThat(getScriptAfter(0, 0)).isEqualTo(script)
+                () -> assertThat(getAssetIdFromAssetAfter(txIndex, 0)).isEqualTo(burnedAssetId),
+                () -> assertThat(getIssuerAfter(txIndex, 0)).isEqualTo(senderPublicKey),
+                () -> assertThat(getQuantityAfter(txIndex, 0)).isEqualTo(String.valueOf(quantityAfter)),
+                () -> assertThat(getReissueAfter(txIndex, 0)).isEqualTo(String.valueOf(issueTx.reissuable())),
+                () -> assertThat(getNameAfter(txIndex, 0)).isEqualTo(issueTx.name()),
+                () -> assertThat(getDescriptionAfter(txIndex, 0)).isEqualTo(issueTx.description()),
+                () -> assertThat(getDecimalsAfter(txIndex, 0)).isEqualTo(String.valueOf(issueTx.decimals())),
+                () -> assertThat(getScriptAfter(txIndex, 0)).isEqualTo(issueTx.script().bytes())
         );
     }
 }

@@ -20,6 +20,7 @@ public class ReissueTransactionSender extends BaseTransactionSender {
     }
 
     public void reissueTransactionSender(long fee, int version) {
+        accountWavesBalance = account.getWavesBalance();
         balanceAfterTransaction = account.getBalance(assetId) + amount.value();
         reissueTx = ReissueTransaction.builder(amount)
                 .version(version)

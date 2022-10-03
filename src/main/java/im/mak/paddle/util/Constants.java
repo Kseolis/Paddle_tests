@@ -41,6 +41,9 @@ public class Constants {
     public static final String ACTIVE_STATUS_LEASE = "ACTIVE";
     public static final String INACTIVE_STATUS_LEASE = "INACTIVE";
 
+    public static final String BUY = "BUY";
+    public static final String SELL = "SELL";
+
     // asset data keys
     public static final String ASSET_ID = "asset_id";
     public static final String ISSUER = "issuer";

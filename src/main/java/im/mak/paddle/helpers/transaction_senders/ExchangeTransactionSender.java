@@ -10,7 +10,12 @@ import static im.mak.paddle.util.Constants.DEFAULT_DECIMALS;
 import static im.mak.paddle.util.Constants.MIN_FEE_FOR_EXCHANGE;
 
 public class ExchangeTransactionSender extends BaseTransactionSender {
-    private static ExchangeTransaction exchangeTx;
+    private ExchangeTransaction exchangeTx;
+    private long exchangeExtraFee;
+
+    private final long wavesBuyerAmountBefore;
+    private final long wavesSellerAmountBefore;
+
     private final Account from;
     private final Account to;
     private final Order buy;
@@ -21,11 +26,14 @@ public class ExchangeTransactionSender extends BaseTransactionSender {
         this.to = to;
         this.buy = buy;
         this.sell = sell;
+        wavesBuyerAmountBefore = from.getWavesBalance();
+        wavesSellerAmountBefore = to.getWavesBalance();
     }
 
 
     public void exchangeTransactionSender(long amount, long price, long extraFee, int version) {
         calculateBalancesAfterExchange(from, to, buy, amount, DEFAULT_DECIMALS);
+        exchangeExtraFee = extraFee;
 
         exchangeTx = ExchangeTransaction
                 .builder(buy, sell, amount, price, MIN_FEE_FOR_EXCHANGE, MIN_FEE_FOR_EXCHANGE)
@@ -38,8 +46,20 @@ public class ExchangeTransactionSender extends BaseTransactionSender {
         txInfo = node().getTransactionInfo(exchangeTx.id());
     }
 
-    public static ExchangeTransaction getExchangeTx() {
+    public ExchangeTransaction getExchangeTx() {
         return exchangeTx;
+    }
+
+    public long getExchangeExtraFee() {
+        return exchangeExtraFee;
+    }
+
+    public long getWavesBuyerAmountBefore() {
+        return wavesBuyerAmountBefore;
+    }
+
+    public long getWavesSellerAmountBefore() {
+        return wavesSellerAmountBefore;
     }
 
     public Account getFrom() {

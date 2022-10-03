@@ -17,7 +17,6 @@ import static com.wavesplatform.wavesj.ApplicationStatus.SUCCEEDED;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Calculations.*;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
-import static im.mak.paddle.helpers.transaction_senders.ExchangeTransactionSender.getExchangeTx;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -134,14 +133,14 @@ public class ExchangeTransactionTest {
     private void checkAssertsForExchangeTransaction(long amount, ExchangeTransactionSender txSender) {
         assertAll(
                 () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
-                () -> assertThat(getExchangeTx().fee().value()).isEqualTo(fee),
-                () -> assertThat(getExchangeTx().fee().assetId()).isEqualTo(AssetId.WAVES),
-                () -> assertThat(getExchangeTx().assetPair()).isEqualTo(txSender.getBuy().assetPair()),
-                () -> assertThat(getExchangeTx().sender()).isEqualTo(txSender.getFrom().publicKey()),
-                () -> assertThat(getExchangeTx().orders()).isEqualTo(List.of(txSender.getBuy(), txSender.getSell())),
-                () -> assertThat(getExchangeTx().amount()).isEqualTo(amount),
-                () -> assertThat(getExchangeTx().price()).isEqualTo(txSender.getBuy().price().value()),
-                () -> assertThat(getExchangeTx().type()).isEqualTo(7),
+                () -> assertThat(txSender.getExchangeTx().fee().value()).isEqualTo(fee),
+                () -> assertThat(txSender.getExchangeTx().fee().assetId()).isEqualTo(AssetId.WAVES),
+                () -> assertThat(txSender.getExchangeTx().assetPair()).isEqualTo(txSender.getBuy().assetPair()),
+                () -> assertThat(txSender.getExchangeTx().sender()).isEqualTo(txSender.getFrom().publicKey()),
+                () -> assertThat(txSender.getExchangeTx().orders()).isEqualTo(List.of(txSender.getBuy(), txSender.getSell())),
+                () -> assertThat(txSender.getExchangeTx().amount()).isEqualTo(amount),
+                () -> assertThat(txSender.getExchangeTx().price()).isEqualTo(txSender.getBuy().price().value()),
+                () -> assertThat(txSender.getExchangeTx().type()).isEqualTo(7),
                 () -> assertThat(txSender.getFrom().getBalance(getAmountAssetId()))
                         .isEqualTo(getBuyerBalanceAfterTransactionAmountAsset()),
                 () -> assertThat(txSender.getTo().getBalance(getAmountAssetId()))

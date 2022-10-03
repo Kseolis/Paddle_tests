@@ -63,7 +63,10 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static long assetBalanceBeforeTransfer;
     protected static long wavesBalanceBeforeTransfer;
 
-    protected static ReissueTransactionSender reissueTx;
+    protected static ReissueTransactionSender reissueTxSender;
+    protected static Id reissueTxId;
+    protected static long assetAmountBeforeReissueTx;
+    protected static long assetAmountAfterReissueTx;
 
     protected static BurnTransactionSender burnTxSender;
     protected static Id burnTxId;
@@ -176,7 +179,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         amountBeforeIssueTx = sender.getWavesBalance();
         issueTx = sender.issue(i -> i
                 .name(assetName)
-                .quantity(ASSET_QUANTITY_MAX)
+                .quantity(1_000_000_000_000L)
                 .description(assetDescription)
                 .decimals(assetDecimals)
                 .reissuable(true)
@@ -208,8 +211,11 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void reissueSetUp() {
-        reissueTx = new ReissueTransactionSender(sender, assetAmount, assetId);
-        reissueTx.reissueTransactionSender(SUM_FEE, ReissueTransaction.LATEST_VERSION);
+        assetAmountBeforeReissueTx = sender.getBalance(assetId);
+        assetAmountAfterReissueTx = assetAmountBeforeReissueTx + assetAmount.value();
+        reissueTxSender = new ReissueTransactionSender(sender, assetAmount, assetId);
+        reissueTxSender.reissueTransactionSender(SUM_FEE, ReissueTransaction.LATEST_VERSION);
+        reissueTxId = reissueTxSender.getReissueTx().id();
         checkHeight();
     }
 

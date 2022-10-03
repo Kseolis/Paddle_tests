@@ -1,9 +1,6 @@
 package im.mak.paddle.blockchain_updates.get_block_update_tests;
 
-import im.mak.paddle.blockchain_updates.transactions_checkers.GrpcAliasCheckers;
-import im.mak.paddle.blockchain_updates.transactions_checkers.GrpcBurnCheckers;
-import im.mak.paddle.blockchain_updates.transactions_checkers.GrpcIssueCheckers;
-import im.mak.paddle.blockchain_updates.transactions_checkers.GrpcTransferCheckers;
+import im.mak.paddle.blockchain_updates.transactions_checkers.*;
 import im.mak.paddle.helpers.blockchain_updates_handlers.GetBlockUpdateHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,5 +59,20 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
         GrpcBurnCheckers grpcTransferCheckers =
                 new GrpcBurnCheckers(getBlockUpdateHandler.getTxIndex(), sender, burnTxSender, issueTx);
         grpcTransferCheckers.checkBurnSubscribe(assetAmountBeforeBurnTx, assetAmountAfterBurnTx, assetAmountBeforeBurnTx);
+    }
+
+    @Test
+    @DisplayName("Check getBlockUpdate response for Reissue transaction")
+    void getBlockUpdateReissueTransactionTest() {
+        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, reissueTxId.toString());
+        GrpcReissueCheckers grpcReissueCheckers =
+                new GrpcReissueCheckers(getBlockUpdateHandler.getTxIndex(), sender, reissueTxSender, issueTx);
+        grpcReissueCheckers.checkReissueSubscribe(
+                assetAmountBeforeReissueTx,
+                assetAmountAfterReissueTx,
+                assetAmountAfterReissueTx,
+                issueTx.quantity()
+        );
     }
 }

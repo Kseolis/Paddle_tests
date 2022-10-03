@@ -62,8 +62,16 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static Id transferTxId;
     protected static long assetBalanceBeforeTransfer;
     protected static long wavesBalanceBeforeTransfer;
-    protected static ReissueTransactionSender reissueTx;
-    protected static BurnTransactionSender burnTx;
+
+    protected static ReissueTransactionSender reissueTxSender;
+    protected static Id reissueTxId;
+    protected static long assetAmountBeforeReissueTx;
+    protected static long assetAmountAfterReissueTx;
+
+    protected static BurnTransactionSender burnTxSender;
+    protected static Id burnTxId;
+    protected static long assetAmountBeforeBurnTx;
+    protected static long assetAmountAfterBurnTx;
 
     protected static CreateAliasTransactionSender aliasTx;
     protected static Id aliasTxId;
@@ -171,7 +179,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         amountBeforeIssueTx = sender.getWavesBalance();
         issueTx = sender.issue(i -> i
                 .name(assetName)
-                .quantity(ASSET_QUANTITY_MAX)
+                .quantity(1_000_000_000_000L)
                 .description(assetDescription)
                 .decimals(assetDecimals)
                 .reissuable(true)
@@ -193,21 +201,21 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         checkHeight();
     }
 
-    private static void reissueSetUp() {
-        reissueTx = new ReissueTransactionSender(sender, assetAmount, assetId);
-        reissueTx.reissueTransactionSender(SUM_FEE, ReissueTransaction.LATEST_VERSION);
+    private static void burnSetUp() {
+        assetAmountBeforeBurnTx = sender.getBalance(assetId);
+        assetAmountAfterBurnTx = assetAmountBeforeBurnTx - assetAmount.value();
+        burnTxSender = new BurnTransactionSender(sender, assetAmount, SUM_FEE, BurnTransaction.LATEST_VERSION);
+        burnTxSender.burnTransactionSender();
+        burnTxId = burnTxSender.getBurnTx().id();
         checkHeight();
     }
 
-    private static void burnSetUp() {
-        burnTx = new BurnTransactionSender(
-                sender,
-                assetAmount,
-                assetId,
-                SUM_FEE,
-                BurnTransaction.LATEST_VERSION
-        );
-        burnTx.burnTransactionSender();
+    private static void reissueSetUp() {
+        assetAmountBeforeReissueTx = sender.getBalance(assetId);
+        assetAmountAfterReissueTx = assetAmountBeforeReissueTx + assetAmount.value();
+        reissueTxSender = new ReissueTransactionSender(sender, assetAmount, assetId);
+        reissueTxSender.reissueTransactionSender(SUM_FEE, ReissueTransaction.LATEST_VERSION);
+        reissueTxId = reissueTxSender.getReissueTx().id();
         checkHeight();
     }
 

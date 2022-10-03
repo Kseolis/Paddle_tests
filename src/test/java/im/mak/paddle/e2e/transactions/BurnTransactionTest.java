@@ -40,7 +40,7 @@ public class BurnTransactionTest {
         Amount amount = Amount.of(ASSET_QUANTITY_MIN, issuedAsset);
 
         for (int v = 1; v < LATEST_VERSION; v++) {
-            BurnTransactionSender txSender = new BurnTransactionSender(account, amount, issuedAsset, MIN_FEE, v);
+            BurnTransactionSender txSender = new BurnTransactionSender(account, amount, MIN_FEE, v);
             txSender.burnTransactionSender();
 
             checkAssertsForBurnTransaction(issuedAsset, txSender);
@@ -54,7 +54,7 @@ public class BurnTransactionTest {
         Amount amount = Amount.of(burnSum, issuedAsset);
 
         for (int v = 1; v < LATEST_VERSION; v++) {
-            BurnTransactionSender txSender = new BurnTransactionSender(account, amount, issuedAsset, MIN_FEE, v);
+            BurnTransactionSender txSender = new BurnTransactionSender(account, amount, MIN_FEE, v);
             txSender.burnTransactionSender();
 
             checkAssertsForBurnTransaction(issuedAsset, txSender);
@@ -68,7 +68,7 @@ public class BurnTransactionTest {
         Amount amount = Amount.of(ASSET_QUANTITY_MIN, issuedSmartAsset);
 
         for (int v = 1; v < LATEST_VERSION; v++) {
-            BurnTransactionSender txSender = new BurnTransactionSender(account, amount, issuedSmartAsset, SUM_FEE, v);
+            BurnTransactionSender txSender = new BurnTransactionSender(account, amount, SUM_FEE, v);
             txSender.burnTransactionSender();
 
             checkAssertsForBurnTransaction(issuedSmartAsset, txSender);
@@ -82,7 +82,7 @@ public class BurnTransactionTest {
         Amount amount = Amount.of(burnSum, issuedSmartAsset);
 
         for (int v = 1; v < LATEST_VERSION; v++) {
-            BurnTransactionSender txSender = new BurnTransactionSender(account, amount, issuedSmartAsset, SUM_FEE, v);
+            BurnTransactionSender txSender = new BurnTransactionSender(account, amount, SUM_FEE, v);
             txSender.burnTransactionSender();
 
             checkAssertsForBurnTransaction(issuedSmartAsset, txSender);

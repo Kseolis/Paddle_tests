@@ -5,41 +5,30 @@ import com.wavesplatform.transactions.account.PrivateKey;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.exchange.Order;
+
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
+import im.mak.paddle.blockchain_updates.transactions_checkers.GrpcExchangeCheckers;
 import im.mak.paddle.helpers.transaction_senders.ExchangeTransactionSender;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-
 import static com.wavesplatform.transactions.ExchangeTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
-import static im.mak.paddle.helpers.Calculations.*;
-import static im.mak.paddle.helpers.Calculations.getSellerBalanceAfterTransactionAmountAsset;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTransactionId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.ExchangeTransactionHandler.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
-import static im.mak.paddle.helpers.transaction_senders.ExchangeTransactionSender.getExchangeTx;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.ORDER_V_4;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class ExchangeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private Account buyer;
     private PrivateKey buyerPrivateKey;
-    private String buyerPublicKey;
-    private String buyerAddress;
 
     private Account seller;
     private PrivateKey sellerPrivateKey;
-    private String sellerPublicKey;
-    private String sellerAddress;
 
     private AssetId assetId;
 
@@ -60,8 +49,6 @@ public class ExchangeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
                 () -> {
                     buyer = new Account(DEFAULT_FAUCET);
                     buyerPrivateKey = buyer.privateKey();
-                    buyerAddress = buyer.address().toString();
-                    buyerPublicKey = buyer.publicKey().toString();
 
                     assetName = getRandomInt(1, 900000) + "asset";
                     assetQuantity = getRandomInt(100000, 999_999_999);
@@ -76,8 +63,6 @@ public class ExchangeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
                 () -> {
                     seller = new Account(DEFAULT_FAUCET);
                     sellerPrivateKey = seller.privateKey();
-                    sellerPublicKey = seller.publicKey().toString();
-                    sellerAddress = seller.address().toString();
                 }
         );
     }
@@ -100,8 +85,10 @@ public class ExchangeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
 
-        checkExchangeSubscribe(MIN_FEE_FOR_EXCHANGE, "");
-        checkBalancesForExchangeWithWaves(amountBefore);
+        GrpcExchangeCheckers grpcExchangeCheckers = new GrpcExchangeCheckers(0, buyer, seller, txSender);
+
+        grpcExchangeCheckers.checkExchangeSubscribe(MIN_FEE_FOR_EXCHANGE, "");
+        grpcExchangeCheckers.checkBalancesForExchangeWithWaves(amountBefore, assetQuantity);
     }
 
     @Test
@@ -109,8 +96,6 @@ public class ExchangeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     void subscribeTestForExchangeTwoSmartAssetsTransaction() {
         fee = MIN_FEE_FOR_EXCHANGE + EXCHANGE_FEE_FOR_SMART_ASSETS;
         long sumBuyerTokens = getRandomInt(1, 500) * (long) Math.pow(10, 8);
-        long wavesBuyerAmountBefore = buyer.getWavesBalance() - ONE_WAVES;
-        long wavesSellerAmountBefore = seller.getWavesBalance() - ONE_WAVES;
 
         AssetId firstSmartAssetId = seller.issue(i -> i.name(assetName).script(SCRIPT_PERMITTING_OPERATIONS)
                 .quantity(assetQuantity).decimals(DEFAULT_DECIMALS)).tx().assetId();
@@ -127,8 +112,11 @@ public class ExchangeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         String txId = txSender.getTxInfo().tx().id().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        checkExchangeSubscribe(fee, amount.assetId().toString());
-        checkBalancesForExchangeWithAssets(wavesBuyerAmountBefore, wavesSellerAmountBefore, EXCHANGE_FEE_FOR_SMART_ASSETS);
+
+        GrpcExchangeCheckers grpcExchangeCheckers = new GrpcExchangeCheckers(0, buyer, seller, txSender);
+
+        grpcExchangeCheckers.checkExchangeSubscribe(fee, amount.assetId().toString());
+        grpcExchangeCheckers.checkBalancesForExchangeWithAssets(assetQuantity);
     }
 
     @Test
@@ -136,8 +124,6 @@ public class ExchangeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     void subscribeTestForExchangeOneSmartAssetTransaction() {
         fee = MIN_FEE_FOR_EXCHANGE + EXTRA_FEE;
         long sumBuyerTokens = getRandomInt(1, 500) * (long) Math.pow(10, 8);
-        long wavesBuyerAmountBefore = buyer.getWavesBalance();
-        long wavesSellerAmountBefore = seller.getWavesBalance() - ONE_WAVES;
 
         AssetId smartAssetId = seller.issue(i -> i.name("v_Asset").script(SCRIPT_PERMITTING_OPERATIONS)
                 .quantity(assetQuantity).decimals(DEFAULT_DECIMALS)).tx().assetId();
@@ -152,90 +138,10 @@ public class ExchangeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         String txId = txSender.getTxInfo().tx().id().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        checkExchangeSubscribe(fee, amount.assetId().toString());
-        checkBalancesForExchangeWithAssets(wavesBuyerAmountBefore, wavesSellerAmountBefore, EXTRA_FEE);
-    }
 
-    private void checkExchangeSubscribe(long fee, String amountAssetId) {
-        assertAll(
-                () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
-                () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(buyerPublicKey),
-                () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(fee),
-                () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),
-                () -> assertThat(getTransactionId()).isEqualTo(getExchangeTx().id().toString()),
-                () -> assertThat(getAmountFromExchange(0)).isEqualTo(amount.value()),
-                () -> assertThat(getPriceFromExchange(0)).isEqualTo(price.value()),
-                () -> assertThat(getBuyMatcherFeeFromExchange(0)).isEqualTo(MIN_FEE_FOR_EXCHANGE),
-                () -> assertThat(getSellMatcherFeeFromExchange(0)).isEqualTo(MIN_FEE_FOR_EXCHANGE),
-                // buy order
-                () -> assertThat(getSenderPublicKeyFromExchange(0, 0)).isEqualTo(buyerPublicKey),
-                () -> assertThat(getMatcherPublicKeyFromExchange(0, 0)).isEqualTo(buyerPublicKey),
-                () -> assertThat(getAmountAssetIdFromExchange(0, 0)).isEqualTo(amountAssetId),
-                () -> assertThat(getOrderAmountFromExchange(0, 0)).isEqualTo(amount.value()),
-                () -> assertThat(getOrderPriceFromExchange(0, 0)).isEqualTo(price.value()),
-                () -> assertThat(getMatcherFeeFromExchange(0, 0)).isEqualTo(MIN_FEE_FOR_EXCHANGE),
-                () -> assertThat(getOrderVersionFromExchange(0, 0)).isEqualTo(buy.version()),
-                // sell order
-                () -> assertThat(getSenderPublicKeyFromExchange(0, 1)).isEqualTo(sellerPublicKey),
-                () -> assertThat(getMatcherPublicKeyFromExchange(0, 1)).isEqualTo(buyerPublicKey),
-                () -> assertThat(getAmountAssetIdFromExchange(0, 1)).isEqualTo(amountAssetId),
-                () -> assertThat(getOrderAmountFromExchange(0, 1)).isEqualTo(amount.value()),
-                () -> assertThat(getOrderPriceFromExchange(0, 1)).isEqualTo(price.value()),
-                () -> assertThat(getMatcherFeeFromExchange(0, 1)).isEqualTo(MIN_FEE_FOR_EXCHANGE),
-                () -> assertThat(getOrderSideFromExchange(0, 1)).isEqualTo("SELL"),
-                () -> assertThat(getOrderVersionFromExchange(0, 1)).isEqualTo(sell.version())
-        );
-    }
+        GrpcExchangeCheckers grpcExchangeCheckers = new GrpcExchangeCheckers(0, buyer, seller, txSender);
 
-    private void checkBalancesForExchangeWithWaves(long amountBefore) {
-        // check waves balance from balances buyer
-        assertThat(getAddress(0, 0)).isEqualTo(buyerAddress);
-        assertThat(getAmountBefore(0, 0)).isEqualTo(amountBefore);
-        assertThat(getAmountAfter(0, 0)).isEqualTo(getBuyerBalanceAfterTransactionAmountAsset());
-        // check asset balance from balances buyer
-        assertThat(getAddress(0, 1)).isEqualTo(buyerAddress);
-        assertThat(getAmountBefore(0, 1)).isEqualTo(assetQuantity);
-        assertThat(getAmountAfter(0, 1)).isEqualTo(getBuyerBalanceAfterTransactionPriceAsset());
-        assertThat(getAssetIdAmountAfter(0, 1)).isEqualTo(assetId.toString());
-        // check waves balance from balances seller
-        assertThat(getAddress(0, 2)).isEqualTo(sellerAddress);
-        assertThat(getAmountBefore(0, 2)).isEqualTo(DEFAULT_FAUCET);
-        assertThat(getAmountAfter(0, 2)).isEqualTo(getSellerBalanceAfterTransactionAmountAsset());
-        // check asset balance from balances seller
-        assertThat(getAddress(0, 3)).isEqualTo(sellerAddress);
-        assertThat(getAmountBefore(0, 3)).isEqualTo(0);
-        assertThat(getAmountAfter(0, 3)).isEqualTo(getSellerBalanceAfterTransactionPriceAsset());
-        assertThat(getAssetIdAmountAfter(0, 3)).isEqualTo(assetId.toString());
-    }
-
-    private void checkBalancesForExchangeWithAssets(long wavesBuyerAmountBefore, long wavesSellerAmountBefore, long tokenTypeFee) {
-        // check waves balance from balances buyer
-        assertThat(getAddress(0, 0)).isEqualTo(buyerAddress);
-        assertThat(getAmountBefore(0, 0)).isEqualTo(wavesBuyerAmountBefore);
-        assertThat(getAmountAfter(0, 0)).isEqualTo(wavesBuyerAmountBefore - tokenTypeFee);
-        // check asset balance from balances buyer
-        assertThat(getAddress(0, 1)).isEqualTo(buyerAddress);
-        assertThat(getAmountBefore(0, 1)).isEqualTo(assetQuantity);
-        assertThat(getAmountAfter(0, 1)).isEqualTo(getBuyerBalanceAfterTransactionPriceAsset());
-        assertThat(getAssetIdAmountAfter(0, 1)).isEqualTo(getPriceAssetId().toString());
-        // check asset balance from balances
-        assertThat(getAddress(0, 2)).isEqualTo(buyerAddress);
-        assertThat(getAmountBefore(0, 2)).isEqualTo(0);
-        assertThat(getAmountAfter(0, 2)).isEqualTo(getBuyerBalanceAfterTransactionAmountAsset());
-        assertThat(getAssetIdAmountAfter(0, 2)).isEqualTo(getAmountAssetId().toString());
-        // check asset balance from balances seller
-        assertThat(getAddress(0, 3)).isEqualTo(sellerAddress);
-        assertThat(getAmountBefore(0, 3)).isEqualTo(wavesSellerAmountBefore);
-        assertThat(getAmountAfter(0, 3)).isEqualTo(wavesSellerAmountBefore - MIN_FEE_FOR_EXCHANGE);
-        // check asset balance from balances buyer
-        assertThat(getAddress(0, 4)).isEqualTo(sellerAddress);
-        assertThat(getAmountBefore(0, 4)).isEqualTo(0);
-        assertThat(getAmountAfter(0, 4)).isEqualTo(getSellerBalanceAfterTransactionPriceAsset());
-        assertThat(getAssetIdAmountAfter(0, 4)).isEqualTo(getPriceAssetId().toString());
-        // check asset balance from balances
-        assertThat(getAddress(0, 5)).isEqualTo(sellerAddress);
-        assertThat(getAmountBefore(0, 5)).isEqualTo(assetQuantity);
-        assertThat(getAmountAfter(0, 5)).isEqualTo(getSellerBalanceAfterTransactionAmountAsset());
-        assertThat(getAssetIdAmountAfter(0, 5)).isEqualTo(getAmountAssetId().toString());
+        grpcExchangeCheckers.checkExchangeSubscribe(fee, amount.assetId().toString());
+        grpcExchangeCheckers.checkBalancesForExchangeWithAssets(assetQuantity);
     }
 }

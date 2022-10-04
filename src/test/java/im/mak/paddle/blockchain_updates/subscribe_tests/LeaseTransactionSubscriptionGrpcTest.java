@@ -23,8 +23,6 @@ public class LeaseTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private Account recipient;
 
     private int amountLease;
-    private long amountBefore;
-    private long amountAfter;
     private static final DefaultDApp420Complexity accWithDApp = new DefaultDApp420Complexity(DEFAULT_FAUCET);
 
     @BeforeEach
@@ -39,36 +37,30 @@ public class LeaseTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     @Test
     @DisplayName("Check subscription on lease min sum waves transaction")
     void subscribeTestForWavesLeaseTransaction() {
-        amountBefore = sender.getWavesBalance();
-        amountAfter = amountBefore - MIN_FEE;
+        LeaseTransactionSender txSender = new LeaseTransactionSender(sender, recipient, MIN_FEE);
 
-        LeaseTransactionSender txSender = new LeaseTransactionSender(sender, recipient);
-
-        txSender.leaseTransactionSender(MIN_TRANSACTION_SUM, MIN_FEE, LATEST_VERSION);
+        txSender.leaseTransactionSender(MIN_TRANSACTION_SUM, LATEST_VERSION);
 
         String leaseId = txSender.getLeaseTx().id().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, leaseId);
 
         GrpcLeaseCheckers grpcLeaseCheckers = new GrpcLeaseCheckers(0, sender, recipient, txSender);
-        grpcLeaseCheckers.checkLeaseGrpc(MIN_FEE, amountBefore, amountAfter);
+        grpcLeaseCheckers.checkLeaseGrpc(MIN_FEE, txSender.getAmountBefore(), txSender.getAmountAfter());
     }
 
     @Test
     @DisplayName("Check subscription on lease transaction in smartAcc")
     void subscribeTestForWavesLeaseTransactionDAppAcc() {
-        amountBefore = accWithDApp.getWavesBalance();
-        amountAfter = amountBefore - SUM_FEE;
+        LeaseTransactionSender txSender = new LeaseTransactionSender(accWithDApp, recipient, SUM_FEE);
 
-        LeaseTransactionSender txSender = new LeaseTransactionSender(accWithDApp, recipient);
-
-        txSender.leaseTransactionSender(amountLease, SUM_FEE, LATEST_VERSION);
+        txSender.leaseTransactionSender(amountLease, LATEST_VERSION);
 
         String leaseId = txSender.getLeaseTx().id().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, leaseId);
 
         GrpcLeaseCheckers grpcLeaseCheckers = new GrpcLeaseCheckers(0, accWithDApp, recipient, txSender);
-        grpcLeaseCheckers.checkLeaseGrpc(SUM_FEE, amountBefore, amountAfter);
+        grpcLeaseCheckers.checkLeaseGrpc(SUM_FEE, txSender.getAmountBefore(), txSender.getAmountAfter());
     }
 }

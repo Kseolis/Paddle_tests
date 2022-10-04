@@ -11,13 +11,19 @@ public class LeaseTransactionSender extends BaseTransactionSender {
     private static long balanceAfterReceiving;
     private final Account from;
     private final Account to;
+    private final long amountBefore;
+    private final long amountAfter;
 
-    public LeaseTransactionSender(Account from, Account to) {
+    public LeaseTransactionSender(Account from, Account to, long fee) {
         this.from = from;
         this.to = to;
+        BaseTransactionSender.fee = fee;
+
+        amountBefore = from.getWavesBalance();
+        amountAfter = amountBefore - fee;
     }
 
-    public void leaseTransactionSender(long amount, long fee, int version) {
+    public void leaseTransactionSender(long amount, int version) {
         effectiveBalanceAfterSendTransaction = from.getWavesBalanceDetails().effective() - fee - amount;
         balanceAfterReceiving = to.getWavesBalanceDetails().effective() + amount;
 
@@ -50,5 +56,13 @@ public class LeaseTransactionSender extends BaseTransactionSender {
 
     public Account getTo() {
         return to;
+    }
+
+    public long getAmountBefore() {
+        return amountBefore;
+    }
+
+    public long getAmountAfter() {
+        return amountAfter;
     }
 }

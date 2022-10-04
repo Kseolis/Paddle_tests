@@ -1,6 +1,5 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests;
 
-import com.wavesplatform.crypto.base.Base58;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.blockchain_updates.transactions_checkers.GrpcLeaseCheckers;
@@ -52,8 +51,7 @@ public class LeaseTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         subscribeResponseHandler(CHANNEL, height, height, leaseId);
 
         GrpcLeaseCheckers grpcLeaseCheckers = new GrpcLeaseCheckers(0, sender, recipient, txSender);
-
-        checkLeaseSubscribe(leaseId, MIN_TRANSACTION_SUM, MIN_FEE);
+        grpcLeaseCheckers.checkLeaseGrpc(MIN_FEE, amountBefore, amountAfter);
     }
 
     @Test
@@ -69,6 +67,8 @@ public class LeaseTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         String leaseId = txSender.getLeaseTx().id().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, leaseId);
-        checkLeaseSubscribe(leaseId, amountLease, SUM_FEE);
+
+        GrpcLeaseCheckers grpcLeaseCheckers = new GrpcLeaseCheckers(0, accWithDApp, recipient, txSender);
+        grpcLeaseCheckers.checkLeaseGrpc(SUM_FEE, amountBefore, amountAfter);
     }
 }

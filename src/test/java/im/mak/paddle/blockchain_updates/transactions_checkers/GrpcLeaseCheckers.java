@@ -1,5 +1,6 @@
 package im.mak.paddle.blockchain_updates.transactions_checkers;
 
+import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.transactions.account.Address;
 import im.mak.paddle.Account;
 import im.mak.paddle.helpers.transaction_senders.LeaseTransactionSender;
@@ -37,12 +38,12 @@ public class GrpcLeaseCheckers {
         this.recipientAddress = recipient.address().toString();
 
         senderPublicKey = sender.publicKey().toString();
-        recipientPublicKeyHash = Arrays.toString(recipient.address().publicKeyHash());
+        recipientPublicKeyHash = Base58.encode(recipient.address().publicKeyHash());
         leaseId = leaseTxSender.getLeaseTx().id().toString();
         leaseSum = leaseTxSender.getLeaseTx().amount();
     }
 
-    private void checkLeaseGrpc(long fee, long amountBefore, long amountAfter) {
+    public void checkLeaseGrpc(long fee, long amountBefore, long amountAfter) {
         assertAll(
                 // transaction
                 () -> assertThat(getChainId(txIndex)).isEqualTo(CHAIN_ID),

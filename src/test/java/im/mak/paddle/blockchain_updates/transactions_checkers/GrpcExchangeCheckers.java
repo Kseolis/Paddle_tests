@@ -96,23 +96,25 @@ public class GrpcExchangeCheckers {
 
     public void checkBalancesForExchangeWithWaves(long amountBefore, long assetQuantity) {
         // check waves balance from balances buyer
-        assertThat(getAddress(txIndex, 0)).isEqualTo(buyerAddress);
-        assertThat(getAmountBefore(txIndex, 0)).isEqualTo(amountBefore);
-        assertThat(getAmountAfter(txIndex, 0)).isEqualTo(getBuyerBalanceAfterTransactionAmountAsset());
-        // check asset balance from balances buyer
-        assertThat(getAddress(txIndex, 1)).isEqualTo(buyerAddress);
-        assertThat(getAmountBefore(txIndex, 1)).isEqualTo(assetQuantity);
-        assertThat(getAmountAfter(txIndex, 1)).isEqualTo(getBuyerBalanceAfterTransactionPriceAsset());
-        assertThat(getAssetIdAmountAfter(txIndex, 1)).isEqualTo(assetId);
-        // check waves balance from balances seller
-        assertThat(getAddress(txIndex, 2)).isEqualTo(sellerAddress);
-        assertThat(getAmountBefore(txIndex, 2)).isEqualTo(DEFAULT_FAUCET);
-        assertThat(getAmountAfter(txIndex, 2)).isEqualTo(getSellerBalanceAfterTransactionAmountAsset());
-        // check asset balance from balances seller
-        assertThat(getAddress(txIndex, 3)).isEqualTo(sellerAddress);
-        assertThat(getAmountBefore(txIndex, 3)).isEqualTo(0);
-        assertThat(getAmountAfter(txIndex, 3)).isEqualTo(getSellerBalanceAfterTransactionPriceAsset());
-        assertThat(getAssetIdAmountAfter(txIndex, 3)).isEqualTo(assetId);
+        assertAll(
+                () -> assertThat(getAddress(txIndex, 0)).isEqualTo(buyerAddress),
+                () -> assertThat(getAmountBefore(txIndex, 0)).isEqualTo(amountBefore),
+                () -> assertThat(getAmountAfter(txIndex, 0)).isEqualTo(getBuyerBalanceAfterTransactionAmountAsset()),
+                // check asset balance from balances buyer
+                () -> assertThat(getAddress(txIndex, 1)).isEqualTo(buyerAddress),
+                () -> assertThat(getAmountBefore(txIndex, 1)).isEqualTo(assetQuantity),
+                () -> assertThat(getAmountAfter(txIndex, 1)).isEqualTo(getBuyerBalanceAfterTransactionPriceAsset()),
+                () -> assertThat(getAssetIdAmountAfter(txIndex, 1)).isEqualTo(assetId),
+                // check waves balance from balances seller
+                () -> assertThat(getAddress(txIndex, 2)).isEqualTo(sellerAddress),
+                () -> assertThat(getAmountBefore(txIndex, 2)).isEqualTo(DEFAULT_FAUCET),
+                () -> assertThat(getAmountAfter(txIndex, 2)).isEqualTo(getSellerBalanceAfterTransactionAmountAsset()),
+                // check asset balance from balances seller
+                () -> assertThat(getAddress(txIndex, 3)).isEqualTo(sellerAddress),
+                () -> assertThat(getAmountBefore(txIndex, 3)).isEqualTo(0),
+                () -> assertThat(getAmountAfter(txIndex, 3)).isEqualTo(getSellerBalanceAfterTransactionPriceAsset()),
+                () -> assertThat(getAssetIdAmountAfter(txIndex, 3)).isEqualTo(assetId)
+        );
     }
 
     public void checkBalancesForExchangeWithAssets(long assetQuantity) {

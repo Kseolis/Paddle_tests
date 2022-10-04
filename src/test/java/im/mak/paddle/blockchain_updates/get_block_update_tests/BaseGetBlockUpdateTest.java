@@ -34,14 +34,18 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static PrivateKey senderPrivateKey;
     protected static PublicKey senderPublicKey;
 
+    protected static Account buyer;
+    protected static Address buyerAddress;
+    protected static PrivateKey buyerPrivateKey;
+    protected static PublicKey buyerPublicKey;
+    protected static AssetId assetIdExchange;
+
     protected static Account recipient;
     protected static PrivateKey recipientPrivateKey;
     protected static PublicKey recipientPublicKey;
 
     protected static Amount wavesAmount;
 
-    protected static Amount orderAmount;
-    protected static Amount orderPrice;
     protected static Order orderBuy;
     protected static Order orderSell;
 
@@ -84,7 +88,9 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static LeaseTransactionSender leaseTx;
     protected static Id leaseTxId;
     protected static LeaseCancelTransactionSender leaseCancelTx;
+
     protected static ExchangeTransactionSender exchangeTx;
+    protected static Id exchangeTxId;
 
     protected static MassTransferTransactionSender massTransferTx;
     protected static Id massTransferTxId;
@@ -157,6 +163,13 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                     senderPrivateKey = sender.privateKey();
                     senderPublicKey = sender.publicKey();
                     assetIdForSponsorFee = sender.issue(i -> i.name("sponsorFeeAsset")).tx().assetId();
+                },
+                () -> {
+                    buyer = new Account(DEFAULT_FAUCET / 2);
+                    buyerAddress = buyer.address();
+                    buyerPrivateKey = buyer.privateKey();
+                    buyerPublicKey = buyer.publicKey();
+                    assetIdExchange = buyer.issue(i -> i.name("assetIdExchange").quantity(950_000)).tx().assetId();
                 },
                 () -> {
                     recipient = new Account(DEFAULT_FAUCET);
@@ -288,29 +301,22 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void exchangeSetUp() {
-        long sumSellerTokens = wavesAmount.value();
-        long offerForToken = 1000;
-        long amountBefore = sender.getWavesBalance() - ONE_WAVES;
+        assetAmount = Amount.of(50_000, assetIdExchange);
+        orderBuy = Order.buy(wavesAmount, assetAmount, buyerPublicKey).version(ORDER_V_3)
+                .getSignedWith(buyerPrivateKey);
 
-        orderAmount = Amount.of(sumSellerTokens, AssetId.WAVES);
-        orderPrice = Amount.of(offerForToken, assetId);
-
-        orderBuy = Order.buy(orderAmount, orderPrice, recipientPublicKey)
-                .version(ORDER_V_3)
+        orderSell = Order.sell(wavesAmount, assetAmount, buyerPublicKey).version(ORDER_V_4)
                 .getSignedWith(recipientPrivateKey);
 
-        orderSell = Order.sell(orderAmount, orderPrice, recipientPublicKey)
-                .version(ORDER_V_4)
-                .getSignedWith(senderPrivateKey);
-
-        exchangeTx = new ExchangeTransactionSender(recipient, sender, orderBuy, orderSell);
+        exchangeTx = new ExchangeTransactionSender(buyer, recipient, orderBuy, orderSell);
 
         exchangeTx.exchangeTransactionSender(
-                orderAmount.value(),
-                orderPrice.value(),
+                wavesAmount.value(),
+                assetAmount.value(),
                 EXTRA_FEE,
                 ExchangeTransaction.LATEST_VERSION
         );
+        exchangeTxId = exchangeTx.getExchangeTx().id();
         checkHeight();
     }
 

@@ -5,7 +5,7 @@ import im.mak.paddle.helpers.blockchain_updates_handlers.GetBlockUpdateHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static im.mak.paddle.util.Constants.MIN_FEE;
+import static im.mak.paddle.util.Constants.*;
 
 public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     @Test
@@ -73,6 +73,21 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
                 assetAmountAfterReissueTx,
                 assetAmountAfterReissueTx,
                 issueTx.quantity()
+        );
+    }
+
+    @Test
+    @DisplayName("Check getBlockUpdate response for Exchange transaction")
+    void getBlockUpdateExchangeTransactionTest() {
+        long fee = MIN_FEE_FOR_EXCHANGE + EXTRA_FEE;
+        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, exchangeTxId.toString());
+        GrpcExchangeCheckers grpcReissueCheckers =
+                new GrpcExchangeCheckers(getBlockUpdateHandler.getTxIndex(), buyer, recipient, exchangeTx);
+        grpcReissueCheckers.checkExchangeSubscribe(fee, "");
+        grpcReissueCheckers.checkBalancesForExchangeWithWaves(
+                exchangeTx.getWavesSellerAmountBefore(),
+                exchangeTx.getWavesBuyerAmountBefore()
         );
     }
 }

@@ -83,7 +83,7 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, exchangeTxId.toString());
         GrpcExchangeCheckers grpcReissueCheckers =
-                new GrpcExchangeCheckers(getBlockUpdateHandler.getTxIndex(), buyer, recipient, exchangeTx);
+                new GrpcExchangeCheckers(getBlockUpdateHandler.getTxIndex(), sender, recipient, exchangeTx);
         grpcReissueCheckers.checkExchangeSubscribe(fee, "");
         grpcReissueCheckers.checkBalancesForExchangeWithWaves(
                 exchangeTx.getWavesSellerAmountBefore(),

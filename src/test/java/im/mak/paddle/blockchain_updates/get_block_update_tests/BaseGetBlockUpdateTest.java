@@ -34,12 +34,6 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static PrivateKey senderPrivateKey;
     protected static PublicKey senderPublicKey;
 
-    protected static Account buyer;
-    protected static Address buyerAddress;
-    protected static PrivateKey buyerPrivateKey;
-    protected static PublicKey buyerPublicKey;
-    protected static AssetId assetIdExchange;
-
     protected static Account recipient;
     protected static PrivateKey recipientPrivateKey;
     protected static PublicKey recipientPublicKey;
@@ -163,13 +157,6 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                     senderPrivateKey = sender.privateKey();
                     senderPublicKey = sender.publicKey();
                     assetIdForSponsorFee = sender.issue(i -> i.name("sponsorFeeAsset")).tx().assetId();
-                },
-                () -> {
-                    buyer = new Account(DEFAULT_FAUCET / 2);
-                    buyerAddress = buyer.address();
-                    buyerPrivateKey = buyer.privateKey();
-                    buyerPublicKey = buyer.publicKey();
-                    assetIdExchange = buyer.issue(i -> i.name("assetIdExchange").quantity(950_000)).tx().assetId();
                 },
                 () -> {
                     recipient = new Account(DEFAULT_FAUCET);
@@ -301,14 +288,13 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void exchangeSetUp() {
-        assetAmount = Amount.of(50_000, assetIdExchange);
-        orderBuy = Order.buy(wavesAmount, assetAmount, buyerPublicKey).version(ORDER_V_3)
-                .getSignedWith(buyerPrivateKey);
+        orderBuy = Order.buy(wavesAmount, assetAmount, senderPublicKey).version(ORDER_V_3)
+                .getSignedWith(senderPrivateKey);
 
-        orderSell = Order.sell(wavesAmount, assetAmount, buyerPublicKey).version(ORDER_V_4)
+        orderSell = Order.sell(wavesAmount, assetAmount, senderPublicKey).version(ORDER_V_4)
                 .getSignedWith(recipientPrivateKey);
 
-        exchangeTx = new ExchangeTransactionSender(buyer, recipient, orderBuy, orderSell);
+        exchangeTx = new ExchangeTransactionSender(sender, recipient, orderBuy, orderSell);
 
         exchangeTx.exchangeTransactionSender(
                 wavesAmount.value(),

@@ -9,15 +9,11 @@ import com.wavesplatform.transactions.exchange.Order;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.blockchain_updates.transactions_checkers.GrpcExchangeCheckers;
-import im.mak.paddle.helpers.blockchain_updates_handlers.GetBlockUpdateHandler;
 import im.mak.paddle.helpers.transaction_senders.ExchangeTransactionSender;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.wavesplatform.transactions.ExchangeTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
@@ -86,21 +82,10 @@ public class ExchangeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         ExchangeTransactionSender txSender = new ExchangeTransactionSender(buyer, seller, buy, sell);
         txSender.exchangeTransactionSender(amount.value(), price.value(), 0, LATEST_VERSION);
         String txId = txSender.getTxInfo().tx().id().toString();
-        /* корректный тест для ExchangeTransactionSubscriptionGrpcTest
-
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
 
-        GrpcExchangeCheckers grpcExchangeCheckers = new GrpcExchangeCheckers(0, buyer, seller, txSender);*/
-
-        // тест с проверками для GetBlockUpdateTest
-        List<Integer> heightsList = new ArrayList<>();
-        heightsList.add(node().getHeight());
-        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
-        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, txId);
-
-        GrpcExchangeCheckers grpcExchangeCheckers =
-                new GrpcExchangeCheckers(getBlockUpdateHandler.getTxIndex(), buyer, seller, txSender);
+        GrpcExchangeCheckers grpcExchangeCheckers = new GrpcExchangeCheckers(0, buyer, seller, txSender);
 
         grpcExchangeCheckers.checkExchangeSubscribe(MIN_FEE_FOR_EXCHANGE, "");
         grpcExchangeCheckers.checkBalancesForExchangeWithWaves(amountBefore, assetQuantity);

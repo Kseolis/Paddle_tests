@@ -90,4 +90,14 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
                 exchangeTx.getWavesBuyerAmountBefore()
         );
     }
+
+    @Test
+    @DisplayName("Check getBlockUpdate response for Lease transaction")
+    void getBlockUpdateLeaseTransactionTest() {
+        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, leaseTxId.toString());
+        GrpcLeaseCheckers grpcLeaseCheckers =
+                new GrpcLeaseCheckers(getBlockUpdateHandler.getTxIndex(), sender, recipient, leaseTx);
+        grpcLeaseCheckers.checkLeaseGrpc(MIN_FEE, leaseTx.getAmountBefore(), leaseTx.getAmountAfter());
+    }
 }

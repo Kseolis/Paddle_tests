@@ -220,8 +220,8 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void leaseSetUp() {
-        leaseTx = new LeaseTransactionSender(sender, recipient);
-        leaseTx.leaseTransactionSender(MIN_TRANSACTION_SUM, MIN_FEE, LeaseTransaction.LATEST_VERSION);
+        leaseTx = new LeaseTransactionSender(sender, recipient, MIN_FEE);
+        leaseTx.leaseTransactionSender(MIN_TRANSACTION_SUM, LeaseTransaction.LATEST_VERSION);
         leaseTxId = leaseTx.getTxInfo().tx().id();
         checkHeight();
     }

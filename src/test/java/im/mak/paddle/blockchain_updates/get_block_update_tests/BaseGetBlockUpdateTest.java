@@ -89,6 +89,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
 
     protected static MassTransferTransactionSender massTransferTx;
     protected static Id massTransferTxId;
+    protected static long balanceBeforeMassTx;
     protected static List<Account> accountList;
 
     protected static DataTransactionsSender dataTx;
@@ -254,6 +255,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
 
     private static void massTransferSetUp() {
         accountList = accountListGenerator(MIN_NUM_ACCOUNT_FOR_MASS_TRANSFER);
+        balanceBeforeMassTx = sender.getWavesBalance();
         massTransferTx = new MassTransferTransactionSender(sender, assetId, assetAmount.value(), accountList);
         massTransferTx.massTransferTransactionSender(MassTransferTransaction.LATEST_VERSION);
         massTransferTxId = massTransferTx.getMassTransferTx().id();

@@ -11,14 +11,12 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     @Test
     @DisplayName("Check getBlockUpdate response for Issue transaction")
     void getBlockUpdateIssueTransactionTest() {
+        String address = senderAddress.toString();
+        String pk = senderPublicKey.toString();
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, issueTxId.toString());
-        GrpcIssueCheckers getIssueCheckers = new GrpcIssueCheckers(
-                getBlockUpdateHandler.getTxIndex(),
-                senderAddress.toString(),
-                senderPublicKey.toString(),
-                issueTx
-        );
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcIssueCheckers getIssueCheckers = new GrpcIssueCheckers(index, address, pk, issueTx);
         getIssueCheckers.checkIssueGrpc(amountBeforeIssueTx, amountAfterIssueTx);
     }
 
@@ -27,8 +25,8 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     void getBlockUpdateTransferTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, transferTxId.toString());
-        GrpcTransferCheckers grpcTransferCheckers =
-                new GrpcTransferCheckers(getBlockUpdateHandler.getTxIndex(), sender, recipient, transferSender);
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcTransferCheckers grpcTransferCheckers = new GrpcTransferCheckers(index, sender, recipient, transferSender);
         grpcTransferCheckers.checkTransferSubscribe(
                 wavesBalanceBeforeTransfer,
                 transferSender.getSenderWavesBalanceAfterTransaction(),
@@ -42,8 +40,8 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     void getBlockUpdateBurnTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, burnTxId.toString());
-        GrpcBurnCheckers grpcTransferCheckers =
-                new GrpcBurnCheckers(getBlockUpdateHandler.getTxIndex(), sender, burnTxSender, issueTx);
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcBurnCheckers grpcTransferCheckers = new GrpcBurnCheckers(index, sender, burnTxSender, issueTx);
         grpcTransferCheckers.checkBurnSubscribe(assetAmountBeforeBurnTx, assetAmountAfterBurnTx, assetAmountBeforeBurnTx);
     }
 
@@ -52,8 +50,8 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     void getBlockUpdateReissueTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, reissueTxId.toString());
-        GrpcReissueCheckers grpcReissueCheckers =
-                new GrpcReissueCheckers(getBlockUpdateHandler.getTxIndex(), sender, reissueTxSender, issueTx);
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcReissueCheckers grpcReissueCheckers = new GrpcReissueCheckers(index, sender, reissueTxSender, issueTx);
         grpcReissueCheckers.checkReissueSubscribe(
                 assetAmountBeforeReissueTx,
                 assetAmountAfterReissueTx,
@@ -68,8 +66,8 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
         long fee = MIN_FEE_FOR_EXCHANGE + EXTRA_FEE;
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, exchangeTxId.toString());
-        GrpcExchangeCheckers grpcReissueCheckers =
-                new GrpcExchangeCheckers(getBlockUpdateHandler.getTxIndex(), sender, recipient, exchangeTx);
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcExchangeCheckers grpcReissueCheckers = new GrpcExchangeCheckers(index, sender, recipient, exchangeTx);
         grpcReissueCheckers.checkExchangeSubscribe(fee, "");
         grpcReissueCheckers.checkBalancesForExchangeWithWaves(
                 exchangeTx.getWavesSellerAmountBefore(),
@@ -82,8 +80,8 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     void getBlockUpdateLeaseTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, leaseTxId.toString());
-        GrpcLeaseCheckers grpcLeaseCheckers =
-                new GrpcLeaseCheckers(getBlockUpdateHandler.getTxIndex(), sender, recipient, leaseTx);
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcLeaseCheckers grpcLeaseCheckers = new GrpcLeaseCheckers(index, sender, recipient, leaseTx);
         grpcLeaseCheckers.checkLeaseGrpc(MIN_FEE, leaseTx.getAmountBefore(), leaseTx.getAmountAfter());
     }
 
@@ -92,9 +90,9 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     void getBlockUpdateLeaseCancelTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, leaseCancelTxId.toString());
-        GrpcLeaseCancelCheckers grpcLeaseCancelCheckers =
-                new GrpcLeaseCancelCheckers(getBlockUpdateHandler.getTxIndex(), sender, recipient, leaseCancelTx);
-        grpcLeaseCancelCheckers.checkLeaseCancelGrpc(MIN_TRANSACTION_SUM);
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcLeaseCancelCheckers leaseCancelCheckers = new GrpcLeaseCancelCheckers(index, sender, recipient, leaseCancelTx);
+        leaseCancelCheckers.checkLeaseCancelGrpc(MIN_TRANSACTION_SUM);
     }
 
     @Test
@@ -109,5 +107,15 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
                 aliasTxId.toString()
         );
         grpcAliasCheckers.checkAliasGrpc(newAlias, amountBeforeAliasTx, amountAfterAliasTx, MIN_FEE);
+    }
+
+    @Test
+    @DisplayName("Check getBlockUpdate response for MassTransfer transaction")
+    void getBlockUpdateMassTransferTransactionTest() {
+        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, massTransferTxId.toString());
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcMassTransferCheckers massTransferCheckers = new GrpcMassTransferCheckers(index, sender, massTransferTx);
+        massTransferCheckers.checkMassTransferGrpc(assetAmount.value(), balanceBeforeMassTx);
     }
 }

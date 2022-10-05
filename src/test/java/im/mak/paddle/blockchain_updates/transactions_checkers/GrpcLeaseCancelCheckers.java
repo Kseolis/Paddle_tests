@@ -45,7 +45,7 @@ public class GrpcLeaseCancelCheckers {
         amountAfter = leaseCancelTxSender.getAmountAfter();
     }
 
-    private void checkLeaseCancelGrpc(long amountLease) {
+    public void checkLeaseCancelGrpc(long amountLease) {
         assertAll(
                 // transaction
                 () -> assertThat(getChainId(txIndex)).isEqualTo(CHAIN_ID),
@@ -69,12 +69,12 @@ public class GrpcLeaseCancelCheckers {
                 () -> assertThat(getInBeforeFromLeasingForAddress(txIndex, 1)).isEqualTo(amountLease),
                 () -> assertThat(getInAfterFromLeasingForAddress(txIndex, 1)).isEqualTo(0),
                 // individual_leases
-                () -> assertThat(getLeaseIdFromIndividualLeases(txIndex, 0)).isEqualTo(leaseCancelId),
+                () -> assertThat(getLeaseIdFromIndividualLeases(txIndex, 0)).isEqualTo(leaseId),
                 () -> assertThat(getStatusAfterFromIndividualLeases(txIndex, 0)).isEqualTo(INACTIVE_STATUS_LEASE),
                 () -> assertThat(getAmountFromIndividualLeases(txIndex, 0)).isEqualTo(amountLease),
                 () -> assertThat(getSenderFromIndividualLeases(txIndex, 0)).isEqualTo(senderPublicKey),
                 () -> assertThat(getRecipientFromIndividualLeases(txIndex, 0)).isEqualTo(recipientAddress),
-                () -> assertThat(getOriginalTransactionIdFromIndividualLeases(txIndex, 0)).isEqualTo(leaseCancelId)
+                () -> assertThat(getOriginalTransactionIdFromIndividualLeases(txIndex, 0)).isEqualTo(leaseId)
         );
     }
 }

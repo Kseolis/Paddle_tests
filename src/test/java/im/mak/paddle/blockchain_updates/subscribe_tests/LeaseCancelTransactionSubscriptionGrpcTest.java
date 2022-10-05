@@ -4,6 +4,7 @@ import com.wavesplatform.transactions.LeaseTransaction;
 import com.wavesplatform.transactions.common.Id;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
+import im.mak.paddle.blockchain_updates.transactions_checkers.GrpcLeaseCancelCheckers;
 import im.mak.paddle.helpers.dapps.DefaultDApp420Complexity;
 import im.mak.paddle.helpers.transaction_senders.LeaseCancelTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,9 +20,7 @@ import static im.mak.paddle.util.Constants.*;
 
 public class LeaseCancelTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private Account sender;
-
     private Account recipient;
-
     private int amountLease;
     private static final DefaultDApp420Complexity accWithDApp = new DefaultDApp420Complexity(DEFAULT_FAUCET);
 
@@ -47,7 +46,8 @@ public class LeaseCancelTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, leaseCancelId);
 
-      //  checkLeaseCancelSubscribe(leaseIdString, leaseCancelId, MIN_FEE);
+        GrpcLeaseCancelCheckers leaseCancelCheckers = new GrpcLeaseCancelCheckers(0, sender, recipient, txSender);
+        leaseCancelCheckers.checkLeaseCancelGrpc(amountLease);
     }
 
     @Test
@@ -62,6 +62,7 @@ public class LeaseCancelTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, leaseCancelId);
 
-      //  checkLeaseCancelSubscribe(leaseCancelId, SUM_FEE);
+        GrpcLeaseCancelCheckers leaseCancelCheckers = new GrpcLeaseCancelCheckers(0, accWithDApp, recipient, txSender);
+        leaseCancelCheckers.checkLeaseCancelGrpc(amountLease);
     }
 }

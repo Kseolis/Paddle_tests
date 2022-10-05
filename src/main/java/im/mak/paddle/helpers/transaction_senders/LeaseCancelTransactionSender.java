@@ -9,22 +9,30 @@ import static im.mak.paddle.util.Constants.MIN_FEE;
 
 public class LeaseCancelTransactionSender extends BaseTransactionSender {
     private static LeaseCancelTransaction leaseCancelTx;
-    private static long effectiveBalanceAfterSendTransaction;
-    private static long balanceAfterReceiving;
     private final Account from;
     private final Account to;
 
-    public LeaseCancelTransactionSender(Account from, Account to) {
+    private static long effectiveBalanceAfterSendTransaction;
+    private static long balanceAfterReceiving;
+
+    private final long amountBefore;
+    private final long amountAfter;
+    private final long fee;
+
+    public LeaseCancelTransactionSender(Account from, Account to, long fee) {
         this.from = from;
         this.to = to;
+        this.fee = fee;
+        amountBefore = from.getWavesBalance();
+        amountAfter = amountBefore - fee;
     }
 
-    public void leaseCancelTransactionSender(Id index, long leaseSum, long fee, int version) {
+    public void leaseCancelTransactionSender(Id leaseId, long leaseSum, int version) {
         effectiveBalanceAfterSendTransaction = from.getWavesBalanceDetails().effective() - MIN_FEE + leaseSum;
         balanceAfterReceiving = to.getWavesBalanceDetails().effective() - leaseSum;
 
         leaseCancelTx = LeaseCancelTransaction
-                .builder(index)
+                .builder(leaseId)
                 .fee(fee)
                 .version(version)
                 .getSignedWith(from.privateKey());
@@ -51,5 +59,17 @@ public class LeaseCancelTransactionSender extends BaseTransactionSender {
 
     public Account getTo() {
         return to;
+    }
+
+    public long getAmountBefore() {
+        return amountBefore;
+    }
+
+    public long getAmountAfter() {
+        return amountAfter;
+    }
+
+    public long getFee() {
+        return fee;
     }
 }

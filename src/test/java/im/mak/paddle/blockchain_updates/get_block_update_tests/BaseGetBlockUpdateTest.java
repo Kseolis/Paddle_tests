@@ -227,11 +227,10 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void leaseCancelSetUp() {
-        leaseCancelTx = new LeaseCancelTransactionSender(sender, recipient);
+        leaseCancelTx = new LeaseCancelTransactionSender(sender, recipient, MIN_FEE);
         leaseCancelTx.leaseCancelTransactionSender(
                 leaseTxId,
                 MIN_TRANSACTION_SUM,
-                MIN_FEE,
                 LeaseCancelTransaction.LATEST_VERSION
         );
         checkHeight();

@@ -35,8 +35,8 @@ public class LeaseTransactionTest {
     @DisplayName("Minimum lease sum transaction")
     void leaseMinimumWavesAssets() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            LeaseTransactionSender txSender = new LeaseTransactionSender(bob, alice);
-            txSender.leaseTransactionSender(MIN_TRANSACTION_SUM, MIN_FEE, v);
+            LeaseTransactionSender txSender = new LeaseTransactionSender(bob, alice, MIN_FEE);
+            txSender.leaseTransactionSender(MIN_TRANSACTION_SUM, v);
             leaseTransactionCheck(MIN_TRANSACTION_SUM, MIN_FEE, txSender);
         }
     }
@@ -46,8 +46,8 @@ public class LeaseTransactionTest {
     void leaseOneWavesAssets() {
         long amount = getRandomInt(100_000, 1_000_000_00);
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            LeaseTransactionSender txSender = new LeaseTransactionSender(bob, alice);
-            txSender.leaseTransactionSender(amount, MIN_FEE, v);
+            LeaseTransactionSender txSender = new LeaseTransactionSender(bob, alice, MIN_FEE);
+            txSender.leaseTransactionSender(amount, v);
             leaseTransactionCheck(amount, MIN_FEE, txSender);
         }
     }
@@ -57,8 +57,8 @@ public class LeaseTransactionTest {
     void leaseMaximumAssets() {
         long amount = alice.getWavesBalance() - MIN_FEE;
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            LeaseTransactionSender txSender = new LeaseTransactionSender(alice, bob);
-            txSender.leaseTransactionSender(amount, MIN_FEE, v);
+            LeaseTransactionSender txSender = new LeaseTransactionSender(alice, bob, MIN_FEE);
+            txSender.leaseTransactionSender(amount, v);
             leaseTransactionCheck(amount, MIN_FEE, txSender);
             node().faucet().transfer(alice, DEFAULT_FAUCET, AssetId.WAVES);
         }
@@ -68,8 +68,8 @@ public class LeaseTransactionTest {
     @DisplayName("Maximum lease sum transaction from DApp account")
     void leaseFromDAppAccount() {
         long amount = smartAcc.getWavesBalance() - SUM_FEE;
-        LeaseTransactionSender txSender = new LeaseTransactionSender(smartAcc, bob);
-        txSender.leaseTransactionSender(amount, SUM_FEE, LATEST_VERSION);
+        LeaseTransactionSender txSender = new LeaseTransactionSender(smartAcc, bob, SUM_FEE);
+        txSender.leaseTransactionSender(amount, LATEST_VERSION);
         leaseTransactionCheck(amount, SUM_FEE, txSender);
         node().faucet().transfer(smartAcc, DEFAULT_FAUCET, AssetId.WAVES);
     }

@@ -40,8 +40,6 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
 
     protected static Amount wavesAmount;
 
-    protected static Amount orderAmount;
-    protected static Amount orderPrice;
     protected static Order orderBuy;
     protected static Order orderSell;
 
@@ -84,7 +82,10 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static LeaseTransactionSender leaseTx;
     protected static Id leaseTxId;
     protected static LeaseCancelTransactionSender leaseCancelTx;
+    protected static Id leaseCancelTxId;
+
     protected static ExchangeTransactionSender exchangeTx;
+    protected static Id exchangeTxId;
 
     protected static MassTransferTransactionSender massTransferTx;
     protected static Id massTransferTxId;
@@ -220,20 +221,20 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void leaseSetUp() {
-        leaseTx = new LeaseTransactionSender(sender, recipient);
-        leaseTx.leaseTransactionSender(MIN_TRANSACTION_SUM, MIN_FEE, LeaseTransaction.LATEST_VERSION);
+        leaseTx = new LeaseTransactionSender(sender, recipient, MIN_FEE);
+        leaseTx.leaseTransactionSender(MIN_TRANSACTION_SUM, LeaseTransaction.LATEST_VERSION);
         leaseTxId = leaseTx.getTxInfo().tx().id();
         checkHeight();
     }
 
     private static void leaseCancelSetUp() {
-        leaseCancelTx = new LeaseCancelTransactionSender(sender, recipient);
+        leaseCancelTx = new LeaseCancelTransactionSender(sender, recipient, MIN_FEE);
         leaseCancelTx.leaseCancelTransactionSender(
                 leaseTxId,
                 MIN_TRANSACTION_SUM,
-                MIN_FEE,
                 LeaseCancelTransaction.LATEST_VERSION
         );
+        leaseCancelTxId = leaseCancelTx.getTxInfo().tx().id();
         checkHeight();
     }
 
@@ -288,29 +289,21 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void exchangeSetUp() {
-        long sumSellerTokens = wavesAmount.value();
-        long offerForToken = 1000;
-        long amountBefore = sender.getWavesBalance() - ONE_WAVES;
-
-        orderAmount = Amount.of(sumSellerTokens, AssetId.WAVES);
-        orderPrice = Amount.of(offerForToken, assetId);
-
-        orderBuy = Order.buy(orderAmount, orderPrice, recipientPublicKey)
-                .version(ORDER_V_3)
-                .getSignedWith(recipientPrivateKey);
-
-        orderSell = Order.sell(orderAmount, orderPrice, recipientPublicKey)
-                .version(ORDER_V_4)
+        orderBuy = Order.buy(wavesAmount, assetAmount, senderPublicKey).version(ORDER_V_3)
                 .getSignedWith(senderPrivateKey);
 
-        exchangeTx = new ExchangeTransactionSender(recipient, sender, orderBuy, orderSell);
+        orderSell = Order.sell(wavesAmount, assetAmount, senderPublicKey).version(ORDER_V_4)
+                .getSignedWith(recipientPrivateKey);
+
+        exchangeTx = new ExchangeTransactionSender(sender, recipient, orderBuy, orderSell);
 
         exchangeTx.exchangeTransactionSender(
-                orderAmount.value(),
-                orderPrice.value(),
+                wavesAmount.value(),
+                assetAmount.value(),
                 EXTRA_FEE,
                 ExchangeTransaction.LATEST_VERSION
         );
+        exchangeTxId = exchangeTx.getExchangeTx().id();
         checkHeight();
     }
 

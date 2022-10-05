@@ -82,6 +82,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static LeaseTransactionSender leaseTx;
     protected static Id leaseTxId;
     protected static LeaseCancelTransactionSender leaseCancelTx;
+    protected static Id leaseCancelTxId;
 
     protected static ExchangeTransactionSender exchangeTx;
     protected static Id exchangeTxId;
@@ -233,6 +234,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                 MIN_TRANSACTION_SUM,
                 LeaseCancelTransaction.LATEST_VERSION
         );
+        leaseCancelTxId = leaseCancelTx.getTxInfo().tx().id();
         checkHeight();
     }
 

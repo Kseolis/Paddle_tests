@@ -79,15 +79,11 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     @Test
     @DisplayName("Check getBlockUpdate response for Exchange transaction")
     void getBlockUpdateExchangeTransactionTest() {
-        long fee = MIN_FEE_FOR_EXCHANGE + EXTRA_FEE;
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, exchangeTxId.toString());
-        GrpcExchangeCheckers grpcReissueCheckers =
-                new GrpcExchangeCheckers(getBlockUpdateHandler.getTxIndex(), buyer, recipient, exchangeTx);
-        grpcReissueCheckers.checkExchangeSubscribe(fee, "");
-        grpcReissueCheckers.checkBalancesForExchangeWithWaves(
-                exchangeTx.getWavesSellerAmountBefore(),
-                exchangeTx.getWavesBuyerAmountBefore()
-        );
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcExchangeCheckers grpcReissueCheckers = new GrpcExchangeCheckers(index, buyer, recipient, exchangeTx);
+        grpcReissueCheckers.checkExchangeSubscribe(MIN_FEE_FOR_EXCHANGE, "");
+        grpcReissueCheckers.checkBalancesForExchangeWithWaves(amountBeforeExchangeTx, assetIdExchangeQuantity);
     }
 }

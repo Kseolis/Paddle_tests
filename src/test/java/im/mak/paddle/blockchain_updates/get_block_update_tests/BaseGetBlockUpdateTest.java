@@ -34,6 +34,12 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static PrivateKey senderPrivateKey;
     protected static PublicKey senderPublicKey;
 
+    protected static Account buyer;
+    protected static Address buyerAddress;
+    protected static PrivateKey buyerPrivateKey;
+    protected static PublicKey buyerPublicKey;
+    protected static AssetId assetIdExchange;
+
     protected static Account recipient;
     protected static PrivateKey recipientPrivateKey;
     protected static PublicKey recipientPublicKey;
@@ -305,10 +311,10 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         orderBuy = Order.buy(wavesAmount, assetAmount, buyerPublicKey).version(ORDER_V_3)
                 .getSignedWith(buyerPrivateKey);
 
-        orderSell = Order.sell(wavesAmount, assetAmount, senderPublicKey).version(ORDER_V_4)
+        orderSell = Order.sell(wavesAmount, assetAmount, buyerPublicKey).version(ORDER_V_4)
                 .getSignedWith(recipientPrivateKey);
 
-        exchangeTx = new ExchangeTransactionSender(sender, recipient, orderBuy, orderSell);
+        exchangeTx = new ExchangeTransactionSender(buyer, recipient, orderBuy, orderSell);
 
         exchangeTx.exchangeTransactionSender(
                 wavesAmount.value(),

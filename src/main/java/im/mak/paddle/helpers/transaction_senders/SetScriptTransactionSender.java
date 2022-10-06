@@ -10,6 +10,7 @@ import static im.mak.paddle.util.Constants.MIN_FEE_FOR_SET_SCRIPT;
 
 public class SetScriptTransactionSender extends BaseTransactionSender {
     private SetScriptTransaction setScriptTx;
+    private long wavesBalanceBeforeSetScript;
     private long fee;
 
     private final Account account;
@@ -22,7 +23,8 @@ public class SetScriptTransactionSender extends BaseTransactionSender {
 
     public void setScriptTransactionSender(long moreFee, int version) {
         fee = MIN_FEE_FOR_SET_SCRIPT + moreFee + EXTRA_FEE_FOR_SET_SCRIPT;
-        balanceAfterTransaction = account.getWavesBalance() - fee;
+        wavesBalanceBeforeSetScript = account.getWavesBalance();
+        balanceAfterTransaction = wavesBalanceBeforeSetScript - fee;
 
         setScriptTx = SetScriptTransaction
                 .builder(script)
@@ -50,4 +52,7 @@ public class SetScriptTransactionSender extends BaseTransactionSender {
         return script;
     }
 
+    public long getWavesBalanceBeforeSetScript() {
+        return wavesBalanceBeforeSetScript;
+    }
 }

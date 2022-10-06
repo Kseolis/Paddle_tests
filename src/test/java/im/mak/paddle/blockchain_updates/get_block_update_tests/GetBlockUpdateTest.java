@@ -124,4 +124,14 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
         GrpcDataCheckers dataCheckers = new GrpcDataCheckers(index, sender, dataTxSender);
         dataCheckers.checkDataTransactionGrpc();
     }
+
+    @Test
+    @DisplayName("Check getBlockUpdate response for SetScript transaction")
+    void getBlockUpdateSetScriptTransactionTest() {
+        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, setScriptTxId.toString());
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcSetScriptCheckers setScriptCheckers = new GrpcSetScriptCheckers(index, setScriptTx);
+        setScriptCheckers.checkSetScriptGrpc();
+    }
 }

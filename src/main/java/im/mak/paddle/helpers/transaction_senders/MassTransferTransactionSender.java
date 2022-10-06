@@ -17,15 +17,20 @@ import static im.mak.paddle.helpers.Calculations.*;
 
 public class MassTransferTransactionSender extends BaseTransactionSender {
     private final Map<Address, Long> balancesAfterTransaction = new HashMap<>();
+
     private long senderBalanceAfterMassTransfer;
     private long senderBalanceBeforeMassTransfer;
+    private long senderWavesBalanceAfterMassTransfer;
+
     private int accountsSize;
+
     private final Base58String attach = new Base58String("attachment");
     private MassTransferTransaction massTransferTx;
 
     private final Account sender;
     private final AssetId assetId;
     private final long amount;
+
     private final List<Account> accounts;
     private final List<Transfer> transfers = new ArrayList<>();
 
@@ -91,6 +96,10 @@ public class MassTransferTransactionSender extends BaseTransactionSender {
         return accounts;
     }
 
+    public long getSenderWavesBalanceAfterMassTransfer() {
+        return senderWavesBalanceAfterMassTransfer;
+    }
+
     private void prepareSender() {
         accounts.forEach(a -> transfers.add(Transfer.to(a.address(), amount)));
         accounts.forEach(a -> balancesAfterTransaction.put(a.address(), a.getBalance(assetId) + amount));
@@ -101,7 +110,7 @@ public class MassTransferTransactionSender extends BaseTransactionSender {
 
     private void afterSend() {
         node().waitForTransaction(node().broadcast(massTransferTx).id());
-        balanceAfterTransaction = sender.getWavesBalance();
+        senderWavesBalanceAfterMassTransfer = sender.getWavesBalance();
         txInfo = node().getTransactionInfo(massTransferTx.id());
     }
 }

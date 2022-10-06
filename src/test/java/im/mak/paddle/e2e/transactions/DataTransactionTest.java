@@ -35,12 +35,9 @@ public class DataTransactionTest {
     @DisplayName("transaction of all data types on dataTransaction")
     void allTypesDataTransactionTest() {
         DataEntry[] dataEntries = new DataEntry[]{binaryEntry, booleanEntry, integerEntry, stringEntry};
-
         for (int v = 1; v <= LATEST_VERSION; v++) {
             final DataTransactionsSender txSender = new DataTransactionsSender(account, dataEntries);
-
             txSender.dataEntryTransactionSender(account, v);
-
             checkAssertsForDataTransaction(txSender);
         }
     }
@@ -50,9 +47,7 @@ public class DataTransactionTest {
     void intTypeDataTransactionTest() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
             final DataTransactionsSender txSender = new DataTransactionsSender(account, integerEntry);
-
             txSender.dataEntryTransactionSender(account, v);
-
             checkAssertsForDataTransaction(txSender);
         }
     }
@@ -62,9 +57,7 @@ public class DataTransactionTest {
     void stringTypeDataTransactionTest() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
             final DataTransactionsSender txSender = new DataTransactionsSender(account, stringEntry);
-
             txSender.dataEntryTransactionSender(account, v);
-
             checkAssertsForDataTransaction(txSender);
         }
     }
@@ -74,9 +67,7 @@ public class DataTransactionTest {
     void binaryTypeDataTransactionTest() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
             final DataTransactionsSender txSender = new DataTransactionsSender(account, binaryEntry);
-
             txSender.dataEntryTransactionSender(account, v);
-
             checkAssertsForDataTransaction(txSender);
         }
     }
@@ -86,9 +77,7 @@ public class DataTransactionTest {
     void booleanTypeDataTransactionTest() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
             final DataTransactionsSender txSender = new DataTransactionsSender(account, booleanEntry);
-
             txSender.dataEntryTransactionSender(account, v);
-
             checkAssertsForDataTransaction(txSender);
         }
     }

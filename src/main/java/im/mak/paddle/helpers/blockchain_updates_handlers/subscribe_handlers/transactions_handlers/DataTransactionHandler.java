@@ -1,6 +1,6 @@
 package im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers;
 
-import com.google.protobuf.ByteString;
+import com.wavesplatform.crypto.base.Base64;
 
 import static com.wavesplatform.protobuf.transaction.TransactionOuterClass.DataTransactionData.DataEntry;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.getWavesTransactionAtIndex;
@@ -22,8 +22,8 @@ public class DataTransactionHandler {
         return getDataEntryFromDataTx(txIndex, dataIndex).getBoolValue();
     }
 
-    public static ByteString getByteStringValueFromDataTx(int txIndex, int dataIndex) {
-        return getDataEntryFromDataTx(txIndex, dataIndex).getBinaryValue();
+    public static String getByteStringValueFromDataTx(int txIndex, int dataIndex) {
+        return Base64.encode(getDataEntryFromDataTx(txIndex, dataIndex).getBinaryValue().toByteArray());
     }
 
     private static DataEntry getDataEntryFromDataTx(int txIndex, int dataIndex) {

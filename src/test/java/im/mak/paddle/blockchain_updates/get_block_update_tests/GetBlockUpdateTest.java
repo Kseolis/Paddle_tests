@@ -118,4 +118,14 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
         GrpcMassTransferCheckers massTransferCheckers = new GrpcMassTransferCheckers(index, sender, massTransferTx);
         massTransferCheckers.checkMassTransferGrpc(assetAmount.value(), balanceBeforeMassTx);
     }
+
+    @Test
+    @DisplayName("Check getBlockUpdate response for Data transaction")
+    void getBlockUpdateDataTransactionTest() {
+        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, dataTxId.toString());
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcDataCheckers dataCheckers = new GrpcDataCheckers(index, sender, dataTxSender);
+        dataCheckers.checkDataTransactionGrpc();
+    }
 }

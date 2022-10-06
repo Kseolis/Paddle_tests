@@ -7,7 +7,6 @@ import im.mak.paddle.Account;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static im.mak.paddle.Node.node;
@@ -16,17 +15,16 @@ import static im.mak.paddle.util.Constants.MIN_FEE;
 public class DataTransactionsSender extends BaseTransactionSender {
     private DataTransaction dataTx;
     private final Map<String, EntryType> dataTxEntryMap = new HashMap<>();
-    private final List<DataEntry> dataEntriesAsList;
     private final DataEntry[] dataEntries;
     private final Account sender;
+    private final long balanceBeforeDataTransaction;
 
     public DataTransactionsSender(Account sender, DataEntry... dataEntries) {
         this.dataEntries = dataEntries;
         this.sender = sender;
-
-        balanceAfterTransaction = sender.getWavesBalance() - MIN_FEE;
-        dataEntriesAsList = Arrays.asList(dataEntries);
-        dataEntriesAsList.forEach(a -> dataTxEntryMap.put(a.key(), a.type()));
+        balanceBeforeDataTransaction = sender.getWavesBalance();
+        balanceAfterTransaction = balanceBeforeDataTransaction - MIN_FEE;
+        Arrays.asList(dataEntries).forEach(a -> dataTxEntryMap.put(a.key(), a.type()));
     }
 
     public void dataEntryTransactionSender(Account account, int version) {
@@ -45,11 +43,15 @@ public class DataTransactionsSender extends BaseTransactionSender {
         return sender;
     }
 
-    public List<DataEntry> getDataEntriesAsList() {
-        return dataEntriesAsList;
-    }
-
     public Map<String, EntryType> getDataTxEntryMap() {
         return dataTxEntryMap;
+    }
+
+    public DataEntry[] getDataEntries() {
+        return dataEntries;
+    }
+
+    public long getBalanceBeforeDataTransaction() {
+        return balanceBeforeDataTransaction;
     }
 }

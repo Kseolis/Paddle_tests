@@ -1,10 +1,10 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests;
 
-import com.wavesplatform.transactions.DataTransaction;
 import com.wavesplatform.transactions.common.Base64String;
 import com.wavesplatform.transactions.data.*;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
+import im.mak.paddle.blockchain_updates.transactions_checkers.GrpcDataCheckers;
 import im.mak.paddle.helpers.transaction_senders.DataTransactionsSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,8 +42,8 @@ public class DataTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        checkDataTransactionSubscribe(txSender);
-        checkDataEntries(txSender.getDataTx());
-    }
 
+        GrpcDataCheckers grpcDataCheckers = new GrpcDataCheckers(0, senderAccount, txSender);
+        grpcDataCheckers.checkDataTransactionGrpc();
+    }
 }

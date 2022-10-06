@@ -86,6 +86,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
 
     protected static ExchangeTransactionSender exchangeTx;
     protected static Id exchangeTxId;
+    protected static long amountBeforeExchangeTx;
 
     protected static MassTransferTransactionSender massTransferTx;
     protected static Id massTransferTxId;
@@ -109,13 +110,15 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static int height;
     protected static List<Integer> heightsList = new ArrayList<>();
 
+    protected static final long assetIdExchangeQuantity = 950_000;
+    protected static final String scriptFromFile = fromFile("ride_scripts/defaultAssetExpression.ride");
+    protected static final Base64String script = node().compileScript(scriptFromFile).script();
+
     private static final Base64String base64String = new Base64String(randomNumAndLetterString(6));
     private static final BinaryEntry binaryEntry = BinaryEntry.as("BinEntry", base64String);
     private static final BooleanEntry booleanEntry = BooleanEntry.as("Boolean", true);
     private static final IntegerEntry integerEntry = IntegerEntry.as("Integer", getRandomInt(100, 100000));
     private static final StringEntry stringEntry = StringEntry.as("String", "string");
-    private static final String scriptFromFile = fromFile("ride_scripts/defaultAssetExpression.ride");
-    protected static final Base64String script = node().compileScript(scriptFromFile).script();
 
     @BeforeAll
     static void setUp() {
@@ -158,6 +161,14 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                     senderPrivateKey = sender.privateKey();
                     senderPublicKey = sender.publicKey();
                     assetIdForSponsorFee = sender.issue(i -> i.name("sponsorFeeAsset")).tx().assetId();
+                },
+                () -> {
+                    buyer = new Account(DEFAULT_FAUCET);
+                    buyerAddress = buyer.address();
+                    buyerPrivateKey = buyer.privateKey();
+                    buyerPublicKey = buyer.publicKey();
+                    assetIdExchange = buyer.issue(i -> i.name("assetIdExchange")
+                            .quantity(assetIdExchangeQuantity)).tx().assetId();
                 },
                 () -> {
                     recipient = new Account(DEFAULT_FAUCET);
@@ -289,8 +300,10 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void exchangeSetUp() {
-        orderBuy = Order.buy(wavesAmount, assetAmount, senderPublicKey).version(ORDER_V_3)
-                .getSignedWith(senderPrivateKey);
+        amountBeforeExchangeTx = buyer.getWavesBalance();
+        assetAmount = Amount.of(5_000_000_000L, assetIdExchange);
+        orderBuy = Order.buy(wavesAmount, assetAmount, buyerPublicKey).version(ORDER_V_3)
+                .getSignedWith(buyerPrivateKey);
 
         orderSell = Order.sell(wavesAmount, assetAmount, senderPublicKey).version(ORDER_V_4)
                 .getSignedWith(recipientPrivateKey);
@@ -300,7 +313,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         exchangeTx.exchangeTransactionSender(
                 wavesAmount.value(),
                 assetAmount.value(),
-                EXTRA_FEE,
+                0,
                 ExchangeTransaction.LATEST_VERSION
         );
         exchangeTxId = exchangeTx.getExchangeTx().id();

@@ -9,20 +9,6 @@ import static im.mak.paddle.util.Constants.*;
 
 public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     @Test
-    @DisplayName("Check getBlockUpdate response for Alias transaction")
-    void getBlockUpdateAliasTransactionTest() {
-        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
-        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, aliasTxId.toString());
-        GrpcAliasCheckers grpcAliasCheckers = new GrpcAliasCheckers(
-                getBlockUpdateHandler.getTxIndex(),
-                senderAddress.toString(),
-                senderPublicKey.toString(),
-                aliasTxId.toString()
-        );
-        grpcAliasCheckers.checkAliasGrpc(newAlias, amountBeforeAliasTx, amountAfterAliasTx, MIN_FEE);
-    }
-
-    @Test
     @DisplayName("Check getBlockUpdate response for Issue transaction")
     void getBlockUpdateIssueTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
@@ -85,5 +71,39 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
         GrpcExchangeCheckers grpcReissueCheckers = new GrpcExchangeCheckers(index, buyer, recipient, exchangeTx);
         grpcReissueCheckers.checkExchangeSubscribe(MIN_FEE_FOR_EXCHANGE, "");
         grpcReissueCheckers.checkBalancesForExchangeWithWaves(amountBeforeExchangeTx, assetIdExchangeQuantity);
+    }
+
+    @Test
+    @DisplayName("Check getBlockUpdate response for Lease transaction")
+    void getBlockUpdateLeaseTransactionTest() {
+        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, leaseTxId.toString());
+        GrpcLeaseCheckers grpcLeaseCheckers =
+                new GrpcLeaseCheckers(getBlockUpdateHandler.getTxIndex(), sender, recipient, leaseTx);
+        grpcLeaseCheckers.checkLeaseGrpc(MIN_FEE, leaseTx.getAmountBefore(), leaseTx.getAmountAfter());
+    }
+
+    @Test
+    @DisplayName("Check getBlockUpdate response for LeaseCancel transaction")
+    void getBlockUpdateLeaseCancelTransactionTest() {
+        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, leaseCancelTxId.toString());
+        GrpcLeaseCancelCheckers grpcLeaseCancelCheckers =
+                new GrpcLeaseCancelCheckers(getBlockUpdateHandler.getTxIndex(), sender, recipient, leaseCancelTx);
+        grpcLeaseCancelCheckers.checkLeaseCancelGrpc(MIN_TRANSACTION_SUM);
+    }
+
+    @Test
+    @DisplayName("Check getBlockUpdate response for Alias transaction")
+    void getBlockUpdateAliasTransactionTest() {
+        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, aliasTxId.toString());
+        GrpcAliasCheckers grpcAliasCheckers = new GrpcAliasCheckers(
+                getBlockUpdateHandler.getTxIndex(),
+                senderAddress.toString(),
+                senderPublicKey.toString(),
+                aliasTxId.toString()
+        );
+        grpcAliasCheckers.checkAliasGrpc(newAlias, amountBeforeAliasTx, amountAfterAliasTx, MIN_FEE);
     }
 }

@@ -34,12 +34,6 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static PrivateKey senderPrivateKey;
     protected static PublicKey senderPublicKey;
 
-    protected static Account buyer;
-    protected static Address buyerAddress;
-    protected static PrivateKey buyerPrivateKey;
-    protected static PublicKey buyerPublicKey;
-    protected static AssetId assetIdExchange;
-
     protected static Account recipient;
     protected static PrivateKey recipientPrivateKey;
     protected static PublicKey recipientPublicKey;
@@ -88,6 +82,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static LeaseTransactionSender leaseTx;
     protected static Id leaseTxId;
     protected static LeaseCancelTransactionSender leaseCancelTx;
+    protected static Id leaseCancelTxId;
 
     protected static ExchangeTransactionSender exchangeTx;
     protected static Id exchangeTxId;
@@ -237,20 +232,20 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void leaseSetUp() {
-        leaseTx = new LeaseTransactionSender(sender, recipient);
-        leaseTx.leaseTransactionSender(MIN_TRANSACTION_SUM, MIN_FEE, LeaseTransaction.LATEST_VERSION);
+        leaseTx = new LeaseTransactionSender(sender, recipient, MIN_FEE);
+        leaseTx.leaseTransactionSender(MIN_TRANSACTION_SUM, LeaseTransaction.LATEST_VERSION);
         leaseTxId = leaseTx.getTxInfo().tx().id();
         checkHeight();
     }
 
     private static void leaseCancelSetUp() {
-        leaseCancelTx = new LeaseCancelTransactionSender(sender, recipient);
+        leaseCancelTx = new LeaseCancelTransactionSender(sender, recipient, MIN_FEE);
         leaseCancelTx.leaseCancelTransactionSender(
                 leaseTxId,
                 MIN_TRANSACTION_SUM,
-                MIN_FEE,
                 LeaseCancelTransaction.LATEST_VERSION
         );
+        leaseCancelTxId = leaseCancelTx.getTxInfo().tx().id();
         checkHeight();
     }
 
@@ -310,10 +305,10 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         orderBuy = Order.buy(wavesAmount, assetAmount, buyerPublicKey).version(ORDER_V_3)
                 .getSignedWith(buyerPrivateKey);
 
-        orderSell = Order.sell(wavesAmount, assetAmount, buyerPublicKey).version(ORDER_V_4)
+        orderSell = Order.sell(wavesAmount, assetAmount, senderPublicKey).version(ORDER_V_4)
                 .getSignedWith(recipientPrivateKey);
 
-        exchangeTx = new ExchangeTransactionSender(buyer, recipient, orderBuy, orderSell);
+        exchangeTx = new ExchangeTransactionSender(sender, recipient, orderBuy, orderSell);
 
         exchangeTx.exchangeTransactionSender(
                 wavesAmount.value(),

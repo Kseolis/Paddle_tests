@@ -110,6 +110,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static InvokeScriptTransactionSender invokeTx;
     protected static Id invokeTxId;
 
+    protected static IssueTransaction sponsorFeeIssueAsset;
     protected static AssetId assetIdForSponsorFee;
     protected static SponsorFeeTransactionSender sponsorFeeTx;
     protected static Id sponsorFeeTxId;
@@ -167,7 +168,8 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                     senderAddress = sender.address();
                     senderPrivateKey = sender.privateKey();
                     senderPublicKey = sender.publicKey();
-                    assetIdForSponsorFee = sender.issue(i -> i.name("sponsorFeeAsset")).tx().assetId();
+                    sponsorFeeIssueAsset = sender.issue(i -> i.name("sponsorFeeAsset")).tx();
+                    assetIdForSponsorFee = sponsorFeeIssueAsset.assetId();
                 },
                 () -> {
                     buyer = new Account(DEFAULT_FAUCET);

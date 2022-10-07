@@ -10,18 +10,21 @@ import static im.mak.paddle.util.Constants.ONE_WAVES;
 
 public class SetAssetScriptTransactionSender extends BaseTransactionSender {
     private SetAssetScriptTransaction setAssetScriptTx;
-
     private final Account account;
     private final Base64String script;
     private final AssetId assetId;
+    private final long wavesAmountBeforeSetAssetScript;
+    private final long wavesAmountAfterSetAssetScript;
 
     public SetAssetScriptTransactionSender(Account account, Base64String script, AssetId assetId) {
         this.account = account;
         this.script = script;
         this.assetId = assetId;
+        this.wavesAmountBeforeSetAssetScript = account.getWavesBalance();
+        this.wavesAmountAfterSetAssetScript = wavesAmountBeforeSetAssetScript - ONE_WAVES;
     }
 
-    public void setAssetScriptTransactionSender(int version) {
+    public void setAssetScriptSender(int version) {
         balanceAfterTransaction = account.getWavesBalance() - ONE_WAVES;
         setAssetScriptTx = SetAssetScriptTransaction
                 .builder(assetId, script)
@@ -45,5 +48,13 @@ public class SetAssetScriptTransactionSender extends BaseTransactionSender {
 
     public AssetId getAssetId() {
         return assetId;
+    }
+
+    public long getWavesAmountBeforeSetAssetScript() {
+        return wavesAmountBeforeSetAssetScript;
+    }
+
+    public long getWavesAmountAfterSetAssetScript() {
+        return wavesAmountAfterSetAssetScript;
     }
 }

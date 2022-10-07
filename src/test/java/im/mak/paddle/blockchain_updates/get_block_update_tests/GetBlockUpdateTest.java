@@ -124,4 +124,34 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
         GrpcDataCheckers dataCheckers = new GrpcDataCheckers(index, sender, dataTxSender);
         dataCheckers.checkDataTransactionGrpc();
     }
+
+    @Test
+    @DisplayName("Check getBlockUpdate response for SetScript transaction")
+    void getBlockUpdateSetScriptTransactionTest() {
+        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, setScriptTxId.toString());
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcSetScriptCheckers setScriptCheckers = new GrpcSetScriptCheckers(index, setScriptTx);
+        setScriptCheckers.checkSetScriptGrpc();
+    }
+
+    @Test
+    @DisplayName("Check getBlockUpdate response for SponsorFee transaction")
+    void getBlockUpdateSponsorFeeTransactionTest() {
+        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, sponsorFeeTxId.toString());
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcSponsorFeeCheckers sponsorFeeCheckers = new GrpcSponsorFeeCheckers(index, sponsorFeeTx, sponsorFeeIssueAsset);
+        sponsorFeeCheckers.checkSponsorFeeGrpc();
+    }
+
+    @Test
+    @DisplayName("Check getBlockUpdate response for SetAssetScript transaction")
+    void getBlockUpdateSetAssetScriptTransactionTest() {
+        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, setAssetScriptTxId.toString());
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcSetAssetScriptCheckers assetScriptCheckers = new GrpcSetAssetScriptCheckers(index, setAssetScriptTx, issueTx);
+        assetScriptCheckers.checkSetAssetGrpc(0, 0);
+    }
 }

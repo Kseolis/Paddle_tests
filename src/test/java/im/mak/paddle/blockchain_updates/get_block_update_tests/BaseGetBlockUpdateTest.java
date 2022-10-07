@@ -82,7 +82,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static long amountBeforeAliasTx;
     protected static long amountAfterAliasTx;
 
-    protected static SetAssetScriptTransaction setAssetScriptTx;
+    protected static SetAssetScriptTransactionSender setAssetScriptTx;
     protected static Id setAssetScriptTxId;
 
     protected static LeaseTransactionSender leaseTx;
@@ -110,6 +110,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static InvokeScriptTransactionSender invokeTx;
     protected static Id invokeTxId;
 
+    protected static IssueTransaction sponsorFeeIssueAsset;
     protected static AssetId assetIdForSponsorFee;
     protected static SponsorFeeTransactionSender sponsorFeeTx;
     protected static Id sponsorFeeTxId;
@@ -167,7 +168,8 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                     senderAddress = sender.address();
                     senderPrivateKey = sender.privateKey();
                     senderPublicKey = sender.publicKey();
-                    assetIdForSponsorFee = sender.issue(i -> i.name("sponsorFeeAsset")).tx().assetId();
+                    sponsorFeeIssueAsset = sender.issue(i -> i.name("sponsorFeeAsset")).tx();
+                    assetIdForSponsorFee = sponsorFeeIssueAsset.assetId();
                 },
                 () -> {
                     buyer = new Account(DEFAULT_FAUCET);
@@ -280,8 +282,9 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void setAssetScriptSetUp() {
-        setAssetScriptTx = sender.setAssetScript(assetId, script).tx();
-        setAssetScriptTxId = setAssetScriptTx.id();
+        setAssetScriptTx = new SetAssetScriptTransactionSender(sender, script, assetId);
+        setAssetScriptTx.setAssetScriptSender(SetAssetScriptTransaction.LATEST_VERSION);
+        setAssetScriptTxId = setAssetScriptTx.getSetAssetScriptTx().id();
         checkHeight();
     }
 

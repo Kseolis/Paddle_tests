@@ -17,14 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SetAssetScriptTransactionTest {
-
-    private static Account alice;
+    private static Account sender;
     private static AssetId issuedAssetId;
 
     @BeforeAll
     static void before() {
-        alice = new Account(DEFAULT_FAUCET);
-        issuedAssetId = alice.issue(i -> i.name("Test_Asset")
+        sender = new Account(DEFAULT_FAUCET);
+        issuedAssetId = sender.issue(i -> i.name("Test_Asset")
                 .script(SCRIPT_PERMITTING_OPERATIONS)
                 .quantity(1000_00000000L)).tx().assetId();
     }
@@ -36,8 +35,8 @@ public class SetAssetScriptTransactionTest {
             Base64String script = node()
                     .compileScript(fromFile("ride_scripts/permissionOnUpdatingKeyValues.ride")).script();
 
-            SetAssetScriptTransactionSender txSender = new SetAssetScriptTransactionSender(alice, script, issuedAssetId);
-            txSender.setAssetScriptTransactionSender(v);
+            SetAssetScriptTransactionSender txSender = new SetAssetScriptTransactionSender(sender, script, issuedAssetId);
+            txSender.setAssetScriptSender(v);
 
             checkSetAssetScriptTransaction(v, txSender);
         }
@@ -46,7 +45,6 @@ public class SetAssetScriptTransactionTest {
     private void checkSetAssetScriptTransaction(int version, SetAssetScriptTransactionSender txSender) {
         assertAll(
                 () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
-                () -> assertThat(txSender.getSetAssetScriptTx().fee().value()).isEqualTo(ONE_WAVES),
                 () -> assertThat(txSender.getSetAssetScriptTx().fee().value()).isEqualTo(ONE_WAVES),
                 () -> assertThat(txSender.getSetAssetScriptTx().sender()).isEqualTo(txSender.getAccount().publicKey()),
                 () -> assertThat(txSender.getSetAssetScriptTx().script()).isEqualTo(txSender.getScript()),

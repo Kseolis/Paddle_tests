@@ -24,7 +24,7 @@ public class SetAssetScriptTransactionSender extends BaseTransactionSender {
         this.wavesAmountAfterSetAssetScript = wavesAmountBeforeSetAssetScript - ONE_WAVES;
     }
 
-    public void setAssetScriptTransactionSender(int version) {
+    public void setAssetScriptSender(int version) {
         balanceAfterTransaction = account.getWavesBalance() - ONE_WAVES;
         setAssetScriptTx = SetAssetScriptTransaction
                 .builder(assetId, script)

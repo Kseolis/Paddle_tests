@@ -82,7 +82,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static long amountBeforeAliasTx;
     protected static long amountAfterAliasTx;
 
-    protected static SetAssetScriptTransaction setAssetScriptTx;
+    protected static SetAssetScriptTransactionSender setAssetScriptTx;
     protected static Id setAssetScriptTxId;
 
     protected static LeaseTransactionSender leaseTx;
@@ -282,8 +282,9 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void setAssetScriptSetUp() {
-        setAssetScriptTx = sender.setAssetScript(assetId, script).tx();
-        setAssetScriptTxId = setAssetScriptTx.id();
+        setAssetScriptTx = new SetAssetScriptTransactionSender(sender, script, assetId);
+        setAssetScriptTx.setAssetScriptSender(SetAssetScriptTransaction.LATEST_VERSION);
+        setAssetScriptTxId = setAssetScriptTx.getSetAssetScriptTx().id();
         checkHeight();
     }
 

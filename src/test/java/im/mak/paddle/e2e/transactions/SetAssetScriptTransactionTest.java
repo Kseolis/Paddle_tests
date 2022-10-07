@@ -36,7 +36,7 @@ public class SetAssetScriptTransactionTest {
                     .compileScript(fromFile("ride_scripts/permissionOnUpdatingKeyValues.ride")).script();
 
             SetAssetScriptTransactionSender txSender = new SetAssetScriptTransactionSender(sender, script, issuedAssetId);
-            txSender.setAssetScriptTransactionSender(v);
+            txSender.setAssetScriptSender(v);
 
             checkSetAssetScriptTransaction(v, txSender);
         }

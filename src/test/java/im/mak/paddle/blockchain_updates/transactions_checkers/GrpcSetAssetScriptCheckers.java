@@ -23,7 +23,8 @@ public class GrpcSetAssetScriptCheckers {
     private final String address;
     private final String publicKey;
     private final String assetId;
-    private final byte[] script;
+    private final byte[] scriptBefore;
+    private final byte[] scriptAfter;
     private final long amountBefore;
     private final long amountAfter;
 
@@ -31,7 +32,8 @@ public class GrpcSetAssetScriptCheckers {
         this.txIndex = txIndex;
         this.issueTx = issueTx;
 
-        this.script = txSender.getScript().bytes();
+        this.scriptBefore = issueTx.script().bytes();
+        this.scriptAfter = txSender.getScript().bytes();
         this.assetId = txSender.getAssetId().toString();
 
         this.address = txSender.getAccount().address().toString();
@@ -43,14 +45,14 @@ public class GrpcSetAssetScriptCheckers {
     }
 
 
-    public void checkSetAssetGrpc(byte[] scriptBefore) {
+    public void checkSetAssetGrpc(int complexityBefore, int complexityAfter) {
         assertAll(
                 () -> assertThat(getChainId(txIndex)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getSenderPublicKeyFromTransaction(txIndex)).isEqualTo(publicKey),
                 () -> assertThat(getTransactionFeeAmount(txIndex)).isEqualTo(ONE_WAVES),
                 () -> assertThat(getTransactionVersion(txIndex)).isEqualTo(SetAssetScriptTransaction.LATEST_VERSION),
                 () -> assertThat(getAssetIdFromSetAssetScript(txIndex)).isEqualTo(assetId),
-                () -> assertThat(getScriptFromSetAssetScript(txIndex)).isEqualTo(script),
+                () -> assertThat(getScriptFromSetAssetScript(txIndex)).isEqualTo(scriptAfter),
                 () -> assertThat(getTxId(txIndex)).isEqualTo(txId),
                 // check waves balance
                 () -> assertThat(getAddress(txIndex, 0)).isEqualTo(address),
@@ -65,7 +67,7 @@ public class GrpcSetAssetScriptCheckers {
                 () -> assertThat(getDescriptionBefore(txIndex, 0)).isEqualTo(issueTx.description()),
                 () -> assertThat(getDecimalsBefore(txIndex, 0)).isEqualTo(String.valueOf(issueTx.decimals())),
                 () -> assertThat(getScriptBefore(txIndex, 0)).isEqualTo(scriptBefore),
-                () -> assertThat(getScriptComplexityBefore(txIndex, 0)).isEqualTo(0),
+                () -> assertThat(getScriptComplexityBefore(txIndex, 0)).isEqualTo(complexityBefore),
                 // check asset after set asset script
                 () -> assertThat(getAssetIdFromAssetAfter(txIndex, 0)).isEqualTo(assetId),
                 () -> assertThat(getIssuerAfter(txIndex, 0)).isEqualTo(publicKey),
@@ -74,8 +76,8 @@ public class GrpcSetAssetScriptCheckers {
                 () -> assertThat(getNameAfter(txIndex, 0)).isEqualTo(issueTx.name()),
                 () -> assertThat(getDescriptionAfter(txIndex, 0)).isEqualTo(issueTx.description()),
                 () -> assertThat(getDecimalsAfter(txIndex, 0)).isEqualTo(String.valueOf(issueTx.decimals())),
-                () -> assertThat(getScriptAfter(txIndex, 0)).isEqualTo(script),
-                () -> assertThat(getScriptComplexityAfter(txIndex, 0)).isEqualTo(15)
+                () -> assertThat(getScriptAfter(txIndex, 0)).isEqualTo(scriptAfter),
+                () -> assertThat(getScriptComplexityAfter(txIndex, 0)).isEqualTo(complexityAfter)
         );
     }
 }

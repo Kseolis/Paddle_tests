@@ -144,4 +144,14 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
         GrpcSponsorFeeCheckers sponsorFeeCheckers = new GrpcSponsorFeeCheckers(index, sponsorFeeTx, sponsorFeeIssueAsset);
         sponsorFeeCheckers.checkSponsorFeeGrpc();
     }
+
+    @Test
+    @DisplayName("Check getBlockUpdate response for SetAssetScript transaction")
+    void getBlockUpdateSetAssetScriptTransactionTest() {
+        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, setAssetScriptTxId.toString());
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcSetAssetScriptCheckers assetScriptCheckers = new GrpcSetAssetScriptCheckers(index, setAssetScriptTx, issueTx);
+        assetScriptCheckers.checkSetAssetGrpc(0, 0);
+    }
 }

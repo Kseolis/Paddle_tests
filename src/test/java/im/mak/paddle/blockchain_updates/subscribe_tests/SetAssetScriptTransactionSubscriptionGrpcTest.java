@@ -26,7 +26,6 @@ public class SetAssetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest 
     private Account account;
     private String assetName;
     private String assetDescription;
-    private final byte[] firstScript = node().compileScript(SCRIPT_PERMITTING_OPERATIONS).script().bytes();
     private final Base64String newScript = node()
             .compileScript(fromFile("ride_scripts/permissionOnUpdatingKeyValues.ride")).script();
 
@@ -57,7 +56,7 @@ public class SetAssetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest 
         final AssetId assetId = issueTx.assetId();
 
         SetAssetScriptTransactionSender senderTx = new SetAssetScriptTransactionSender(account, newScript, assetId);
-        senderTx.setAssetScriptTransactionSender(LATEST_VERSION);
+        senderTx.setAssetScriptSender(LATEST_VERSION);
         String txId = senderTx.getSetAssetScriptTx().id().toString();
 
         height = node().getHeight();
@@ -65,6 +64,6 @@ public class SetAssetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest 
         subscribeResponseHandler(CHANNEL, height, height, txId);
 
         GrpcSetAssetScriptCheckers grpcSetAssetScriptCheckers = new GrpcSetAssetScriptCheckers(0, senderTx, issueTx);
-        grpcSetAssetScriptCheckers.checkSetAssetGrpc(firstScript);
+        grpcSetAssetScriptCheckers.checkSetAssetGrpc(0, 15);
     }
 }

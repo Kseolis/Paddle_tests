@@ -15,7 +15,6 @@ import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.*;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTx;
-import im.mak.paddle.helpers.transaction_senders.invoke.InvokeScriptTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
 
 import java.util.ArrayList;
@@ -107,8 +106,6 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
 
     protected static PrepareInvokeTestsData testData;
     protected static InvokeCalculationsBalancesAfterTx calcBalances;
-    protected static InvokeScriptTransactionSender invokeTx;
-    protected static Id invokeTxId;
 
     protected static IssueTransaction sponsorFeeIssueAsset;
     protected static AssetId assetIdForSponsorFee;
@@ -157,8 +154,6 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         sponsorFeeSetUp();
         // SetAssetScript transaction
         setAssetScriptSetUp();
-        // Invoke transaction
-    //     invokeSetUp();
     }
 
     private static void mainSetUp() {

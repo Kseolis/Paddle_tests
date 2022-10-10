@@ -71,7 +71,7 @@ public class SubscribeInvokeDataGrpcTest extends BaseGrpcTest {
 
     private void assertionsCheck(long payment, String intVal, String binVal, String boolArg, String strVal, String txId) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId),
+                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId, 0),
                 () -> checkPaymentsSubscribe(0, 0, payment, ""),
                 () -> checkMainMetadata(0),
                 () -> checkArgumentsMetadata(0, 0, INTEGER, intVal),

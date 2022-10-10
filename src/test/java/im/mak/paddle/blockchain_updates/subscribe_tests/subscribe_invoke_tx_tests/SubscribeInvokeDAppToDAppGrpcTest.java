@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
     private static PrepareInvokeTestsData testData;
-    private InvokeCalculationsBalancesAfterTx calcBalances;
 
     @BeforeAll
     static void before() {
@@ -37,8 +36,8 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
     @Test
     @DisplayName("subscribe dApp to dApp")
     void subscribeInvokeWithDAppToDApp() {
-        testData.prepareDataForDAppToDAppTests(SUM_FEE + ONE_WAVES);
-        calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+        testData.prepareDataForDAppToDAppTests(SUM_FEE);
+        InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
 
         final AssetId assetId = testData.getAssetId();
         final DAppCall dAppCall = testData.getDAppCall();
@@ -47,8 +46,7 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
         final Account assetDAppAccount = testData.getAssetDAppAccount();
         final List<Amount> amounts = testData.getAmounts();
 
-        final InvokeScriptTransactionSender txSender =
-                new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
+        final InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
         setVersion(LATEST_VERSION);
         calcBalances.balancesAfterDAppToDApp(caller, dAppAccount, assetDAppAccount, amounts, assetId);
         txSender.invokeSender();
@@ -59,81 +57,81 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
         subscribeResponseHandler(CHANNEL, height, height, txId);
         prepareInvoke(dAppAccount, testData);
 
-        assertionsCheck(
-                testData.getKey1ForDAppEqualBar(),
-                testData.getKey2ForDAppEqualBalance(),
-                assetId.toString(),
-                txId
-        );
+        assertionsCheckDAppToDAppInvoke(testData, calcBalances, txId, 0);
     }
 
-    private void assertionsCheck(String key1, String key2, String assetId, String txId) {
+    public static void assertionsCheckDAppToDAppInvoke
+            (PrepareInvokeTestsData data, InvokeCalculationsBalancesAfterTx calcBalances, String txId, int txIndex) {
+        String key1 = data.getKey1ForDAppEqualBar();
+        String key2 = data.getKey2ForDAppEqualBalance();
+        String assetId = data.getAssetId().toString();
         assertAll(
-                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId),
-                () -> checkMainMetadata(0),
-                () -> checkArgumentsMetadata(0, 0, BINARY_BASE58, testData.getAssetDAppAddress()),
-                () -> checkArgumentsMetadata(0, 1, INTEGER, String.valueOf(testData.getIntArg())),
-                () -> checkArgumentsMetadata(0, 2, STRING, key1),
-                () -> checkArgumentsMetadata(0, 3, STRING, key2),
-                () -> checkArgumentsMetadata(0, 4, BINARY_BASE58, assetId),
+                () -> checkInvokeSubscribeTransaction(data.getInvokeFee(), data.getCallerPublicKey(), txId, txIndex),
+                () -> checkMainMetadata(txIndex),
+                () -> checkArgumentsMetadata(txIndex, 0, BINARY_BASE58, data.getAssetDAppAddress()),
+                () -> checkArgumentsMetadata(txIndex, 1, INTEGER, String.valueOf(data.getIntArg())),
+                () -> checkArgumentsMetadata(txIndex, 2, STRING, key1),
+                () -> checkArgumentsMetadata(txIndex, 3, STRING, key2),
+                () -> checkArgumentsMetadata(txIndex, 4, BINARY_BASE58, assetId),
 
-                () -> checkDataMetadata(0, 0,
-                        INTEGER,
-                        key1,
-                        calcBalances.getInvokeResultData()),
-                () -> checkDataMetadata(0, 1,
+                () -> checkDataMetadata(txIndex, 1,
                         INTEGER,
                         key2,
                         String.valueOf(calcBalances.getAccBalanceWavesAfterTransaction())),
 
-                () -> checkResultInvokesMetadata(0, 0,
-                        testData.getAssetDAppAddress(),
+                () -> checkResultInvokesMetadata(txIndex, 0,
+                        data.getAssetDAppAddress(),
                         key1),
-                () -> checkResultInvokesMetadataPayments(0, 0, 0, assetId, testData.getAssetAmount().value()),
-                () -> checkResultInvokesMetadataStateChanges(0, 0, 0,
+                () -> checkResultInvokesMetadataPayments(txIndex, 0, 0, assetId, data.getAssetAmount().value()),
+                () -> checkResultInvokesMetadataStateChanges(txIndex, 0, 0,
                         WAVES_STRING_ID,
-                        testData.getDAppAddress(),
-                        testData.getWavesAmount().value()),
+                        data.getDAppAddress(),
+                        data.getWavesAmount().value()),
 
-                () -> checkStateUpdateBalance(0,
+                () -> checkDataMetadata(txIndex, 0,
+                        INTEGER,
+                        key1,
+                        calcBalances.getInvokeResultData()),
+                () -> checkStateUpdateBalance(txIndex,
                         0,
-                        testData.getDAppAddress(),
+                        data.getDAppAddress(),
                         WAVES_STRING_ID,
                         calcBalances.getDAppBalanceWavesBeforeTransaction(),
                         calcBalances.getDAppBalanceWavesAfterTransaction()),
-                () -> checkStateUpdateBalance(0,
+                () -> checkStateUpdateBalance(txIndex,
                         1,
-                        testData.getDAppAddress(),
+                        data.getDAppAddress(),
                         assetId,
                         calcBalances.getDAppBalanceIssuedAssetsBeforeTransaction(),
                         calcBalances.getDAppBalanceIssuedAssetsAfterTransaction()),
 
-                () -> checkStateUpdateBalance(0,
+                () -> checkStateUpdateBalance(txIndex,
                         2,
-                        testData.getAssetDAppAddress(),
+                        data.getAssetDAppAddress(),
                         WAVES_STRING_ID,
                         calcBalances.getAccBalanceWavesBeforeTransaction(),
                         calcBalances.getAccBalanceWavesAfterTransaction()),
-                () -> checkStateUpdateBalance(0,
+                () -> checkStateUpdateBalance(txIndex,
                         3,
-                        testData.getAssetDAppAddress(),
+                        data.getAssetDAppAddress(),
                         assetId,
                         calcBalances.getAccBalanceIssuedAssetsBeforeTransaction(),
                         calcBalances.getAccBalanceIssuedAssetsAfterTransaction()),
 
-                () -> checkStateUpdateBalance(0,
+                () -> checkStateUpdateBalance(txIndex,
                         4,
-                        testData.getCallerAddress(),
+                        data.getCallerAddress(),
                         WAVES_STRING_ID,
                         calcBalances.getCallerBalanceWavesBeforeTransaction(),
                         calcBalances.getCallerBalanceWavesAfterTransaction()),
 
-                () -> checkStateUpdateDataEntries(0, 0,
-                        testData.getDAppAddress(),
+
+                () -> checkStateUpdateDataEntries(txIndex, 0,
+                        data.getDAppAddress(),
                         key1,
                         calcBalances.getInvokeResultData()),
-                () -> checkStateUpdateDataEntries(0, 1,
-                        testData.getDAppAddress(),
+                () -> checkStateUpdateDataEntries(txIndex, 1,
+                        data.getDAppAddress(),
                         key2,
                         String.valueOf(calcBalances.getAccBalanceWavesAfterTransaction()))
         );

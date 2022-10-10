@@ -71,7 +71,7 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
 
     private void assertionsCheck(long dAppAssetAmountAfter, long recipientAmountValueAfter, String txId) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId),
+                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId, 0),
 
                 () -> checkMainMetadata(0),
                 () -> checkArgumentsMetadata(0, 0, BINARY_BASE58, assetIdToStr),

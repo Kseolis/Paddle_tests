@@ -75,7 +75,7 @@ public class SubscribeInvokeScriptPaymentsGrpcTest extends BaseGrpcTest {
 
     private void assertionsCheck(long paymentWaves, long paymentAsset, String assetId, String intArg, String txId) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId),
+                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId, 0),
                 () -> checkPaymentsSubscribe(0, 0, paymentWaves, ""),
                 () -> checkPaymentsSubscribe(0, 1, paymentAsset, assetId),
 

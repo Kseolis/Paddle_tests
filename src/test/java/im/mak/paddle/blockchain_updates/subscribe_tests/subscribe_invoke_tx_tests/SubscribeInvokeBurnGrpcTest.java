@@ -66,7 +66,7 @@ public class SubscribeInvokeBurnGrpcTest extends BaseGrpcTest {
 
     private void assertionsCheck(String txId) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId),
+                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId, 0),
                 () -> checkMainMetadata(0),
                 () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
                 () -> checkBurnMetadata(0, 0, assetId.toString(), testData.getAssetAmount().value()),

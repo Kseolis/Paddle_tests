@@ -67,7 +67,7 @@ public class SubscribeInvokeLeaseCancelGrpcTest extends BaseGrpcTest {
 
     private void assertionsCheck(long amountValue, String txId) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId),
+                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId, 0),
                 () -> checkMainMetadata(0),
                 () -> checkPaymentsSubscribe(0, 0, amountValue, ""),
                 () -> checkPaymentMetadata(0, 0, null, amountValue),

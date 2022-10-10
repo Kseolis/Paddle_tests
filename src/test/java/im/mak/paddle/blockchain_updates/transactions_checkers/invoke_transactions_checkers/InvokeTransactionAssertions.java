@@ -11,15 +11,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class InvokeTransactionAssertions extends BaseGrpcTest {
-    public static void checkInvokeSubscribeTransaction(long fee, String senderPublicKey, String txId) {
+    public static void checkInvokeSubscribeTransaction(long fee, String senderPublicKey, String txId, int txIndex) {
         assertAll(
-                () -> assertThat(getChainId(0)).isEqualTo(CHAIN_ID),
-                () -> assertThat(getTransactionFeeAmount(0)).isEqualTo(fee),
-                () -> assertThat(getSenderPublicKeyFromTransaction(0)).isEqualTo(senderPublicKey),
-                () -> assertThat(getTransactionVersion(0)).isEqualTo(LATEST_VERSION),
-                () -> assertThat(getInvokeTransactionPublicKeyHash(0)).isEqualTo(getDAppAccountPublicKeyHash()),
-                //  () -> assertThat(getInvokeTransactionFunctionCall(0)).isEqualTo();
-                () -> assertThat(getTransactionId()).isEqualTo(txId)
+                () -> assertThat(getChainId(txIndex)).isEqualTo(CHAIN_ID),
+                () -> assertThat(getTransactionFeeAmount(txIndex)).isEqualTo(fee),
+                () -> assertThat(getSenderPublicKeyFromTransaction(txIndex)).isEqualTo(senderPublicKey),
+                () -> assertThat(getTransactionVersion(txIndex)).isEqualTo(LATEST_VERSION),
+                () -> assertThat(getInvokeTransactionPublicKeyHash(txIndex)).isEqualTo(getDAppAccountPublicKeyHash()),
+                //  () -> assertThat(getInvokeTransactionFunctionCall(txIndex)).isEqualTo();
+                () -> assertThat(getTxId(txIndex)).isEqualTo(txId)
         );
     }
 

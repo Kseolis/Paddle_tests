@@ -69,7 +69,7 @@ public class SubscribeInvokeIssueGrpcTest extends BaseGrpcTest {
 
     private void assertionsCheck(long issueAssetDataVolume, long assetDataForIssueVolume, String txId) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId),
+                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId, 0),
                 () -> checkMainMetadata(0),
                 () -> checkIssueAssetMetadata(0, 0, getIssueAssetData()),
                 () -> checkIssueAssetMetadata(0, 1, testData.getAssetDataForIssue()),

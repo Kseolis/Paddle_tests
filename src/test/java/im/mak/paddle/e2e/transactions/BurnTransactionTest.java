@@ -42,7 +42,6 @@ public class BurnTransactionTest {
         for (int v = 1; v < LATEST_VERSION; v++) {
             BurnTransactionSender txSender = new BurnTransactionSender(account, amount, MIN_FEE, v);
             txSender.burnTransactionSender();
-
             checkAssertsForBurnTransaction(issuedAsset, txSender);
         }
     }
@@ -56,7 +55,6 @@ public class BurnTransactionTest {
         for (int v = 1; v < LATEST_VERSION; v++) {
             BurnTransactionSender txSender = new BurnTransactionSender(account, amount, MIN_FEE, v);
             txSender.burnTransactionSender();
-
             checkAssertsForBurnTransaction(issuedAsset, txSender);
             account.reissue(1000, issuedAsset);
         }
@@ -70,7 +68,6 @@ public class BurnTransactionTest {
         for (int v = 1; v < LATEST_VERSION; v++) {
             BurnTransactionSender txSender = new BurnTransactionSender(account, amount, SUM_FEE, v);
             txSender.burnTransactionSender();
-
             checkAssertsForBurnTransaction(issuedSmartAsset, txSender);
         }
     }
@@ -84,7 +81,6 @@ public class BurnTransactionTest {
         for (int v = 1; v < LATEST_VERSION; v++) {
             BurnTransactionSender txSender = new BurnTransactionSender(account, amount, SUM_FEE, v);
             txSender.burnTransactionSender();
-
             checkAssertsForBurnTransaction(issuedSmartAsset, txSender);
             account.reissue(1000, issuedSmartAsset);
         }
@@ -94,9 +90,8 @@ public class BurnTransactionTest {
         assertAll(
                 () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
                 () -> assertThat(txSender.getSender().getAssetBalance(assetId))
-                        .isEqualTo(txSender.getBalanceAfterTransaction()),
-                () -> assertThat(txSender.getSender().getWavesBalance())
-                        .isEqualTo(txSender.getAccountWavesBalance() - txSender.getFee()),
+                        .isEqualTo(txSender.getAssetBalanceAfterTransaction()),
+                () -> assertThat(txSender.getSender().getWavesBalance()).isEqualTo(txSender.getBalanceAfterTransaction()),
                 () -> assertThat(txSender.getBurnTx().fee().assetId()).isEqualTo(AssetId.WAVES),
                 () -> assertThat(txSender.getBurnTx().fee().value()).isEqualTo(txSender.getFee()),
                 () -> assertThat(txSender.getBurnTx().amount().value()).isEqualTo(txSender.getAmount().value()),

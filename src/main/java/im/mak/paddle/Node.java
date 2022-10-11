@@ -33,7 +33,8 @@ import static java.util.Collections.singletonList;
 public class Node extends com.wavesplatform.wavesj.Node {
 
     private static Node instance;
-    private static final int GRPCPort = 6888;
+    private static final int dockerGRPCPort = 6888;
+    private static final int devNetGRPCPort = 6881;
 
     public static Node node() {
         if (instance == null) synchronized (Node.class) {
@@ -79,8 +80,8 @@ public class Node extends com.wavesplatform.wavesj.Node {
                 Map<String, List<PortBinding>> portBindings = new HashMap<>();
                 portBindings.put("6863", singletonList(PortBinding
                         .of("0.0.0.0", port)));
-                portBindings.put(String.valueOf(GRPCPort), singletonList(PortBinding
-                        .of("0.0.0.0", GRPCPort)));
+                portBindings.put(String.valueOf(dockerGRPCPort), singletonList(PortBinding
+                        .of("0.0.0.0", dockerGRPCPort)));
                 HostConfig hostConfig = HostConfig.builder()
                         .binds(HostConfig.Bind
                                 .from("/Users/vnikolaenko/projects/Paddle_tests/src/main/resources/docker")
@@ -92,7 +93,7 @@ public class Node extends com.wavesplatform.wavesj.Node {
                 ContainerConfig containerConfig = ContainerConfig.builder()
                         .hostConfig(hostConfig)
                         .image(conf.dockerImage)
-                        .exposedPorts("6863", String.valueOf(GRPCPort))
+                        .exposedPorts("6863", String.valueOf(dockerGRPCPort))
                         .build();
 
                 containerId = docker.createContainer(containerConfig).id();
@@ -547,8 +548,11 @@ public class Node extends com.wavesplatform.wavesj.Node {
         return throwErrorOrGet(() -> super.waitBlocks(blocksCount));
     }
 
-    public static int getGRPCPort() {
-        return GRPCPort;
+    public static int getDockerGRPCPort() {
+        return dockerGRPCPort;
     }
 
+    public static int getDevNetGRPCPort() {
+        return devNetGRPCPort;
+    }
 }

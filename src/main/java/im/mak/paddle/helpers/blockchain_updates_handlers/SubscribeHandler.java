@@ -6,7 +6,6 @@ import com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdates.SubscribeReq
 import com.wavesplatform.events.protobuf.Events.BlockchainUpdated;
 import com.wavesplatform.events.protobuf.Events.BlockchainUpdated.Append;
 import com.wavesplatform.protobuf.block.BlockOuterClass.MicroBlock;
-import com.wavesplatform.protobuf.transaction.TransactionOuterClass.Transaction;
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
 
@@ -18,8 +17,6 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.se
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.setMicroBlockInfo;
 
 public class SubscribeHandler {
-    private static String transactionId;
-
     public static void subscribeResponseHandler(Channel channel, int fromHeight, int toHeight, String txId) {
         SubscribeRequest request = SubscribeRequest
                 .newBuilder()
@@ -38,10 +35,6 @@ public class SubscribeHandler {
         }
     }
 
-    public static String getTransactionId() {
-        return transactionId;
-    }
-
     private static void subscribeEventHandler(BlockchainUpdated subscribeEventUpdate, String txId) {
         Append append = subscribeEventUpdate.getAppend();
         MicroBlock microBlockInfo = append
@@ -50,7 +43,7 @@ public class SubscribeHandler {
                 .getMicroBlock();
 
         if (microBlockInfo.getTransactionsCount() > 0) {
-            transactionId = Base58.encode(append.getTransactionIds(0).toByteArray());
+            String transactionId = Base58.encode(append.getTransactionIds(0).toByteArray());
             if (transactionId.equals(txId)) {
                 setMicroBlockInfo(microBlockInfo);
                 setAppend(append);

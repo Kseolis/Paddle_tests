@@ -45,6 +45,7 @@ public class AliasTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     @Test
     @DisplayName("Check subscription on alias transaction")
     void subscribeTestForCreateAlias() {
+        height = node().getHeight();
         long amountBefore = account.getWavesBalance();
         long amountAfter = amountBefore - MIN_FEE;
         newAlias = randomNumAndLetterString(15);
@@ -55,8 +56,7 @@ public class AliasTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         String txId = txSender.getCreateAliasTx().id().toString();
 
-        height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, node().getHeight(), txId);
 
         GrpcAliasCheckers grpcAliasCheckers = new GrpcAliasCheckers(0, accountAddress, accountPublicKey, txId);
         grpcAliasCheckers.checkAliasGrpc(newAlias, amountBefore, amountAfter, MIN_FEE);
@@ -65,6 +65,7 @@ public class AliasTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     @Test
     @DisplayName("Check subscription on alias transaction from DApp account")
     void subscribeTestForCreateAliasDAppAcc() {
+        height = node().getHeight();
         long amountBefore = dAppAccount.getWavesBalance();
         long amountAfter = amountBefore - SUM_FEE;
         newAlias = randomNumAndLetterString(4);
@@ -74,8 +75,7 @@ public class AliasTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         txSender.createAliasTransactionSender();
 
         String txId = txSender.getCreateAliasTx().id().toString();
-        height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, height, height, txId);
+        subscribeResponseHandler(CHANNEL, height, node().getHeight(), txId);
         GrpcAliasCheckers grpcAliasCheckers = new GrpcAliasCheckers(0, dAppAccountAddress, dAppAccountPublicKey, txId);
         grpcAliasCheckers.checkAliasGrpc(newAlias, amountBefore, amountAfter, SUM_FEE);
     }

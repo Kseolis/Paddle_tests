@@ -113,6 +113,8 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static Id sponsorFeeTxId;
 
     protected static int height;
+    protected static int fromHeight;
+    protected static int toHeight;
     protected static List<Integer> heightsList = new ArrayList<>();
 
     protected static final long assetIdExchangeQuantity = 950_000;
@@ -330,6 +332,17 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         if (height < node().getHeight()) {
             height = node().getHeight();
             heightsList.add(height);
+        }
+    }
+
+    protected void setHeights(List<Integer> heightsList) {
+        if (heightsList.size() == 1) {
+            fromHeight = heightsList.get(0);
+            toHeight = heightsList.get(0);
+        } else {
+            int lastHeightsIndex = heightsList.size() - 1;
+            fromHeight = heightsList.get(0);
+            toHeight = heightsList.get(lastHeightsIndex);
         }
     }
 }

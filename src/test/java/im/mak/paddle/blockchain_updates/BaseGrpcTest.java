@@ -8,16 +8,18 @@ import io.grpc.ManagedChannelBuilder;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
+import static im.mak.paddle.Node.getGRPCPort;
+
 @Execution(ExecutionMode.SAME_THREAD)
 public class BaseGrpcTest {
     protected int height;
-    public static final long CHAIN_ID = 68;
+    public static final long CHAIN_ID = 82;
     private static String dAppAccountPublicKeyHash;
     private static String dAppAccountAddress;
     private static String dAppFunctionName;
 
     protected final Channel CHANNEL = ManagedChannelBuilder
-            .forAddress("devnet1-htz-nbg1-3.wavesnodes.com", 6881)
+            .forAddress("0.0.0.0", getGRPCPort())
             .usePlaintext()
             .build();
 

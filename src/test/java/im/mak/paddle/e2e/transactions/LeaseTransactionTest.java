@@ -44,7 +44,7 @@ public class LeaseTransactionTest {
     @Test
     @DisplayName("lease asset transaction random WAVES")
     void leaseOneWavesAssets() {
-        long amount = getRandomInt(100_000, 1_000_000_00);
+        long amount = getRandomInt(1000, 1_000_000);
         for (int v = 1; v <= LATEST_VERSION; v++) {
             LeaseTransactionSender txSender = new LeaseTransactionSender(bob, alice, MIN_FEE);
             txSender.leaseTransactionSender(amount, v);

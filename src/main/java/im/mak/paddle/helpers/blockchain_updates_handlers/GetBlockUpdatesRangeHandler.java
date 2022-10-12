@@ -34,9 +34,9 @@ public class GetBlockUpdatesRangeHandler {
         List<BlockchainUpdated> updatesList = response.getUpdatesList();
         for (BlockchainUpdated updates : updatesList) {
             Append append = updates.getAppend();
-            long txIdsCount = append.getTransactionIdsCount() - 1;
+            long txIdsCount = append.getTransactionIdsCount();
 
-            for (int i = 0; i <= txIdsCount; i++) {
+            for (int i = 0; i < txIdsCount; i++) {
                 String transactionId = Base58.encode(append.getTransactionIds(i).toByteArray());
                 if (transactionId.equals(txId)) {
                     txIndex = i;

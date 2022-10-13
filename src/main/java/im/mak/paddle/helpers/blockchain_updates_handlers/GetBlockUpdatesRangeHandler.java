@@ -40,7 +40,7 @@ public class GetBlockUpdatesRangeHandler {
                 String transactionId = Base58.encode(append.getTransactionIds(i).toByteArray());
                 if (transactionId.equals(txId)) {
                     txIndex = i;
-                    setBlockInfo(append.getBlock().getBlock());
+                    setBlockInfo(append);
                     return append;
                 }
             }

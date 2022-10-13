@@ -14,7 +14,7 @@ import java.util.Iterator;
 import static com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdatesApiGrpc.newBlockingStub;
 import static com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdatesApiGrpc.BlockchainUpdatesApiBlockingStub;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.setAppend;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.setMicroBlockInfo;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.setBlockInfo;
 
 public class SubscribeHandler {
     public static void subscribeResponseHandler(Channel channel, int fromHeight, int toHeight, String txId) {
@@ -45,7 +45,7 @@ public class SubscribeHandler {
         if (microBlockInfo.getTransactionsCount() > 0) {
             String transactionId = Base58.encode(append.getTransactionIds(0).toByteArray());
             if (transactionId.equals(txId)) {
-                setMicroBlockInfo(microBlockInfo);
+                setBlockInfo(append);
                 setAppend(append);
             }
         }

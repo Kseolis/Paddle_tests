@@ -55,12 +55,12 @@ public class LeaseTransactionTest {
     @Test
     @DisplayName("Maximum lease sum transaction")
     void leaseMaximumAssets() {
-        long amount = alice.getWavesBalance() - MIN_FEE;
         for (int v = 1; v <= LATEST_VERSION; v++) {
+            long amount = alice.getWavesBalance() - MIN_FEE;
             LeaseTransactionSender txSender = new LeaseTransactionSender(alice, bob, MIN_FEE);
             txSender.leaseTransactionSender(amount, v);
             leaseTransactionCheck(amount, MIN_FEE, txSender);
-            node().faucet().transfer(alice, DEFAULT_FAUCET, AssetId.WAVES);
+            alice.cancelLease(txSender.getLeaseTx().id());
         }
     }
 

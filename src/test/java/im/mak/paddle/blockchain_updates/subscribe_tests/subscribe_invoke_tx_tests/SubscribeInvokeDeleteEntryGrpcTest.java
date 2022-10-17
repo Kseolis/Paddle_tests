@@ -40,6 +40,7 @@ public class SubscribeInvokeDeleteEntryGrpcTest extends BaseGrpcTest {
     @Test
     @DisplayName("subscribe invoke with DeleteEntry")
     void subscribeInvokeWithDeleteEntry() {
+        fromHeight = node().getHeight();
         String intValueAfter = String.valueOf(0);
         testData.prepareDataForDeleteEntryTests();
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
@@ -59,8 +60,8 @@ public class SubscribeInvokeDeleteEntryGrpcTest extends BaseGrpcTest {
 
         final String txId = txSender.getInvokeScriptId();
 
-        height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, height, height, txId);
+        toHeight = node().getHeight();
+        subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
         prepareInvoke(dAppAccount, testData);
 
         assertionsCheck(testData.getWavesAmount().value(),

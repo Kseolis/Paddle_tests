@@ -1,4 +1,4 @@
-package im.mak.paddle.blockchain_updates.subscribe_tests;
+package im.mak.paddle.blockchain_updates.subscribe_tests.tests_others_subscription_transactions;
 
 import com.wavesplatform.transactions.LeaseTransaction;
 import com.wavesplatform.transactions.common.Id;

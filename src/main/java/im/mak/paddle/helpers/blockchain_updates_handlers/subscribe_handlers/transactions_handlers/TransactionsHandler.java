@@ -2,6 +2,7 @@ package im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.tra
 
 import com.google.protobuf.ByteString;
 import com.wavesplatform.crypto.base.Base58;
+import com.wavesplatform.events.protobuf.Events.BlockchainUpdated.Append;
 import com.wavesplatform.protobuf.block.BlockOuterClass;
 import com.wavesplatform.protobuf.transaction.TransactionOuterClass.Transaction;
 
@@ -52,11 +53,11 @@ public class TransactionsHandler {
         return getWavesTransactionAtIndex(txIndex).getVersion();
     }
 
-    public static void setBlockInfo(BlockOuterClass.Block block) {
-        blockInfo = block;
-    }
-
-    public static void setMicroBlockInfo(BlockOuterClass.MicroBlock microBlock) {
-        microBlockInfo = microBlock;
+    public static void setBlockInfo(Append append) {
+        blockInfo = append.getBlock().getBlock();
+        if (blockInfo.toString().isBlank()) {
+            blockInfo = null;
+        }
+        microBlockInfo = append.getMicroBlock().getMicroBlock().getMicroBlock();
     }
 }

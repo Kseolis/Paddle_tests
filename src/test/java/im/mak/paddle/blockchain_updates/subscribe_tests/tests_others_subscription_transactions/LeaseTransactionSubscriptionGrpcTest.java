@@ -1,4 +1,4 @@
-package im.mak.paddle.blockchain_updates.subscribe_tests;
+package im.mak.paddle.blockchain_updates.subscribe_tests.tests_others_subscription_transactions;
 
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;

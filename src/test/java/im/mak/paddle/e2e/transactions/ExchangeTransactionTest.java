@@ -54,7 +54,7 @@ public class ExchangeTransactionTest {
     }
 
     @Test
-    @DisplayName("Exchange maximum tokens for maximum price")
+    @DisplayName("Exchange maximum tokens for maximum price, orders and exchange equals versions")
     void exchangeMaxAssets() {
         fee = MIN_FEE_FOR_EXCHANGE;
         long sumSellerTokens = bob.getWavesBalance() - MIN_FEE_FOR_EXCHANGE;
@@ -82,7 +82,32 @@ public class ExchangeTransactionTest {
     }
 
     @Test
-    @DisplayName("Exchange minimum tokens, issued asset is smart")
+    @DisplayName("Exchange minimum tokens for maximum price Orders v3, exchange v2")
+    void exchangeMinAssets() {
+        fee = MIN_FEE_FOR_EXCHANGE;
+        int exchangeVersion = 2;
+        long sumSellerTokens = 1;
+        long offerForToken = getRandomInt(1, 50);
+
+        Amount amountsTokensForExchange = Amount.of(sumSellerTokens, AssetId.WAVES);
+        long amountValue = amountsTokensForExchange.value();
+        Amount pricePerToken = Amount.of(offerForToken, testAssetId);
+        long priceValue = pricePerToken.value();
+
+        Order buyerOrder = Order.buy(amountsTokensForExchange, pricePerToken, alice.publicKey()).version(ORDER_V_3)
+                .getSignedWith(alice.privateKey());
+        Order sellOrder = Order.sell(amountsTokensForExchange, pricePerToken, alice.publicKey()).version(ORDER_V_3)
+                .getSignedWith(bob.privateKey());
+
+        ExchangeTransactionSender txSender = new ExchangeTransactionSender(alice, bob, buyerOrder, sellOrder);
+
+        txSender.exchangeTransactionSender(amountValue, priceValue, 0, exchangeVersion);
+
+        checkAssertsForExchangeTransaction(amountValue, txSender);
+    }
+
+    @Test
+    @DisplayName("Exchange minimum tokens, issued asset is smart, latest exchange version, order v4/v3")
     void exchangeOneSmartAsset() {
         fee = MIN_FEE_FOR_EXCHANGE + EXTRA_FEE;
         long sumSellerTokens = getRandomInt(1, 50) * (long) Math.pow(10, 8);
@@ -106,7 +131,7 @@ public class ExchangeTransactionTest {
     }
 
     @Test
-    @DisplayName("Exchange transaction two smart assets")
+    @DisplayName("Exchange transaction two smart assets, latest exchange version, order v3/v4")
     void exchangeTwoSmartAssets() {
         fee = MIN_FEE_FOR_EXCHANGE + EXCHANGE_FEE_FOR_SMART_ASSETS;
 

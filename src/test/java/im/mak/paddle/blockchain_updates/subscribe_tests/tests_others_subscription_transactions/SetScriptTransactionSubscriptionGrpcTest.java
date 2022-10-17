@@ -1,4 +1,4 @@
-package im.mak.paddle.blockchain_updates.subscribe_tests;
+package im.mak.paddle.blockchain_updates.subscribe_tests.tests_others_subscription_transactions;
 
 import com.wavesplatform.transactions.common.Base64String;
 import im.mak.paddle.Account;
@@ -44,6 +44,7 @@ public class SetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     @Test
     @DisplayName("Check subscription on set 32kb_size Script transaction")
     void subscribeTestForSet32kbScript() {
+        fromHeight = node().getHeight();
         long minimalValSetScriptFee = 2200000;
         script = node().compileScript(fromFile("ride_scripts/scriptSize32kb.ride")).script();
 
@@ -51,8 +52,8 @@ public class SetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         txSender.setScriptTransactionSender(minimalValSetScriptFee, LATEST_VERSION);
         String txId = txSender.getSetScriptTx().id().toString();
 
-        height = node().getHeight();
-        subscribeResponseHandler(CHANNEL, height, height, txId);
+        toHeight = node().getHeight();
+        subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
         GrpcSetScriptCheckers grpcSetScriptCheckers = new GrpcSetScriptCheckers(0, txSender);
         grpcSetScriptCheckers.checkSetScriptGrpc();
     }

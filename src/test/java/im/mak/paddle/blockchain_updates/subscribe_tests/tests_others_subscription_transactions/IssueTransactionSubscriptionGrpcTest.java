@@ -101,7 +101,7 @@ public class IssueTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     }
 
     @Test
-    @DisplayName("Check subscription on issue transaction")
+    @DisplayName("Check subscription on issue NFT transaction")
     void subscribeTestForIssueNftTransaction() {
         amountBefore = account.getWavesBalance();
         amountAfter = DEFAULT_FAUCET - MIN_FEE;

@@ -34,8 +34,8 @@ public class LeaseCancelTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     }
 
     @Test
-    @DisplayName("Check subscription on lease waves transaction")
-    void subscribeTestForWavesLeaseTransaction() {
+    @DisplayName("Check subscription on leaseCancel waves transaction")
+    void subscribeTestForWavesLeaseCancelTransaction() {
         final LeaseTransaction leaseTx = sender.lease(recipient, amountLease).tx();
         final Id leaseId = leaseTx.id();
 
@@ -51,8 +51,8 @@ public class LeaseCancelTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     }
 
     @Test
-    @DisplayName("Check subscription on lease waves transaction in smartAcc")
-    void subscribeTestForWavesLeaseTransactionDAppAcc() {
+    @DisplayName("Check subscription on leaseCancel waves transaction in smartAcc")
+    void subscribeTestForWavesLeaseCancelTransactionDAppAcc() {
         final LeaseTransaction leaseTx = accWithDApp.lease(recipient, amountLease).tx();
         final Id leaseId = leaseTx.id();
 

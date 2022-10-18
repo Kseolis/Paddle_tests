@@ -44,7 +44,7 @@ public class MassTransferTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     }
 
     @Test
-    @DisplayName("Transaction Waves")
+    @DisplayName("MassTransfer Transaction Waves, maximum accounts transfer")
     void subscribeTestForMassTransferTransaction() {
         balanceBefore = sender.getWavesBalance();
         amountValue = getRandomInt(10_000, 1_000_000);
@@ -63,7 +63,7 @@ public class MassTransferTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     }
 
     @Test
-    @DisplayName("DApp account & smart asset")
+    @DisplayName("MassTransfer form DApp account, smart asset, maximum accounts transfer")
     void subscribeTestForMassTransferIssueSmartAssetTransaction() {
         balanceBefore = dAppSender.getWavesBalance();
         amountValue = getRandomInt(10_000, 1_000_000);

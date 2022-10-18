@@ -43,7 +43,7 @@ public class GetBlockUpdatesRangeInvokeTest extends BaseGrpcTest {
     }
 
     @Test
-    @DisplayName("getBlockUpdate dApp to dApp")
+    @DisplayName("GetBlockUpdatesRange invoke dApp to dApp")
     void getBlockUpdateInvokeWithDAppToDApp() {
         fromHeight = node().getHeight();
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);

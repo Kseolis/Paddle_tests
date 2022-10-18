@@ -34,7 +34,7 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
     }
 
     @Test
-    @DisplayName("subscribe dApp to dApp")
+    @DisplayName("subscribe invoke dApp to dApp")
     void subscribeInvokeWithDAppToDApp() {
         fromHeight = node().getHeight();
         long fee = SUM_FEE + (ONE_WAVES * 2);

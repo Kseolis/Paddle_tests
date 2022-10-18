@@ -46,7 +46,7 @@ public class GetBlockUpdateInvokeTest extends BaseGrpcTest {
     }
 
     @Test
-    @DisplayName("getBlockUpdate dApp to dApp")
+    @DisplayName("getBlockUpdate invoke dApp to dApp")
     void getBlockUpdateInvokeWithDAppToDApp() {
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
         calcBalances.balancesAfterDAppToDApp(caller, dAppAccount, assetDAppAccount, amounts, assetId);

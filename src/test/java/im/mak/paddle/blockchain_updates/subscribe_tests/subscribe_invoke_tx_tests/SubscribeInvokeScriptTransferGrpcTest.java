@@ -22,6 +22,7 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetVolume;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Constants.*;
@@ -70,6 +71,7 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
     }
 
     private void assertionsCheck(long dAppAssetAmountAfter, long recipientAmountValueAfter, String txId) {
+        System.out.println(getAppend());
         assertAll(
                 () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId, 0),
 
@@ -90,20 +92,24 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
                         testData.getDAppAddress(),
                         WAVES_STRING_ID,
                         testData.getWavesAmount().value()),
+                () -> checkTransfersMetadata(0, 3,
+                        testData.getCallerAddress(),
+                        WAVES_STRING_ID,
+                        testData.getWavesAmount().value()),
 
                 () -> checkStateUpdateBalance(0,
                         0,
                         testData.getCallerAddress(),
                         WAVES_STRING_ID,
                         calcBalances.getCallerBalanceWavesBeforeTransaction(),
-                        calcBalances.getCallerBalanceWavesAfterTransaction()),
+                        calcBalances.getCallerBalanceWavesAfterTransaction()), // here
 
                 () -> checkStateUpdateBalance(0,
                         1,
                         testData.getAssetDAppAddress(),
                         WAVES_STRING_ID,
                         calcBalances.getDAppBalanceWavesBeforeTransaction(),
-                        calcBalances.getDAppBalanceWavesAfterTransaction()),
+                        calcBalances.getDAppBalanceWavesAfterTransaction()), // here 2
                 () -> checkStateUpdateBalance(0,
                         2,
                         testData.getAssetDAppAddress(),

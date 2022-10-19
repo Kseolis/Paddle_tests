@@ -109,8 +109,9 @@ public class InvokeCalculationsBalancesAfterTx {
             amounts.forEach(
                     a -> {
                         if (a.assetId().isWaves()) {
-                            dAppBalanceWavesAfterTransaction -= a.value();
+                            dAppBalanceWavesAfterTransaction -= a.value() * 2;
                             accBalanceWavesAfterTransaction += a.value();
+                            callerBalanceWavesAfterTransaction += a.value();
                         } else if (a.assetId().equals(id)) {
                             callerBalanceIssuedAssetsAfterTransaction -= a.value();
                             dAppBalanceIssuedAssetsAfterTransaction -= a.value();

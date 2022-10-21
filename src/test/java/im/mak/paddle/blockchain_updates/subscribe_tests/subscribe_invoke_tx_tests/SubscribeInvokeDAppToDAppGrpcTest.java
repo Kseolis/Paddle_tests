@@ -84,15 +84,24 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
                         data.getAssetDAppAddress(),
                         key1),
                 () -> checkResultInvokesMetadataPayments(txIndex, 0, 0, assetId, data.getAssetAmount().value()),
-                () -> checkResultInvokesMetadataStateChanges(txIndex, 0, 0,
+
+                () -> checkStateChangesTransfers(txIndex, 0, 0,
                         WAVES_STRING_ID,
-                        data.getDAppAddress(),
-                        data.getWavesAmount().value()),
+                        data.getWavesAmount().value(),
+                        data.getDAppAddress()
+                ),
+                () -> checkStateChangesBurn(txIndex, 0, 0, data.getAssetAmount()),
+                () -> checkStateChangesReissue(txIndex, 0, 0, data),
+                () -> checkStateChangesData(txIndex, 0, 0, data),
+                () -> checkStateChangesSponsorFee(txIndex, 0, 0, data),
+                () -> checkStateChangesLease(txIndex, 0, 0, data),
+                () -> checkStateChangesLeaseCancel(txIndex, 0, 0),
 
                 () -> checkDataMetadata(txIndex, 0,
                         INTEGER,
                         key1,
                         calcBalances.getInvokeResultData()),
+
                 () -> checkStateUpdateBalance(txIndex,
                         0,
                         data.getDAppAddress(),

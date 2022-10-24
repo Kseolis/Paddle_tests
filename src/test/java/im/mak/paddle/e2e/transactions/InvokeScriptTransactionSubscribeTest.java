@@ -211,7 +211,8 @@ public class InvokeScriptTransactionSubscribeTest {
     @Test
     @DisplayName("invoke dApp to dApp")
     void invokeDAppToDApp() {
-        testData.prepareDataForDAppToDAppTests(SUM_FEE + ONE_WAVES);
+        long fee = SUM_FEE + ONE_WAVES;
+        testData.prepareDataForDAppToDAppTests(fee);
         dAppCall = testData.getDAppCall();
 
         for (int v = 1; v <= LATEST_VERSION; v++) {
@@ -222,12 +223,28 @@ public class InvokeScriptTransactionSubscribeTest {
             setVersion(v);
             calcBalances.balancesAfterDAppToDApp(caller, dAppAccount, assetDAppAccount, amounts, assetId);
             txSender.invokeSender();
-            checkInvokeTransaction(caller, testData.getInvokeFee(), txSender);
-            checkBalancesAfterThreeAccountsInvokeInvoke(
-                    caller,
-                    dAppAccount,
-                    testData.getAssetDAppAccount(),
-                    calcBalances);
+            checkInvokeTransaction(caller, fee, txSender);
+            checkBalancesAfterThreeAccountsInvokeInvoke(caller, dAppAccount, assetDAppAccount, calcBalances);
+        }
+    }
+
+    @Test
+    @DisplayName("invoke double nesting")
+    void invokeDoubleNesting() {
+        long fee = SUM_FEE + ONE_WAVES;
+        testData.prepareDataForDoubleNestingTest(fee);
+        dAppCall = testData.getDAppCall();
+
+        for (int v = 1; v <= LATEST_VERSION; v++) {
+            InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+            InvokeScriptTransactionSender txSender =
+                    new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
+
+            setVersion(v);
+            calcBalances.balancesAfterDAppToDApp(caller, dAppAccount, assetDAppAccount, amounts, assetId);
+            txSender.invokeSender();
+            checkInvokeTransaction(caller, fee, txSender);
+            checkBalancesAfterThreeAccountsInvokeInvoke(caller, dAppAccount, assetDAppAccount, calcBalances);
         }
     }
 
@@ -266,8 +283,6 @@ public class InvokeScriptTransactionSubscribeTest {
                 () -> assertThat(acc.getWavesBalance()).isEqualTo(calcBalances.getAccBalanceWavesAfterTransaction())
         );
         if (assetId != null) {
-            System.out.println(dApp.getBalance(assetId));
-            System.out.println(acc.getBalance(assetId));
             assertAll(
                     () -> assertThat(caller.getBalance(assetId))
                             .isEqualTo(calcBalances.getCallerBalanceIssuedAssetsAfterTransaction()),

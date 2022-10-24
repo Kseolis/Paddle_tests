@@ -113,7 +113,6 @@ public class InvokeCalculationsBalancesAfterTx {
                             accBalanceWavesAfterTransaction += a.value();
                             callerBalanceWavesAfterTransaction += a.value();
                         } else if (a.assetId().equals(id)) {
-                            callerBalanceIssuedAssetsAfterTransaction -= a.value();
                             dAppBalanceIssuedAssetsAfterTransaction -= a.value();
                             accBalanceIssuedAssetsAfterTransaction += a.value();
                         }

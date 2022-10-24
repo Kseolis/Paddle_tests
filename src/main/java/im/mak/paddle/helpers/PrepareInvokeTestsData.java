@@ -237,7 +237,6 @@ public class PrepareInvokeTestsData {
         final String functionArgs = "address:ByteVector";
         final String functions = "[\nLease(Address(address), " + wavesAmount.value() + ")\n]\n";
         final String script = defaultFunctionBuilder(functionArgs, functions, libVersion);
-        System.out.println(script);
         dAppAccount.setScript(script);
 
         dAppCall = dAppAccount.setData(callerAddressBase58);
@@ -297,7 +296,7 @@ public class PrepareInvokeTestsData {
                                  "\tScriptTransfer(i.caller, " + wavesAmount.value() + ", unit)";
         final String script = assetsFunctionBuilder(libVersion, "unit", functions, currentArgs, getAssetDAppPublicKey());
         assetDAppAccount.setScript(script);
-
+        System.out.println(script);
         dAppCall = assetDAppAccount.setDataAssetAndAddress(Base58.decode(assetId.toString()), dAppAddressBase58);
 
         amounts.clear();
@@ -359,6 +358,51 @@ public class PrepareInvokeTestsData {
         "      a * 2\n" +
         "   )\n" +
         "}";
+        dAppAccount.setScript(dApp1);
+        assetDAppAccount.setScript(dApp2);
+        System.out.println(dApp1);
+        System.out.println(dApp2);
+
+        dAppCall = dAppAccount.setData
+                (assetDAppAddressBase58, intArg, key1ForDAppEqualBar, key2ForDAppEqualBalance, assetId.bytes());
+
+        amounts.clear();
+        amounts.add(wavesAmount);
+        amounts.add(assetAmount);
+    }
+
+    public void prepareDataForDoubleNestingTest(long fee) {
+        invokeFee = fee;
+        final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
+
+        final String functionArgsDApp1 = "dapp2:ByteVector, a:Int, key1:String, key2:String, assetId:ByteVector";
+        final String dApp1Body =
+                "strict res = invoke(Address(dapp2),\"bar\",[a, assetId],[AttachedPayment(assetId," + assetAmount.value() + ")])\n" +
+                        "   match res {\ncase r : Int => \n(\n[\n" +
+                        "   IntegerEntry(key1, r),\n" +
+                        "   IntegerEntry(key2, wavesBalance(Address(dapp2)).regular)\n" +
+                        "],\nunit\n)\ncase _ => throw(\"Incorrect invoke result\") }\n";
+        final String dApp1 = defaultFunctionBuilder(functionArgsDApp1, dApp1Body, libVersion);
+
+        final String dApp2 =
+                "{-# STDLIB_VERSION 5 #-}\n{-# CONTENT_TYPE DAPP #-}\n{-# SCRIPT_TYPE ACCOUNT #-}\n" +
+                        "\n@Callable(i)\n" +
+                        "func bar(a: Int, assetId: ByteVector) = {\n" +
+                        "let lease = Lease(i.caller, " + wavesAmount.value() + ")\n" +
+                        "   (\n" +
+                        "      [\n" +
+                        "           ScriptTransfer(i.caller, " + wavesAmount.value() + ", unit),\n" +
+                        "           SponsorFee(assetId, " + assetAmount.value() + "),\n" +
+                        "           Burn(assetId, " + assetAmount.value() + "),\n" +
+                        "           Reissue(assetId, " + assetAmount.value() + ", true),\n" +
+                        "           lease,\n" +
+                        "           LeaseCancel(lease.calculateLeaseId()),\n" +
+                        "           IntegerEntry(\"int\", a),\n" +
+                        "           DeleteEntry(\"int\")\n" +
+                        "      ],\n" +
+                        "      a * 2\n" +
+                        "   )\n" +
+                        "}";
         dAppAccount.setScript(dApp1);
         assetDAppAccount.setScript(dApp2);
 

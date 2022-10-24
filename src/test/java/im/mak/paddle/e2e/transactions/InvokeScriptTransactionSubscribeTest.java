@@ -21,6 +21,7 @@ import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class InvokeScriptTransactionSubscribeTest {
     private PrepareInvokeTestsData testData;
@@ -178,13 +179,13 @@ public class InvokeScriptTransactionSubscribeTest {
             testData.prepareDataForScriptTransferTests();
             dAppCall = testData.getDAppCall();
             InvokeScriptTransactionSender txSender =
-                    new InvokeScriptTransactionSender(testData.getAssetDAppAccount(), testData.getAssetDAppAccount(), dAppCall);
+                    new InvokeScriptTransactionSender(testData.getCallerAccount(), testData.getAssetDAppAccount(), dAppCall);
 
             setVersion(v);
-            calcBalances.balancesAfterCallerInvokeAsset(testData.getAssetDAppAccount(), dAppAccount, amounts, assetId);
+            calcBalances.balancesAfterCallerScriptTransfer(caller, assetDAppAccount, dAppAccount, amounts, assetId);
             txSender.invokeSender();
-            checkInvokeTransaction(testData.getAssetDAppAccount(), testData.getInvokeFee(), txSender);
-            checkBalancesAfterInvoke(testData.getAssetDAppAccount(), dAppAccount, calcBalances);
+            checkInvokeTransaction(caller, testData.getInvokeFee(), txSender);
+            checkBalancesAfterThreeAccountsInvokeInvoke(caller, assetDAppAccount, dAppAccount, calcBalances);
         }
     }
 
@@ -222,7 +223,7 @@ public class InvokeScriptTransactionSubscribeTest {
             calcBalances.balancesAfterDAppToDApp(caller, dAppAccount, assetDAppAccount, amounts, assetId);
             txSender.invokeSender();
             checkInvokeTransaction(caller, testData.getInvokeFee(), txSender);
-            checkBalancesAfterDAppToDAppInvoke(
+            checkBalancesAfterThreeAccountsInvokeInvoke(
                     caller,
                     dAppAccount,
                     testData.getAssetDAppAccount(),
@@ -231,33 +232,50 @@ public class InvokeScriptTransactionSubscribeTest {
     }
 
     private void checkInvokeTransaction(Account caller, long fee, InvokeScriptTransactionSender tx) {
-        assertThat(tx.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED);
-        assertThat(tx.getInvokeScriptTx().dApp()).isEqualTo(dAppCall.getDApp());
-        assertThat(tx.getInvokeScriptTx().function()).isEqualTo(dAppCall.getFunction());
-        assertThat(tx.getInvokeScriptTx().sender()).isEqualTo(caller.publicKey());
-        assertThat(tx.getInvokeScriptTx().fee().assetId()).isEqualTo(AssetId.WAVES);
-        assertThat(tx.getInvokeScriptTx().fee().value()).isEqualTo(fee);
-        assertThat(tx.getInvokeScriptTx().type()).isEqualTo(16);
+        assertAll(
+                () -> assertThat(tx.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
+                () -> assertThat(tx.getInvokeScriptTx().dApp()).isEqualTo(dAppCall.getDApp()),
+                () -> assertThat(tx.getInvokeScriptTx().function()).isEqualTo(dAppCall.getFunction()),
+                () -> assertThat(tx.getInvokeScriptTx().sender()).isEqualTo(caller.publicKey()),
+                () -> assertThat(tx.getInvokeScriptTx().fee().assetId()).isEqualTo(AssetId.WAVES),
+                () -> assertThat(tx.getInvokeScriptTx().fee().value()).isEqualTo(fee),
+                () -> assertThat(tx.getInvokeScriptTx().type()).isEqualTo(16)
+        );
     }
 
     private void checkBalancesAfterInvoke(Account caller, Account dApp, InvokeCalculationsBalancesAfterTx calcBalances) {
-        assertThat(caller.getWavesBalance()).isEqualTo(calcBalances.getCallerBalanceWavesAfterTransaction());
-        assertThat(dApp.getWavesBalance()).isEqualTo(calcBalances.getDAppBalanceWavesAfterTransaction());
+        assertAll(
+                () -> assertThat(caller.getWavesBalance()).isEqualTo(calcBalances.getCallerBalanceWavesAfterTransaction()),
+                () -> assertThat(dApp.getWavesBalance()).isEqualTo(calcBalances.getDAppBalanceWavesAfterTransaction())
+        );
         if (assetId != null) {
-            assertThat(caller.getBalance(assetId)).isEqualTo(calcBalances.getCallerBalanceIssuedAssetsAfterTransaction());
-            assertThat(dApp.getBalance(assetId)).isEqualTo(calcBalances.getDAppBalanceIssuedAssetsAfterTransaction());
+            assertAll(
+                    () -> assertThat(caller.getBalance(assetId))
+                            .isEqualTo(calcBalances.getCallerBalanceIssuedAssetsAfterTransaction()),
+                    () -> assertThat(dApp.getBalance(assetId))
+                            .isEqualTo(calcBalances.getDAppBalanceIssuedAssetsAfterTransaction())
+            );
         }
     }
 
-    private void checkBalancesAfterDAppToDAppInvoke
+    private void checkBalancesAfterThreeAccountsInvokeInvoke
             (Account caller, Account dApp, Account acc, InvokeCalculationsBalancesAfterTx calcBalances) {
-        assertThat(caller.getWavesBalance()).isEqualTo(calcBalances.getCallerBalanceWavesAfterTransaction());
-        assertThat(dApp.getWavesBalance()).isEqualTo(calcBalances.getDAppBalanceWavesAfterTransaction());
-        assertThat(acc.getWavesBalance()).isEqualTo(calcBalances.getAccBalanceWavesAfterTransaction());
+        assertAll(
+                () -> assertThat(caller.getWavesBalance()).isEqualTo(calcBalances.getCallerBalanceWavesAfterTransaction()),
+                () -> assertThat(dApp.getWavesBalance()).isEqualTo(calcBalances.getDAppBalanceWavesAfterTransaction()),
+                () -> assertThat(acc.getWavesBalance()).isEqualTo(calcBalances.getAccBalanceWavesAfterTransaction())
+        );
         if (assetId != null) {
-            assertThat(caller.getBalance(assetId)).isEqualTo(calcBalances.getCallerBalanceIssuedAssetsAfterTransaction());
-            assertThat(dApp.getBalance(assetId)).isEqualTo(calcBalances.getDAppBalanceIssuedAssetsAfterTransaction());
-            assertThat(acc.getBalance(assetId)).isEqualTo(calcBalances.getAccBalanceIssuedAssetsAfterTransaction());
+            System.out.println(dApp.getBalance(assetId));
+            System.out.println(acc.getBalance(assetId));
+            assertAll(
+                    () -> assertThat(caller.getBalance(assetId))
+                            .isEqualTo(calcBalances.getCallerBalanceIssuedAssetsAfterTransaction()),
+                    () -> assertThat(dApp.getBalance(assetId))
+                            .isEqualTo(calcBalances.getDAppBalanceIssuedAssetsAfterTransaction()),
+                    () -> assertThat(acc.getBalance(assetId))
+                            .isEqualTo(calcBalances.getAccBalanceIssuedAssetsAfterTransaction())
+            );
         }
     }
 

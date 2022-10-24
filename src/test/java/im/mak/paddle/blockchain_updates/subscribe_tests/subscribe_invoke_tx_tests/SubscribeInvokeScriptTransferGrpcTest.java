@@ -22,7 +22,6 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetVolume;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Constants.*;
@@ -71,7 +70,6 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
     }
 
     private void assertionsCheck(long dAppAssetAmountAfter, long recipientAmountValueAfter, String txId) {
-        System.out.println(getAppend());
         assertAll(
                 () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId, 0),
 

@@ -26,7 +26,7 @@ import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.WAVES_STRING_ID;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SubscribeInvokeDoubleNestingTest extends BaseGrpcTest {
+public class SubscribeInvokeDoubleNestedTest extends BaseGrpcTest {
     private static PrepareInvokeTestsData testData;
 
     @BeforeAll
@@ -35,11 +35,11 @@ public class SubscribeInvokeDoubleNestingTest extends BaseGrpcTest {
     }
 
     @Test
-    @DisplayName("subscribe invoke double nesting")
-    void subscribeInvokeWithDoubleNesting() {
+    @DisplayName("subscribe invoke double nested")
+    void subscribeInvokeWithDoubleNested() {
         fromHeight = node().getHeight();
         long fee = SUM_FEE + (ONE_WAVES * 2);
-        testData.prepareDataForDoubleNestingTest(SUM_FEE);
+        testData.prepareDataForDoubleNestedTest(SUM_FEE);
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
 
         final AssetId assetId = testData.getAssetId();
@@ -59,10 +59,10 @@ public class SubscribeInvokeDoubleNestingTest extends BaseGrpcTest {
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
         prepareInvoke(dAppAccount, testData);
-        assertionsCheckDoubleNestingInvoke(testData, calcBalances, txId, 0);
+        assertionsCheckDoubleNestedInvoke(testData, calcBalances, txId, 0);
     }
 
-    public static void assertionsCheckDoubleNestingInvoke
+    public static void assertionsCheckDoubleNestedInvoke
             (PrepareInvokeTestsData data, InvokeCalculationsBalancesAfterTx calcBalances, String txId, int txIndex) {
         String key1 = data.getKey1ForDAppEqualBar();
         String key2 = data.getKey2ForDAppEqualBalance();

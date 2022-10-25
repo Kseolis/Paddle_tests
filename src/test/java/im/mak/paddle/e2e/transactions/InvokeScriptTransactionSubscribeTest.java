@@ -1,6 +1,5 @@
 package im.mak.paddle.e2e.transactions;
 
-import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
@@ -230,10 +229,10 @@ public class InvokeScriptTransactionSubscribeTest {
     }
 
     @Test
-    @DisplayName("invoke double nesting")
-    void invokeDoubleNesting() {
+    @DisplayName("invoke double nested")
+    void invokeDoubleNested() {
         long fee = SUM_FEE;
-        testData.prepareDataForDoubleNestingTest(fee);
+        testData.prepareDataForDoubleNestedTest(fee);
         dAppCall = testData.getDAppCall();
 
         for (int v = 1; v <= LATEST_VERSION; v++) {

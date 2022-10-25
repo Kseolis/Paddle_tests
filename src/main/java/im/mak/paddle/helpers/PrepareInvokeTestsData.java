@@ -51,6 +51,7 @@ public class PrepareInvokeTestsData {
     private long invokeFee;
 
     private final Amount wavesAmount;
+    private final Amount secondWavesAmount;
     private final Amount assetAmount;
     private final String args = "assetId:ByteVector";
     private final String key1ForDAppEqualBar = "bar";
@@ -111,14 +112,13 @@ public class PrepareInvokeTestsData {
         assetDAppAccount.transfer(callerAccount, Amount.of(300_000_000L, assetId));
         assetDAppAccount.transfer(dAppAccount, Amount.of(300_000_000L, assetId));
         wavesAmount = Amount.of(getRandomInt(10, 10000));
+        secondWavesAmount = Amount.of(getRandomInt(10000, 20000));
         assetAmount = Amount.of(getRandomInt(10, 10000), assetId);
     }
 
     public void prepareDataForDataDAppTests() {
         invokeFee = SUM_FEE + ONE_WAVES;
-
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
-
         final String functionArgs = "intVal:Int, binVal:ByteVector, boolVal:Boolean, strVal:String";
         final String functions = "[\nIntegerEntry(\"int\", intVal),\nBinaryEntry(\"byte\", binVal),\n" +
                 "BooleanEntry(\"bool\", boolVal),\nStringEntry(\"str\", strVal)\n]\n";
@@ -368,7 +368,7 @@ public class PrepareInvokeTestsData {
         amounts.add(assetAmount);
     }
 
-    public void prepareDataForDoubleNestingTest(long fee) {
+    public void prepareDataForDoubleNestedTest(long fee) {
         invokeFee = fee;
         DataDApp otherDAppAccount = new DataDApp(DEFAULT_FAUCET, "true");
         String otherDAppAddress = otherDAppAccount.address().toString();
@@ -384,9 +384,7 @@ public class PrepareInvokeTestsData {
                         "   match res {\n" +
                         "   case r : Int => \n(\n[\n" +
                         "   IntegerEntry(key1, r),\n" +
-                        "   IntegerEntry(key2, wavesBalance(Address(acc2)).regular)\n" +
-                        "], unit\n" +
-                        ")\n" +
+                        "   IntegerEntry(key2, wavesBalance(Address(acc2)).regular)\n]\n    )\n" +
                         "\tcase _ => throw(\"Incorrect invoke result for res in dApp 1\")}\n";
         final String dApp1 = defaultFunctionBuilder(functionArgsDApp1, dApp1Body, libVersion);
 
@@ -400,7 +398,7 @@ public class PrepareInvokeTestsData {
                         "   (\n" +
                         "      [\n" +
                         "           ScriptTransfer(i.caller, " + wavesAmount.value() + ", unit)\n" +
-                        "      ], a\n" +
+                        "      ], a*2\n" +
                         "   )\n" +
                         "\tcase _ => throw(\"Incorrect invoke result for res2\")\n" +
                         "\t}" +
@@ -414,9 +412,9 @@ public class PrepareInvokeTestsData {
                         "func baz(a: Int) = {\n" +
                         "   (\n" +
                         "      [\n" +
-                        "           ScriptTransfer(i.caller, " + wavesAmount.value() + ", unit)\n" +
+                        "           ScriptTransfer(i.caller, " + secondWavesAmount.value() + ", unit)\n" +
                         "      ],\n" +
-                        "      a * 2\n" +
+                        "      a+2\n" +
                         "   )\n" +
                         "}";
 
@@ -428,8 +426,14 @@ public class PrepareInvokeTestsData {
         assetDAppAccount.setScript(dApp2);
         otherDAppAccount.setScript(dApp3);
 
-        dAppCall = dAppAccount.setData
-                (otherDAppAddressBytes, assetDAppAddressBytes, intArg, key1ForDAppEqualBar, key2ForDAppEqualBalance, assetId.bytes());
+        dAppCall = dAppAccount.setData(
+                otherDAppAddressBytes,
+                assetDAppAddressBytes,
+                intArg,
+                key1ForDAppEqualBar,
+                key2ForDAppEqualBalance,
+                assetId.bytes()
+        );
 
         amounts.clear();
         amounts.add(wavesAmount);
@@ -532,7 +536,6 @@ public class PrepareInvokeTestsData {
         return dAppPublicKeyHash;
     }
 
-
     public String getAssetDAppPublicKey() {
         return assetDAppPublicKey;
     }
@@ -564,5 +567,4 @@ public class PrepareInvokeTestsData {
     public byte[] getAssetDAppAddressBytes() {
         return assetDAppAddressBytes;
     }
-
 }

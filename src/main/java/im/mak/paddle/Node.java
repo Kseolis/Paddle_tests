@@ -32,12 +32,13 @@ import static java.util.Collections.singletonList;
 @SuppressWarnings("WeakerAccess")
 public class Node extends com.wavesplatform.wavesj.Node {
 
+    public static final String dockerGRPCAddress = "0.0.0.0";
+    public static final int dockerGRPCPort = 6888;
+    public static final String devNetGRPCAddress = "devnet1-htz-nbg1-3.wavesnodes.com";
+    public static final int devNetGRPCPort = 6881;
     private static Node instance;
-    private static final int dockerGRPCPort = 6888;
-    private static final int devNetGRPCPort = 6881;
 
     public static Node node() {
-        if (instance == null) synchronized (Node.class) {
             if (instance == null) {
                 try {
                     instance = new Node();
@@ -46,7 +47,6 @@ public class Node extends com.wavesplatform.wavesj.Node {
                 } catch (NodeException e) {
                     throw new ApiError(e.getErrorCode(), e.getMessage());
                 }
-            }
         }
         return instance;
     }
@@ -546,13 +546,5 @@ public class Node extends com.wavesplatform.wavesj.Node {
     @Override
     public int waitBlocks(int blocksCount) {
         return throwErrorOrGet(() -> super.waitBlocks(blocksCount));
-    }
-
-    public static int getDockerGRPCPort() {
-        return dockerGRPCPort;
-    }
-
-    public static int getDevNetGRPCPort() {
-        return devNetGRPCPort;
     }
 }

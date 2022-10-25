@@ -39,6 +39,7 @@ public class Node extends com.wavesplatform.wavesj.Node {
     private static Node instance;
 
     public static Node node() {
+        if (instance == null) synchronized (Node.class) {
             if (instance == null) {
                 try {
                     instance = new Node();
@@ -47,6 +48,7 @@ public class Node extends com.wavesplatform.wavesj.Node {
                 } catch (NodeException e) {
                     throw new ApiError(e.getErrorCode(), e.getMessage());
                 }
+            }
         }
         return instance;
     }

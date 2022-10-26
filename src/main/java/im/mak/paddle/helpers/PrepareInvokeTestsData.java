@@ -26,11 +26,15 @@ public class PrepareInvokeTestsData {
     private String callerPublicKey;
     private String callerPublicKeyHash;
     private byte[] callerAddressBytes;
+
     private DataDApp dAppAccount;
     private String dAppAddress;
     private String dAppPublicKey;
     private String dAppPublicKeyHash;
     private byte[] dAppAddressBytes;
+
+    private DataDApp otherDAppAccount;
+    private String otherDAppAddress;
 
     private AssetDAppAccount assetDAppAccount;
     private String assetDAppAddress;
@@ -107,12 +111,16 @@ public class PrepareInvokeTestsData {
                     dAppPublicKey = dAppAccount.publicKey().toString();
                     dAppPublicKeyHash = Base58.encode(dAppAccount.address().publicKeyHash());
                     dAppAddressBytes = Base58.decode(dAppAddress);
+                },
+                () -> {
+                    otherDAppAccount = new DataDApp(DEFAULT_FAUCET, "true");
+                    otherDAppAddress = otherDAppAccount.address().toString();
                 }
         );
         assetDAppAccount.transfer(callerAccount, Amount.of(300_000_000L, assetId));
         assetDAppAccount.transfer(dAppAccount, Amount.of(300_000_000L, assetId));
         wavesAmount = Amount.of(getRandomInt(10, 10000));
-        secondWavesAmount = Amount.of(getRandomInt(10000, 20000));
+        secondWavesAmount = Amount.of(getRandomInt(10001, 20000));
         assetAmount = Amount.of(getRandomInt(10, 10000), assetId);
     }
 
@@ -368,10 +376,8 @@ public class PrepareInvokeTestsData {
         amounts.add(assetAmount);
     }
 
-    public void prepareDataForDoubleNestedTest(long fee) {
+    public void prepareDataForDoubleNestedTest(long fee, String firstRecipient, String secondRecipient) {
         invokeFee = fee;
-        DataDApp otherDAppAccount = new DataDApp(DEFAULT_FAUCET, "true");
-        String otherDAppAddress = otherDAppAccount.address().toString();
         String otherDAppPublicKey = otherDAppAccount.publicKey().toString();
         String otherDAppPublicKeyHash = Base58.encode(otherDAppAccount.address().publicKeyHash());
         byte[] otherDAppAddressBytes = Base58.decode(otherDAppAddress);
@@ -397,7 +403,7 @@ public class PrepareInvokeTestsData {
                         "   \ncase r : Int =>\n" +
                         "   (\n" +
                         "      [\n" +
-                        "           ScriptTransfer(i.caller, " + wavesAmount.value() + ", unit)\n" +
+                        "           ScriptTransfer(" + firstRecipient + ", " + wavesAmount.value() + ", unit)\n" +
                         "      ], a*2\n" +
                         "   )\n" +
                         "\tcase _ => throw(\"Incorrect invoke result for res2\")\n" +
@@ -412,16 +418,11 @@ public class PrepareInvokeTestsData {
                         "func baz(a: Int) = {\n" +
                         "   (\n" +
                         "      [\n" +
-                        "           ScriptTransfer(i.caller, " + secondWavesAmount.value() + ", unit)\n" +
+                        "           ScriptTransfer(" + secondRecipient + ", " + secondWavesAmount.value() + ", unit)\n" +
                         "      ],\n" +
                         "      a+2\n" +
                         "   )\n" +
                         "}";
-
-        System.out.println(dApp1);
-        System.out.println(dApp2);
-        System.out.println(dApp3);
-
         dAppAccount.setScript(dApp1);
         assetDAppAccount.setScript(dApp2);
         otherDAppAccount.setScript(dApp3);
@@ -437,6 +438,7 @@ public class PrepareInvokeTestsData {
 
         amounts.clear();
         amounts.add(wavesAmount);
+        amounts.add(secondWavesAmount);
         amounts.add(assetAmount);
     }
 
@@ -566,5 +568,13 @@ public class PrepareInvokeTestsData {
 
     public byte[] getAssetDAppAddressBytes() {
         return assetDAppAddressBytes;
+    }
+
+    public DataDApp getOtherDAppAccount() {
+        return otherDAppAccount;
+    }
+
+    public String getOtherDAppAddress() {
+        return otherDAppAddress;
     }
 }

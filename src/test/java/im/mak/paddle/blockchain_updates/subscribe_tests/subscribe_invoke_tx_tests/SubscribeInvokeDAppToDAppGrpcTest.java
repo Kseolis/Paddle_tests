@@ -63,7 +63,7 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
 
     public static void assertionsCheckDAppToDAppInvoke
             (PrepareInvokeTestsData data, InvokeCalculationsBalancesAfterTx calcBalances, String txId, int txIndex) {
-        String key1 = data.getKey1ForDAppEqualBar();
+        String key1 = data.getKeyForDAppEqualBar();
         String key2 = data.getKey2ForDAppEqualBalance();
         String assetId = data.getAssetId().toString();
         assertAll(

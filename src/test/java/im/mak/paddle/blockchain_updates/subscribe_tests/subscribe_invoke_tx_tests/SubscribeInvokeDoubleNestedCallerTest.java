@@ -20,13 +20,14 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateDataEntries;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.WAVES_STRING_ID;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SubscribeInvokeDoubleNestedTest extends BaseGrpcTest {
+public class SubscribeInvokeDoubleNestedCallerTest extends BaseGrpcTest {
     private static PrepareInvokeTestsData testData;
 
     @BeforeAll
@@ -39,19 +40,20 @@ public class SubscribeInvokeDoubleNestedTest extends BaseGrpcTest {
     void subscribeInvokeWithDoubleNested() {
         fromHeight = node().getHeight();
         long fee = SUM_FEE + (ONE_WAVES * 2);
-        testData.prepareDataForDoubleNestedTest(SUM_FEE);
+        testData.prepareDataForDoubleNestedTest(SUM_FEE, "i.caller", "i.caller");
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
 
         final AssetId assetId = testData.getAssetId();
         final DAppCall dAppCall = testData.getDAppCall();
         final Account caller = testData.getCallerAccount();
         final Account dAppAccount = testData.getDAppAccount();
+        final Account otherDAppAccount = testData.getOtherDAppAccount();
         final Account assetDAppAccount = testData.getAssetDAppAccount();
         final List<Amount> amounts = testData.getAmounts();
 
         final InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
         setVersion(LATEST_VERSION);
-        calcBalances.balancesAfterDAppToDApp(caller, dAppAccount, assetDAppAccount, amounts, assetId);
+        calcBalances.balancesAfterDoubleNestedForCaller(caller, dAppAccount, otherDAppAccount, assetDAppAccount, amounts, assetId);
         txSender.invokeSender();
 
         final String txId = txSender.getInvokeScriptId();
@@ -64,26 +66,36 @@ public class SubscribeInvokeDoubleNestedTest extends BaseGrpcTest {
 
     public static void assertionsCheckDoubleNestedInvoke
             (PrepareInvokeTestsData data, InvokeCalculationsBalancesAfterTx calcBalances, String txId, int txIndex) {
-        String key1 = data.getKey1ForDAppEqualBar();
+        System.out.println(getAppend());
+        String key1 = data.getKeyForDAppEqualBar();
         String key2 = data.getKey2ForDAppEqualBalance();
         String assetId = data.getAssetId().toString();
         assertAll(
                 () -> checkInvokeSubscribeTransaction(data.getInvokeFee(), data.getCallerPublicKey(), txId, txIndex),
                 () -> checkMainMetadata(txIndex),
-                () -> checkArgumentsMetadata(txIndex, 0, BINARY_BASE58, data.getAssetDAppAddress()),
-                () -> checkArgumentsMetadata(txIndex, 1, INTEGER, String.valueOf(data.getIntArg())),
-                () -> checkArgumentsMetadata(txIndex, 2, STRING, key1),
-                () -> checkArgumentsMetadata(txIndex, 3, STRING, key2),
-                () -> checkArgumentsMetadata(txIndex, 4, BINARY_BASE58, assetId),
+                () -> checkArgumentsMetadata(txIndex, 0, BINARY_BASE58, data.getOtherDAppAddress()),
+                () -> checkArgumentsMetadata(txIndex, 1, BINARY_BASE58, data.getAssetDAppAddress()),
+                () -> checkArgumentsMetadata(txIndex, 2, INTEGER, String.valueOf(data.getIntArg())),
+                () -> checkArgumentsMetadata(txIndex, 3, STRING, key1),
+                () -> checkArgumentsMetadata(txIndex, 4, STRING, key2),
+                () -> checkArgumentsMetadata(txIndex, 5, BINARY_BASE58, assetId),
+
+                () -> checkDataMetadata(txIndex, 0,
+                        INTEGER,
+                        key1,
+                        String.valueOf(data.getIntArg() * 2)),
 
                 () -> checkDataMetadata(txIndex, 1,
                         INTEGER,
                         key2,
                         String.valueOf(calcBalances.getAccBalanceWavesAfterTransaction())),
 
-                () -> checkResultInvokesMetadata(txIndex, 0,
-                        data.getAssetDAppAddress(),
-                        key1),
+                () -> checkResultInvokesMetadata(txIndex, 0, data.getAssetDAppAddress(), key1),
+
+                () -> checkInvokesMetadataCallArgs(txIndex, 0, 0, INTEGER, String.valueOf(data.getIntArg())),
+                () -> checkInvokesMetadataCallArgs(txIndex, 0, 1, BINARY_VALUE, assetId),
+                () -> checkInvokesMetadataCallArgs(txIndex, 0, 2, BINARY_VALUE, data.getOtherDAppAddress()),
+
                 () -> checkResultInvokesMetadataPayments(txIndex, 0, 0, assetId, data.getAssetAmount().value()),
 
                 () -> checkStateChangesTransfers(txIndex, 0, 0,
@@ -91,12 +103,28 @@ public class SubscribeInvokeDoubleNestedTest extends BaseGrpcTest {
                         data.getWavesAmount().value(),
                         data.getDAppAddress()
                 ),
-                () -> checkStateChangesBurn(txIndex, 0, 0, data.getAssetAmount()),
-                () -> checkStateChangesReissue(txIndex, 0, 0, data),
-                () -> checkStateChangesData(txIndex, 0, 0, data),
-                () -> checkStateChangesSponsorFee(txIndex, 0, 0, data),
-                () -> checkStateChangesLease(txIndex, 0, 0, data),
-                () -> checkStateChangesLeaseCancel(txIndex, 0, 0),
+
+                () -> checkStateChangesNestedTransfers(txIndex, 0, 0,
+                        WAVES_STRING_ID,
+                        data.getWavesAmount().value(),
+                        data.getDAppAddress()
+                ),
+
+                () -> checkResultNestedInvokes(txIndex, 0, 0,
+                        data.getOtherDAppAddress(),
+                        data.getKeyForDAppEqualBaz()
+                ),
+
+                () -> checkNestedInvokesMetadataCallArgs(txIndex, 0, 0, 0,
+                        INTEGER,
+                        String.valueOf(data.getIntArg())
+                ),
+
+                () -> checkStateChangesDoubleNestedTransfers(txIndex, 0, 0, 0,
+                        WAVES_STRING_ID,
+                        data.getSecondWavesAmount().value(),
+                        data.getAssetDAppAddress()
+                ),
 
                 () -> checkDataMetadata(txIndex, 0,
                         INTEGER,
@@ -131,6 +159,13 @@ public class SubscribeInvokeDoubleNestedTest extends BaseGrpcTest {
 
                 () -> checkStateUpdateBalance(txIndex,
                         4,
+                        data.getOtherDAppAddress(),
+                        WAVES_STRING_ID,
+                        calcBalances.getOtherDAppBalanceWavesBeforeTransaction(),
+                        calcBalances.getOtherDAppBalanceWavesAfterTransaction()),
+
+                () -> checkStateUpdateBalance(txIndex,
+                        5,
                         data.getCallerAddress(),
                         WAVES_STRING_ID,
                         calcBalances.getCallerBalanceWavesBeforeTransaction(),
@@ -141,6 +176,7 @@ public class SubscribeInvokeDoubleNestedTest extends BaseGrpcTest {
                         data.getDAppAddress(),
                         key1,
                         calcBalances.getInvokeResultData()),
+
                 () -> checkStateUpdateDataEntries(txIndex, 1,
                         data.getDAppAddress(),
                         key2,

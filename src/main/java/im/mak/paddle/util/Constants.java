@@ -59,6 +59,7 @@ public class Constants {
     public static final String INTEGER = "integer";
     public static final String STRING = "string";
     public static final String BOOLEAN = "boolean";
+    public static final String BINARY_VALUE = "binary_value";
     public static final String BINARY_BASE58 = "binary_value_58";
     public static final String BINARY_BASE64 = "binary_value_64";
 

@@ -279,7 +279,7 @@ public class InvokeCalculationsBalancesAfterTx {
 
     private void prepareFourAccBalances(Account caller, Account dApp, Account acc, Account dApp2, AssetId id) {
         prepareThreeAccBalances(caller, dApp, acc, id);
-
+        otherDAppBalanceWavesBeforeTransaction = dApp2.getWavesBalance();
         otherDAppBalanceWavesAfterTransaction = dApp2.getWavesBalance();
         otherDAppBalanceIssuedAssetsAfterTransaction = dApp2.getBalance(id);
     }

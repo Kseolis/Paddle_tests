@@ -35,6 +35,9 @@ public class PrepareInvokeTestsData {
 
     private DataDApp otherDAppAccount;
     private String otherDAppAddress;
+    private String otherDAppPublicKey;
+    private String otherDAppPublicKeyHash;
+    private byte[] otherDAppAddressBytes;
 
     private AssetDAppAccount assetDAppAccount;
     private String assetDAppAddress;
@@ -57,8 +60,10 @@ public class PrepareInvokeTestsData {
     private final Amount wavesAmount;
     private final Amount secondWavesAmount;
     private final Amount assetAmount;
+
     private final String args = "assetId:ByteVector";
-    private final String key1ForDAppEqualBar = "bar";
+    private final String keyForDAppEqualBar = "bar";
+    private final String keyForDAppEqualBaz = "baz";
     private final String key2ForDAppEqualBalance = "balance";
 
     private final Map<String, String> assetData = new HashMap<>();
@@ -115,6 +120,9 @@ public class PrepareInvokeTestsData {
                 () -> {
                     otherDAppAccount = new DataDApp(DEFAULT_FAUCET, "true");
                     otherDAppAddress = otherDAppAccount.address().toString();
+                    otherDAppPublicKey = otherDAppAccount.publicKey().toString();
+                    otherDAppPublicKeyHash = Base58.encode(otherDAppAccount.address().publicKeyHash());
+                    otherDAppAddressBytes = Base58.decode(otherDAppAddress);
                 }
         );
         assetDAppAccount.transfer(callerAccount, Amount.of(300_000_000L, assetId));
@@ -369,7 +377,7 @@ public class PrepareInvokeTestsData {
         assetDAppAccount.setScript(dApp2);
 
         dAppCall = dAppAccount.setData
-                (assetDAppAddressBytes, intArg, key1ForDAppEqualBar, key2ForDAppEqualBalance, assetId.bytes());
+                (assetDAppAddressBytes, intArg, keyForDAppEqualBar, key2ForDAppEqualBalance, assetId.bytes());
 
         amounts.clear();
         amounts.add(wavesAmount);
@@ -378,9 +386,6 @@ public class PrepareInvokeTestsData {
 
     public void prepareDataForDoubleNestedTest(long fee, String firstRecipient, String secondRecipient) {
         invokeFee = fee;
-        String otherDAppPublicKey = otherDAppAccount.publicKey().toString();
-        String otherDAppPublicKeyHash = Base58.encode(otherDAppAccount.address().publicKeyHash());
-        byte[] otherDAppAddressBytes = Base58.decode(otherDAppAddress);
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
 
         final String functionArgsDApp1 = "acc1:ByteVector ,acc2:ByteVector, a:Int, key1:String, key2:String, assetId:ByteVector";
@@ -398,7 +403,7 @@ public class PrepareInvokeTestsData {
                 "{-# STDLIB_VERSION 5 #-}\n{-# CONTENT_TYPE DAPP #-}\n{-# SCRIPT_TYPE ACCOUNT #-}\n" +
                         "@Callable(i)\n" +
                         "func bar(a: Int, assetId: ByteVector, acc1: ByteVector) = {\n" +
-                        "strict res2 = invoke(Address(acc1),\"baz\",[a],[])\n" +
+                        "strict res2 = invoke(Address(acc1),\"" + keyForDAppEqualBaz + "\",[a],[])\n" +
                         "   match res2 {" +
                         "   \ncase r : Int =>\n" +
                         "   (\n" +
@@ -415,7 +420,7 @@ public class PrepareInvokeTestsData {
                         "\n{-# CONTENT_TYPE DAPP #-}" +
                         "\n{-# SCRIPT_TYPE ACCOUNT #-}\n" +
                         "@Callable(i)\n" +
-                        "func baz(a: Int) = {\n" +
+                        "func " + keyForDAppEqualBaz + "(a: Int) = {\n" +
                         "   (\n" +
                         "      [\n" +
                         "           ScriptTransfer(" + secondRecipient + ", " + secondWavesAmount.value() + ", unit)\n" +
@@ -431,7 +436,7 @@ public class PrepareInvokeTestsData {
                 otherDAppAddressBytes,
                 assetDAppAddressBytes,
                 intArg,
-                key1ForDAppEqualBar,
+                keyForDAppEqualBar,
                 key2ForDAppEqualBalance,
                 assetId.bytes()
         );
@@ -494,6 +499,10 @@ public class PrepareInvokeTestsData {
         return wavesAmount;
     }
 
+    public Amount getSecondWavesAmount() {
+        return secondWavesAmount;
+    }
+
     public Amount getAssetAmount() {
         return assetAmount;
     }
@@ -554,8 +563,8 @@ public class PrepareInvokeTestsData {
         return dAppAddressBytes;
     }
 
-    public String getKey1ForDAppEqualBar() {
-        return key1ForDAppEqualBar;
+    public String getKeyForDAppEqualBar() {
+        return keyForDAppEqualBar;
     }
 
     public String getKey2ForDAppEqualBalance() {
@@ -576,5 +585,13 @@ public class PrepareInvokeTestsData {
 
     public String getOtherDAppAddress() {
         return otherDAppAddress;
+    }
+
+    public byte[] getOtherDAppAddressBytes() {
+        return otherDAppAddressBytes;
+    }
+
+    public String getKeyForDAppEqualBaz() {
+        return keyForDAppEqualBaz;
     }
 }

@@ -178,8 +178,10 @@ public class InvokeCalculationsBalancesAfterTx {
                 if (a.assetId().isWaves() && a.value() <= maxFirstWavesAmountValue) {
                     dAppBalanceWavesAfterTransaction += a.value();
                     accBalanceWavesAfterTransaction -= a.value();
+                    callerBalanceWavesAfterTransaction += a.value();
                 } else if (a.assetId().isWaves() && a.value() > maxFirstWavesAmountValue) {
                     otherDAppBalanceWavesAfterTransaction -= a.value();
+                    callerBalanceWavesAfterTransaction += a.value();
                 } else if (a.assetId().equals(id)) {
                     dAppBalanceIssuedAssetsAfterTransaction -= a.value();
                     accBalanceIssuedAssetsAfterTransaction += a.value();

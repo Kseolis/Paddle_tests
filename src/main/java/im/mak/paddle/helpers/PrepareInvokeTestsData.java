@@ -382,9 +382,11 @@ public class PrepareInvokeTestsData {
         amounts.clear();
         amounts.add(wavesAmount);
         amounts.add(assetAmount);
+        setExtraFee(0);
     }
 
     public void prepareDataForDoubleNestedTest(long fee, String firstRecipient, String secondRecipient) {
+        setExtraFee(0);
         invokeFee = fee;
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
 
@@ -445,6 +447,7 @@ public class PrepareInvokeTestsData {
         amounts.add(wavesAmount);
         amounts.add(secondWavesAmount);
         amounts.add(assetAmount);
+        setExtraFee(0);
     }
 
     public DAppCall getDAppCall() {

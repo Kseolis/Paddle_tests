@@ -21,11 +21,13 @@ import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class InvokeScriptTransactionSubscribeTest {
     private PrepareInvokeTestsData testData;
     private Account caller;
     private Account dAppAccount;
+    private Account otherDAppAccount;
     private Account assetDAppAccount;
     private List<Amount> amounts;
     private AssetId assetId;
@@ -36,6 +38,7 @@ public class InvokeScriptTransactionSubscribeTest {
         testData = new PrepareInvokeTestsData();
         caller = testData.getCallerAccount();
         dAppAccount = testData.getDAppAccount();
+        otherDAppAccount = testData.getOtherDAppAccount();
         assetDAppAccount = testData.getAssetDAppAccount();
         amounts = testData.getAmounts();
         assetId = testData.getAssetId();
@@ -178,13 +181,13 @@ public class InvokeScriptTransactionSubscribeTest {
             testData.prepareDataForScriptTransferTests();
             dAppCall = testData.getDAppCall();
             InvokeScriptTransactionSender txSender =
-                    new InvokeScriptTransactionSender(testData.getAssetDAppAccount(), testData.getAssetDAppAccount(), dAppCall);
+                    new InvokeScriptTransactionSender(testData.getCallerAccount(), testData.getAssetDAppAccount(), dAppCall);
 
             setVersion(v);
-            calcBalances.balancesAfterCallerInvokeAsset(testData.getAssetDAppAccount(), dAppAccount, amounts, assetId);
+            calcBalances.balancesAfterCallerScriptTransfer(caller, assetDAppAccount, dAppAccount, amounts, assetId);
             txSender.invokeSender();
-            checkInvokeTransaction(testData.getAssetDAppAccount(), testData.getInvokeFee(), txSender);
-            checkBalancesAfterInvoke(testData.getAssetDAppAccount(), dAppAccount, calcBalances);
+            checkInvokeTransaction(caller, testData.getInvokeFee(), txSender);
+            thirdAccountBalanceCheck(dAppAccount, calcBalances);
         }
     }
 
@@ -210,59 +213,105 @@ public class InvokeScriptTransactionSubscribeTest {
     @Test
     @DisplayName("invoke dApp to dApp")
     void invokeDAppToDApp() {
-        testData.prepareDataForDAppToDAppTests(SUM_FEE + ONE_WAVES);
+        testData.prepareDataForDAppToDAppTests(SUM_FEE);
         dAppCall = testData.getDAppCall();
 
         for (int v = 1; v <= LATEST_VERSION; v++) {
             InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-            InvokeScriptTransactionSender txSender =
-                    new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
+            InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
 
             setVersion(v);
             calcBalances.balancesAfterDAppToDApp(caller, dAppAccount, assetDAppAccount, amounts, assetId);
             txSender.invokeSender();
-            checkInvokeTransaction(caller, testData.getInvokeFee(), txSender);
-            checkBalancesAfterDAppToDAppInvoke(
-                    caller,
-                    dAppAccount,
-                    testData.getAssetDAppAccount(),
-                    calcBalances);
+            checkInvokeTransaction(caller, SUM_FEE, txSender);
+            thirdAccountBalanceCheck(assetDAppAccount, calcBalances);
+        }
+    }
+
+    @Test
+    @DisplayName("invoke double nested for i.caller")
+    void invokeDoubleNestedForCaller() {
+        testData.prepareDataForDoubleNestedTest(SUM_FEE, "i.caller", "i.caller");
+        dAppCall = testData.getDAppCall();
+
+        for (int v = 1; v <= LATEST_VERSION; v++) {
+            InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+            InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
+
+            setVersion(v);
+            calcBalances.balancesAfterDoubleNestedForCaller
+                    (caller, dAppAccount, otherDAppAccount, assetDAppAccount, amounts, assetId);
+            txSender.invokeSender();
+            checkInvokeTransaction(caller, SUM_FEE, txSender);
+            thirdAccountBalanceCheck(assetDAppAccount, calcBalances);
+            fourthAccountBalanceCheck(otherDAppAccount, calcBalances);
+        }
+    }
+
+    @Test
+    @DisplayName("invoke double nested for i.originCaller")
+    void invokeDoubleNestedForOriginCaller() {
+        testData.prepareDataForDoubleNestedTest(SUM_FEE, "i.originCaller", "i.originCaller");
+        dAppCall = testData.getDAppCall();
+
+        for (int v = 1; v <= LATEST_VERSION; v++) {
+            InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+            InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
+
+            setVersion(v);
+            calcBalances.balancesAfterDoubleNestedForOriginCaller
+                    (caller, dAppAccount, otherDAppAccount, assetDAppAccount, amounts, assetId);
+            txSender.invokeSender();
+            checkInvokeTransaction(caller, SUM_FEE, txSender);
+            thirdAccountBalanceCheck(assetDAppAccount, calcBalances);
+            fourthAccountBalanceCheck(otherDAppAccount, calcBalances);
         }
     }
 
     private void checkInvokeTransaction(Account caller, long fee, InvokeScriptTransactionSender tx) {
-        assertThat(tx.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED);
-        assertThat(tx.getInvokeScriptTx().dApp()).isEqualTo(dAppCall.getDApp());
-        assertThat(tx.getInvokeScriptTx().function()).isEqualTo(dAppCall.getFunction());
-        assertThat(tx.getInvokeScriptTx().sender()).isEqualTo(caller.publicKey());
-        assertThat(tx.getInvokeScriptTx().fee().assetId()).isEqualTo(AssetId.WAVES);
-        assertThat(tx.getInvokeScriptTx().fee().value()).isEqualTo(fee);
-        assertThat(tx.getInvokeScriptTx().type()).isEqualTo(16);
+        assertAll(
+                () -> assertThat(tx.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
+                () -> assertThat(tx.getInvokeScriptTx().dApp()).isEqualTo(dAppCall.getDApp()),
+                () -> assertThat(tx.getInvokeScriptTx().function()).isEqualTo(dAppCall.getFunction()),
+                () -> assertThat(tx.getInvokeScriptTx().sender()).isEqualTo(caller.publicKey()),
+                () -> assertThat(tx.getInvokeScriptTx().fee().assetId()).isEqualTo(AssetId.WAVES),
+                () -> assertThat(tx.getInvokeScriptTx().fee().value()).isEqualTo(fee),
+                () -> assertThat(tx.getInvokeScriptTx().type()).isEqualTo(16)
+        );
     }
 
     private void checkBalancesAfterInvoke(Account caller, Account dApp, InvokeCalculationsBalancesAfterTx calcBalances) {
-        assertThat(caller.getWavesBalance()).isEqualTo(calcBalances.getCallerBalanceWavesAfterTransaction());
-        assertThat(dApp.getWavesBalance()).isEqualTo(calcBalances.getDAppBalanceWavesAfterTransaction());
+        assertAll(
+                () -> assertThat(caller.getWavesBalance()).isEqualTo(calcBalances.getCallerBalanceWavesAfterTransaction()),
+                () -> assertThat(dApp.getWavesBalance()).isEqualTo(calcBalances.getDAppBalanceWavesAfterTransaction())
+        );
         if (assetId != null) {
-            assertThat(caller.getBalance(assetId)).isEqualTo(calcBalances.getCallerBalanceIssuedAssetsAfterTransaction());
-            assertThat(dApp.getBalance(assetId)).isEqualTo(calcBalances.getDAppBalanceIssuedAssetsAfterTransaction());
+            assertAll(
+                    () -> assertThat(caller.getBalance(assetId))
+                            .isEqualTo(calcBalances.getCallerBalanceIssuedAssetsAfterTransaction()),
+                    () -> assertThat(dApp.getBalance(assetId))
+                            .isEqualTo(calcBalances.getDAppBalanceIssuedAssetsAfterTransaction())
+            );
         }
     }
 
-    private void checkBalancesAfterDAppToDAppInvoke
-            (Account caller, Account dApp, Account acc, InvokeCalculationsBalancesAfterTx calcBalances) {
-        assertThat(caller.getWavesBalance()).isEqualTo(calcBalances.getCallerBalanceWavesAfterTransaction());
-        assertThat(dApp.getWavesBalance()).isEqualTo(calcBalances.getDAppBalanceWavesAfterTransaction());
+    private void thirdAccountBalanceCheck(Account acc, InvokeCalculationsBalancesAfterTx calcBalances) {
         assertThat(acc.getWavesBalance()).isEqualTo(calcBalances.getAccBalanceWavesAfterTransaction());
         if (assetId != null) {
-            assertThat(caller.getBalance(assetId)).isEqualTo(calcBalances.getCallerBalanceIssuedAssetsAfterTransaction());
-            assertThat(dApp.getBalance(assetId)).isEqualTo(calcBalances.getDAppBalanceIssuedAssetsAfterTransaction());
             assertThat(acc.getBalance(assetId)).isEqualTo(calcBalances.getAccBalanceIssuedAssetsAfterTransaction());
+        }
+    }
+
+    private void fourthAccountBalanceCheck(Account dApp2, InvokeCalculationsBalancesAfterTx calcBalances) {
+        assertThat(dApp2.getWavesBalance()).isEqualTo(calcBalances.getOtherDAppBalanceWavesAfterTransaction());
+        if (assetId != null) {
+            assertThat(dApp2.getBalance(assetId)).isEqualTo(calcBalances.getOtherDAppBalanceIssuedAssetsAfterTransaction());
         }
     }
 
     @AfterEach
     void after() {
+        testData = null;
         if (caller.getWavesBalance() < ONE_WAVES) {
             node().faucet().transfer(caller, DEFAULT_FAUCET, WAVES);
         }

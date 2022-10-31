@@ -8,20 +8,20 @@ import io.grpc.ManagedChannelBuilder;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
-import static im.mak.paddle.Node.getDockerGRPCPort;
+import static im.mak.paddle.Node.*;
 
 @Execution(ExecutionMode.SAME_THREAD)
 public class BaseGrpcTest {
     protected int height;
     protected int fromHeight;
     protected int toHeight;
-    public static final long CHAIN_ID = 82;
+    public static final long CHAIN_ID = 68;
     private static String dAppAccountPublicKeyHash;
     private static String dAppAccountAddress;
     private static String dAppFunctionName;
 
     protected final Channel CHANNEL = ManagedChannelBuilder
-            .forAddress("0.0.0.0", getDockerGRPCPort())
+            .forAddress(devNetGRPCAddress, devNetGRPCPort)
             .usePlaintext()
             .build();
 

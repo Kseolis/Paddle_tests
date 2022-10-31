@@ -37,8 +37,7 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
     @DisplayName("subscribe invoke dApp to dApp")
     void subscribeInvokeWithDAppToDApp() {
         fromHeight = node().getHeight();
-        long fee = SUM_FEE + (ONE_WAVES * 2);
-        testData.prepareDataForDAppToDAppTests(fee);
+        testData.prepareDataForDAppToDAppTests(SUM_FEE);
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
 
         final AssetId assetId = testData.getAssetId();
@@ -63,7 +62,7 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
 
     public static void assertionsCheckDAppToDAppInvoke
             (PrepareInvokeTestsData data, InvokeCalculationsBalancesAfterTx calcBalances, String txId, int txIndex) {
-        String key1 = data.getKey1ForDAppEqualBar();
+        String key1 = data.getKeyForDAppEqualBar();
         String key2 = data.getKey2ForDAppEqualBalance();
         String assetId = data.getAssetId().toString();
         assertAll(
@@ -84,15 +83,24 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
                         data.getAssetDAppAddress(),
                         key1),
                 () -> checkResultInvokesMetadataPayments(txIndex, 0, 0, assetId, data.getAssetAmount().value()),
-                () -> checkResultInvokesMetadataStateChanges(txIndex, 0, 0,
+
+                () -> checkStateChangesTransfers(txIndex, 0, 0,
                         WAVES_STRING_ID,
-                        data.getDAppAddress(),
-                        data.getWavesAmount().value()),
+                        data.getWavesAmount().value(),
+                        data.getDAppAddress()
+                ),
+                () -> checkStateChangesBurn(txIndex, 0, 0, data.getAssetAmount()),
+                () -> checkStateChangesReissue(txIndex, 0, 0, data),
+                () -> checkStateChangesData(txIndex, 0, 0, data),
+                () -> checkStateChangesSponsorFee(txIndex, 0, 0, data),
+                () -> checkStateChangesLease(txIndex, 0, 0, data),
+                () -> checkStateChangesLeaseCancel(txIndex, 0, 0),
 
                 () -> checkDataMetadata(txIndex, 0,
                         INTEGER,
                         key1,
                         calcBalances.getInvokeResultData()),
+
                 () -> checkStateUpdateBalance(txIndex,
                         0,
                         data.getDAppAddress(),

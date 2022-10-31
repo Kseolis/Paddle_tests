@@ -1,5 +1,8 @@
 package im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers;
 
+import com.wavesplatform.transactions.common.Amount;
+import im.mak.paddle.helpers.PrepareInvokeTestsData;
+
 import java.util.Map;
 
 import static im.mak.paddle.blockchain_updates.BaseGrpcTest.getDAppAccountAddress;
@@ -134,8 +137,7 @@ public class InvokeMetadataAssertions {
 
     public static void checkLeaseMetadata(int metadataIndex, int dataIndex, String publicKeyHash, long amount) {
         assertAll(
-                () -> assertThat(getInvokeMetadataLeasesRecipientPublicKey(metadataIndex, dataIndex))
-                        .isEqualTo(publicKeyHash),
+                () -> assertThat(getInvokeMetadataLeasesRecipientPublicKey(metadataIndex, dataIndex)).isEqualTo(publicKeyHash),
                 () -> assertThat(getInvokeMetadataLeasesAmount(metadataIndex, dataIndex)).isEqualTo(amount)
         );
     }
@@ -157,8 +159,65 @@ public class InvokeMetadataAssertions {
         );
     }
 
-    public static void checkResultInvokesMetadataPayments
-            (int metadataIndex, int dataIndex, int payIndex, String assetId, long amount) {
+    public static void checkInvokesMetadataCallArgs(int metadataIndex, int dataIndex, int argIndex,
+                                                    String type, String argValue) {
+        switch (type) {
+            case BINARY_VALUE:
+                assertThat(getInvokeMetadataResultInvokesCallBinArgs(metadataIndex, dataIndex, argIndex)).isEqualTo(argValue);
+                break;
+            case INTEGER:
+                assertThat(getInvokeMetadataResultInvokesCallIntArgs(metadataIndex, dataIndex, argIndex)).isEqualTo(argValue);
+                break;
+            case STRING:
+                assertThat(getInvokeMetadataResultInvokesCallStringArgs(metadataIndex, dataIndex, argIndex)).isEqualTo(argValue);
+                break;
+            case BOOLEAN:
+                assertThat(getInvokeMetadataResultInvokesCallBoolArgs(metadataIndex, dataIndex, argIndex)).isEqualTo(argValue);
+                break;
+        }
+    }
+
+    public static void checkResultNestedInvokes(int metadataIndex, int dataIndex, int nestedInvokesIndex, String dApp, String func) {
+        assertAll(
+                () -> assertThat(
+                        getNestedStateChangesInvokesDApp(metadataIndex, dataIndex, nestedInvokesIndex)
+                ).isEqualTo(dApp),
+                () -> assertThat(
+                        getNestedStateChangesTransferInvokesCallFunction
+                                (metadataIndex, dataIndex, nestedInvokesIndex)
+                ).isEqualTo(func)
+        );
+    }
+
+    public static void checkNestedInvokesMetadataCallArgs(int metadataIndex, int dataIndex, int nestedInvokesIndex,
+                                                          int args, String type, String argValue) {
+        switch (type) {
+            case BINARY_VALUE:
+                assertThat(
+                        getNestedStateChangesTransferInvokesCallBinArg(
+                                metadataIndex, dataIndex, nestedInvokesIndex, args
+                        )).isEqualTo(argValue);
+                break;
+            case INTEGER:
+                assertThat(getNestedStateChangesTransferInvokesCallIntArg(
+                        metadataIndex, dataIndex, nestedInvokesIndex, args
+                )).isEqualTo(argValue);
+                break;
+            case STRING:
+                assertThat(getNestedStateChangesTransferInvokesCallStringArg(
+                        metadataIndex, dataIndex, nestedInvokesIndex, args
+                )).isEqualTo(argValue);
+                break;
+            case BOOLEAN:
+                assertThat(getNestedStateChangesTransferInvokesCallBooleanArg(
+                        metadataIndex, dataIndex, nestedInvokesIndex, args
+                )).isEqualTo(argValue);
+                break;
+        }
+    }
+
+    public static void checkResultInvokesMetadataPayments(int metadataIndex, int dataIndex, int payIndex,
+                                                          String assetId, long amount) {
         if (assetId != null) {
             assertThat(getInvokeMetadataResultInvokesPaymentAssetId(metadataIndex, dataIndex, payIndex))
                     .isEqualTo(assetId);
@@ -166,20 +225,95 @@ public class InvokeMetadataAssertions {
         assertThat(getInvokeMetadataResultInvokesPaymentAmount(metadataIndex, dataIndex, payIndex)).isEqualTo(amount);
     }
 
-    public static void checkResultInvokesMetadataStateChanges(int metadataIndex, int dataIndex,
-                                                              int payIndex, String assetId,
-                                                              String address, long amount) {
+    public static void checkStateChangesTransfers(int metadataIndex, int dataIndex, int payIndex,
+                                                  String assetId, long amountValue, String address) {
         if (assetId != null) {
-            assertThat(getInvokeMetadataResultInvokesStateChangesTransferAssetId(metadataIndex, dataIndex, payIndex))
+            assertThat(getStateChangesTransferAssetId(metadataIndex, dataIndex, payIndex)).isEqualTo(assetId);
+        }
+        assertAll(
+                () -> assertThat(getStateChangesTransferAddress(metadataIndex, dataIndex, payIndex)).isEqualTo(address),
+                () -> assertThat(getStateChangesTransferAmount(metadataIndex, dataIndex, payIndex)).isEqualTo(amountValue)
+        );
+    }
+
+    public static void checkStateChangesNestedTransfers(int metadataIndex, int dataIndex, int transferIndex,
+                                                        String assetId, long amountValue, String address) {
+        if (assetId != null) {
+            assertThat(getNestedStateChangesTransferAssetId(metadataIndex, dataIndex, transferIndex))
                     .isEqualTo(assetId);
         }
         assertAll(
-                () -> assertThat(
-                        getInvokeMetadataResultInvokesStateChangesTransferAddress(metadataIndex, dataIndex, payIndex))
+                () -> assertThat(getNestedStateChangesTransferAddress(metadataIndex, dataIndex, transferIndex))
                         .isEqualTo(address),
-                () -> assertThat(
-                        getInvokeMetadataResultInvokesStateChangesTransferAmount(metadataIndex, dataIndex, payIndex))
-                        .isEqualTo(amount)
+                () -> assertThat(getNestedStateChangesTransferAmount(metadataIndex, dataIndex, transferIndex))
+                        .isEqualTo(amountValue)
         );
+    }
+
+    public static void checkStateChangesDoubleNestedTransfers
+            (int metadataIndex, int dataIndex, int transferIndex, int invokesIndex, String assetId, long amountValue, String address) {
+        if (assetId != null) {
+            assertThat(getDoubleNestedStateChangesTransferAssetId(metadataIndex, dataIndex, transferIndex, invokesIndex))
+                    .isEqualTo(assetId);
+        }
+        assertAll(
+                () -> assertThat(getDoubleNestedStateChangesTransferAddress(metadataIndex, dataIndex, transferIndex, invokesIndex))
+                        .isEqualTo(address),
+                () -> assertThat(getDoubleNestedStateChangesTransferAmount(metadataIndex, dataIndex, transferIndex, invokesIndex))
+                        .isEqualTo(amountValue)
+        );
+    }
+
+    public static void checkStateChangesBurn(int metadataIndex, int dataIndex, int payIndex, Amount amount) {
+        String assetId = amount.assetId().toString();
+        long amountValue = amount.value();
+        if (assetId != null) {
+            assertThat(getStateChangesBurnAssetId(metadataIndex, dataIndex, payIndex)).isEqualTo(assetId);
+        }
+        assertThat(getStateChangesBurnAmount(metadataIndex, dataIndex, payIndex)).isEqualTo(amountValue);
+    }
+
+    public static void checkStateChangesReissue(int metadataIndex, int dataIndex, int payIndex, PrepareInvokeTestsData data) {
+        String assetId = data.getAssetAmount().assetId().toString();
+        long amountValue = data.getAssetAmount().value();
+        boolean reissue = Boolean.parseBoolean(data.getAssetData().get(REISSUE));
+        if (assetId != null) {
+            assertThat(getStateChangesReissueAssetId(metadataIndex, dataIndex, payIndex)).isEqualTo(assetId);
+        }
+        assertAll(
+                () -> assertThat(getStateChangesReissueAmount(metadataIndex, dataIndex, payIndex)).isEqualTo(amountValue),
+                () -> assertThat(getStateChangesReissueReissuable(metadataIndex, dataIndex, payIndex)).isEqualTo(reissue)
+        );
+    }
+
+    public static void checkStateChangesData(int metadataIndex, int dataIndex, int payIndex, PrepareInvokeTestsData data) {
+        int intArg = data.getIntArg();
+        assertAll(
+                () -> assertThat(getStateChangesDataKey(metadataIndex, dataIndex, payIndex)).isEqualTo(DATA_ENTRY_INT),
+                () -> assertThat(getStateChangesDataIntVal(metadataIndex, dataIndex, payIndex)).isEqualTo(intArg)
+        );
+    }
+
+    public static void checkStateChangesSponsorFee(int metadataIndex, int dataIndex, int payIndex, PrepareInvokeTestsData data) {
+        assertAll(
+                () -> assertThat(getStateChangesSponsorFeeAssetId(metadataIndex, dataIndex, payIndex))
+                        .isEqualTo(data.getAssetAmount().assetId().toString()),
+                () -> assertThat(getStateChangesSponsorFeeAmount(metadataIndex, dataIndex, payIndex))
+                        .isEqualTo(data.getAssetAmount().value())
+        );
+    }
+
+    public static void checkStateChangesLease(int metadataIndex, int dataIndex, int payIndex, PrepareInvokeTestsData data) {
+        assertAll(
+                () -> assertThat(getStateChangesLeasesRecipientPkHash(metadataIndex, dataIndex, payIndex))
+                        .isEqualTo(data.getDAppPublicKeyHash()),
+                () -> assertThat(getStateChangesLeasesAmount(metadataIndex, dataIndex, payIndex))
+                        .isEqualTo(data.getWavesAmount().value())
+        );
+    }
+
+    public static void checkStateChangesLeaseCancel(int metadataIndex, int dataIndex, int payIndex) {
+        String leaseId = getStateChangesLeasesId(metadataIndex, dataIndex, payIndex);
+        assertThat(getStateChangesLeaseCancelsLeasesId(metadataIndex, dataIndex, payIndex)).isEqualTo(leaseId);
     }
 }

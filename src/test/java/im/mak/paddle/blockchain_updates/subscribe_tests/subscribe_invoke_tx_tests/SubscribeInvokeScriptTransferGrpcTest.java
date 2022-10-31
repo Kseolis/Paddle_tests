@@ -90,20 +90,24 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
                         testData.getDAppAddress(),
                         WAVES_STRING_ID,
                         testData.getWavesAmount().value()),
+                () -> checkTransfersMetadata(0, 3,
+                        testData.getCallerAddress(),
+                        WAVES_STRING_ID,
+                        testData.getWavesAmount().value()),
 
                 () -> checkStateUpdateBalance(0,
                         0,
                         testData.getCallerAddress(),
                         WAVES_STRING_ID,
                         calcBalances.getCallerBalanceWavesBeforeTransaction(),
-                        calcBalances.getCallerBalanceWavesAfterTransaction()),
+                        calcBalances.getCallerBalanceWavesAfterTransaction()), // here
 
                 () -> checkStateUpdateBalance(0,
                         1,
                         testData.getAssetDAppAddress(),
                         WAVES_STRING_ID,
                         calcBalances.getDAppBalanceWavesBeforeTransaction(),
-                        calcBalances.getDAppBalanceWavesAfterTransaction()),
+                        calcBalances.getDAppBalanceWavesAfterTransaction()), // here 2
                 () -> checkStateUpdateBalance(0,
                         2,
                         testData.getAssetDAppAddress(),

@@ -19,6 +19,11 @@ public class InvokeCalculationsBalancesAfterTx {
     private long dAppBalanceWavesAfterTransaction;
     private long dAppBalanceIssuedAssetsAfterTransaction;
 
+    private long otherDAppBalanceWavesBeforeTransaction;
+    private long otherDAppBalanceIssuedAssetsBeforeTransaction;
+    private long otherDAppBalanceWavesAfterTransaction;
+    private long otherDAppBalanceIssuedAssetsAfterTransaction;
+
     private long accBalanceWavesBeforeTransaction;
     private long accBalanceIssuedAssetsBeforeTransaction;
     private long accBalanceWavesAfterTransaction;
@@ -109,10 +114,10 @@ public class InvokeCalculationsBalancesAfterTx {
             amounts.forEach(
                     a -> {
                         if (a.assetId().isWaves()) {
-                            dAppBalanceWavesAfterTransaction -= a.value();
+                            dAppBalanceWavesAfterTransaction -= a.value() * 2;
                             accBalanceWavesAfterTransaction += a.value();
+                            callerBalanceWavesAfterTransaction += a.value();
                         } else if (a.assetId().equals(id)) {
-                            callerBalanceIssuedAssetsAfterTransaction -= a.value();
                             dAppBalanceIssuedAssetsAfterTransaction -= a.value();
                             accBalanceIssuedAssetsAfterTransaction += a.value();
                         }
@@ -137,6 +142,51 @@ public class InvokeCalculationsBalancesAfterTx {
                         }
                     }
             );
+        }
+    }
+
+    public void balancesAfterDoubleNestedForCaller
+            (Account caller, Account dApp, Account otherDApp, Account acc, List<Amount> amounts, AssetId id) {
+        long maxFirstWavesAmountValue = 10000;
+        prepareFourAccBalances(caller, dApp, acc, otherDApp, id);
+        invokeResultData = String.valueOf(testData.getIntArg() * 2);
+
+        if (!amounts.isEmpty()) {
+            amounts.forEach(a -> {
+                if (a.assetId().isWaves() && a.value() <= maxFirstWavesAmountValue) {
+                    dAppBalanceWavesAfterTransaction += a.value();
+                    accBalanceWavesAfterTransaction -= a.value();
+                } else if (a.assetId().isWaves() && a.value() > maxFirstWavesAmountValue) {
+                    accBalanceWavesAfterTransaction += a.value();
+                    otherDAppBalanceWavesAfterTransaction -= a.value();
+                } else if (a.assetId().equals(id)) {
+                    dAppBalanceIssuedAssetsAfterTransaction -= a.value();
+                    accBalanceIssuedAssetsAfterTransaction += a.value();
+                }
+            });
+        }
+    }
+
+    public void balancesAfterDoubleNestedForOriginCaller
+            (Account caller, Account dApp, Account otherDApp, Account acc, List<Amount> amounts, AssetId id) {
+        long maxFirstWavesAmountValue = 10000;
+        prepareFourAccBalances(caller, dApp, acc, otherDApp, id);
+        invokeResultData = String.valueOf(testData.getIntArg() * 2);
+
+        if (!amounts.isEmpty()) {
+            amounts.forEach(a -> {
+                if (a.assetId().isWaves() && a.value() <= maxFirstWavesAmountValue) {
+                    dAppBalanceWavesAfterTransaction += a.value();
+                    accBalanceWavesAfterTransaction -= a.value();
+                    callerBalanceWavesAfterTransaction += a.value();
+                } else if (a.assetId().isWaves() && a.value() > maxFirstWavesAmountValue) {
+                    otherDAppBalanceWavesAfterTransaction -= a.value();
+                    callerBalanceWavesAfterTransaction += a.value();
+                } else if (a.assetId().equals(id)) {
+                    dAppBalanceIssuedAssetsAfterTransaction -= a.value();
+                    accBalanceIssuedAssetsAfterTransaction += a.value();
+                }
+            });
         }
     }
 
@@ -188,6 +238,22 @@ public class InvokeCalculationsBalancesAfterTx {
         return accBalanceIssuedAssetsAfterTransaction;
     }
 
+    public long getOtherDAppBalanceWavesBeforeTransaction() {
+        return otherDAppBalanceWavesBeforeTransaction;
+    }
+
+    public long getOtherDAppBalanceIssuedAssetsBeforeTransaction() {
+        return otherDAppBalanceIssuedAssetsBeforeTransaction;
+    }
+
+    public long getOtherDAppBalanceWavesAfterTransaction() {
+        return otherDAppBalanceWavesAfterTransaction;
+    }
+
+    public long getOtherDAppBalanceIssuedAssetsAfterTransaction() {
+        return otherDAppBalanceIssuedAssetsAfterTransaction;
+    }
+
     public String getInvokeResultData() {
         return invokeResultData;
     }
@@ -211,5 +277,12 @@ public class InvokeCalculationsBalancesAfterTx {
         accBalanceIssuedAssetsBeforeTransaction = acc.getBalance(id);
         accBalanceWavesAfterTransaction = accBalanceWavesBeforeTransaction;
         accBalanceIssuedAssetsAfterTransaction = accBalanceIssuedAssetsBeforeTransaction;
+    }
+
+    private void prepareFourAccBalances(Account caller, Account dApp, Account acc, Account dApp2, AssetId id) {
+        prepareThreeAccBalances(caller, dApp, acc, id);
+        otherDAppBalanceWavesBeforeTransaction = dApp2.getWavesBalance();
+        otherDAppBalanceWavesAfterTransaction = dApp2.getWavesBalance();
+        otherDAppBalanceIssuedAssetsAfterTransaction = dApp2.getBalance(id);
     }
 }

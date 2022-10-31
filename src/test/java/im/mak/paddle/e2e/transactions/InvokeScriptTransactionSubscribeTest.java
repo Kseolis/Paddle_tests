@@ -110,7 +110,7 @@ public class InvokeScriptTransactionSubscribeTest {
             InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
             InvokeScriptTransactionSender txSender =
                     new InvokeScriptTransactionSender(caller, testData.getAssetDAppAccount(), dAppCall);
-            System.out.println(testData.getInvokeFee());
+
             setVersion(v);
             calcBalances.balancesAfterReissueAssetInvoke(caller, testData.getAssetDAppAccount(), amounts, assetId);
             txSender.invokeSender();

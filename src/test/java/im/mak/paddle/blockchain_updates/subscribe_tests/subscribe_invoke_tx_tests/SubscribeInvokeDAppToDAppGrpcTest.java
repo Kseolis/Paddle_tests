@@ -37,8 +37,7 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
     @DisplayName("subscribe invoke dApp to dApp")
     void subscribeInvokeWithDAppToDApp() {
         fromHeight = node().getHeight();
-        long fee = SUM_FEE + (ONE_WAVES * 2);
-        testData.prepareDataForDAppToDAppTests(fee);
+        testData.prepareDataForDAppToDAppTests(SUM_FEE);
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
 
         final AssetId assetId = testData.getAssetId();

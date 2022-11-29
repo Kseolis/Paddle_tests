@@ -7,6 +7,7 @@ import com.wavesplatform.transactions.EthereumTransaction;
 import com.wavesplatform.transactions.account.Address;
 import com.wavesplatform.transactions.account.PrivateKey;
 import com.wavesplatform.transactions.common.Amount;
+import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.wavesj.exceptions.NodeException;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
@@ -31,6 +32,10 @@ public class EthereumTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private Address senderAddress;
     private PrivateKey senderPrivateKey;
 
+    private final String ethAddress = "0x8c7D940a36408D378B4A6df4ce041983af78110d";
+    private final String ethAddressWithoutTheFirstBytes = "8c7D940a36408D378B4A6df4ce041983af78110d";
+
+
     private ECKeyPair ecKeyPair;
 
     private Account recipient;
@@ -48,16 +53,12 @@ public class EthereumTransactionSubscriptionGrpcTest extends BaseGrpcTest {
                     ecKeyPair = ECKeyPair.create(senderPrivateKey.bytes());
                 },
                 () -> {
-                    recipient = new Account(DEFAULT_FAUCET);
-                    recipientAddress = recipient.address();
-/*
                     try {
-                        System.out.println("recipientAddress " + recipientAddress);
-                        recipientEthereumAddress = getEthereumAddressFromWaves(recipientAddress.toString());
+                        recipientAddress = Address.as(getWavesAddressFromETH(ethAddressWithoutTheFirstBytes));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-*/
+                    node().faucet().transfer(recipientAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
                 },
                 () -> amountTransfer = Amount.of(1),
                 () -> gasPrice = new BigInteger(String.valueOf(10_000_000_000L))
@@ -85,22 +86,19 @@ public class EthereumTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     }
 
 
-    private static Address getEthereumAddressFromWaves(String wavesAddressFormat) throws IOException {
+    private static String getWavesAddressFromETH(String wavesAddressFormat) throws IOException {
         byte[] ethAddressBytes = Hex.decode(wavesAddressFormat);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
         outputStream.write((byte) 1);
         outputStream.write(node().chainId());
         outputStream.write(ethAddressBytes);
 
         byte[] checkSumPrefix = Bytes.chunk(Hash.secureHash(outputStream.toByteArray()), 4)[0];
-
         outputStream.write(checkSumPrefix);
 
-        byte[] ethereumAddressFormat = outputStream.toByteArray();
+        byte[] address = outputStream.toByteArray();
 
-        System.out.println("eth address " + Base58.encode(ethereumAddressFormat));
-        return Address.as(ethereumAddressFormat);
+        return Base58.encode(address);
     }
 }

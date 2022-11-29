@@ -28,14 +28,9 @@ import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 
 public class EthereumTransactionSubscriptionGrpcTest extends BaseGrpcTest {
-    private Account sender;
     private Address senderAddress;
-    private PrivateKey senderPrivateKey;
-
-    private final String ethAddress = "0x8c7D940a36408D378B4A6df4ce041983af78110d";
+    private final PrivateKey senderPrivateKey = PrivateKey.fromSeed("0x8c7D940a36408D378B4A6df4ce041983af78110d");
     private final String ethAddressWithoutTheFirstBytes = "8c7D940a36408D378B4A6df4ce041983af78110d";
-
-
     private ECKeyPair ecKeyPair;
 
     private Account recipient;
@@ -47,18 +42,17 @@ public class EthereumTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     void setUp() {
         async(
                 () -> {
-                    sender = new Account(DEFAULT_FAUCET);
-                    senderAddress = sender.address();
-                    senderPrivateKey = sender.privateKey();
-                    ecKeyPair = ECKeyPair.create(senderPrivateKey.bytes());
-                },
-                () -> {
                     try {
-                        recipientAddress = Address.as(getWavesAddressFromETH(ethAddressWithoutTheFirstBytes));
+                        senderAddress = Address.as(getWavesAddressFromETH(ethAddressWithoutTheFirstBytes));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    node().faucet().transfer(recipientAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
+                    node().faucet().transfer(senderAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
+                    ecKeyPair = ECKeyPair.create(senderPrivateKey.bytes());
+                },
+                () -> {
+                    recipient = new Account(DEFAULT_FAUCET);
+                    recipientAddress = recipient.address();
                 },
                 () -> amountTransfer = Amount.of(1),
                 () -> gasPrice = new BigInteger(String.valueOf(10_000_000_000L))
@@ -84,7 +78,6 @@ public class EthereumTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         subscribeResponseHandler(CHANNEL, 1, height, ethTxId.toString());
         System.out.println(getAppend());
     }
-
 
     private static String getWavesAddressFromETH(String wavesAddressFormat) throws IOException {
         byte[] ethAddressBytes = Hex.decode(wavesAddressFormat);

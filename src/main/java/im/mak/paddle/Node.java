@@ -95,6 +95,7 @@ public class Node extends com.wavesplatform.wavesj.Node {
                 ContainerConfig containerConfig = ContainerConfig.builder()
                         .hostConfig(hostConfig)
                         .image(conf.dockerImage)
+                        .env("WAVES_LOG_LEVEL=TRACE")
                         .exposedPorts("6863", String.valueOf(dockerGRPCPort))
                         .build();
 
@@ -126,7 +127,8 @@ public class Node extends com.wavesplatform.wavesj.Node {
                 throw new NodeError(e);
             }
 
-            if (conf.autoShutdown)
+            //TODO uncomment for use
+            /*if (conf.autoShutdown)
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     try {
                         if (docker.listContainers().stream().anyMatch(c -> c.id().equals(containerId))) {
@@ -137,7 +139,7 @@ public class Node extends com.wavesplatform.wavesj.Node {
                     } catch (DockerException | InterruptedException e) {
                         e.printStackTrace();
                     }
-                }));
+                }));*/
         }
         return conf.apiUrl;
     }

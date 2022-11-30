@@ -37,16 +37,23 @@ public class SubscribeHandler {
 
     private static void subscribeEventHandler(BlockchainUpdated subscribeEventUpdate, String txId) {
         Append append = subscribeEventUpdate.getAppend();
+
+        System.out.println(subscribeEventUpdate);
+
         MicroBlock microBlockInfo = append
                 .getMicroBlock()
                 .getMicroBlock()
                 .getMicroBlock();
+        int transactionCount = microBlockInfo.getTransactionsCount();
 
-        if (microBlockInfo.getTransactionsCount() > 0) {
-            String transactionId = Base58.encode(append.getTransactionIds(0).toByteArray());
-            if (transactionId.equals(txId)) {
-                setBlockInfo(append);
-                setAppend(append);
+        if (transactionCount > 0) {
+            for (int i = 0; i < transactionCount; i++) {
+                String transactionId = Base58.encode(append.getTransactionIds(i).toByteArray());
+                if (transactionId.equals(txId)) {
+                    System.out.println("append " + append);
+                    setBlockInfo(append);
+                    setAppend(append);
+                }
             }
         }
     }

@@ -18,13 +18,13 @@ public class BaseGrpcTest {
     protected int height;
     protected int fromHeight;
     protected int toHeight;
-    public static final long CHAIN_ID = devNetChainId;
+    public static final long CHAIN_ID = dockerChainId;
     private static String dAppAccountPublicKeyHash;
     private static String dAppAccountAddress;
     private static String dAppFunctionName;
 
     protected final Channel CHANNEL = ManagedChannelBuilder
-            .forAddress(devNetGRPCAddress, devNetGRPCPort)
+            .forAddress(dockerGRPCAddress, dockerGRPCPort)
             .usePlaintext()
             .build();
 

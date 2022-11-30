@@ -5,7 +5,6 @@ import com.wavesplatform.crypto.Hash;
 import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.transactions.EthereumTransaction;
 import com.wavesplatform.transactions.account.Address;
-import com.wavesplatform.transactions.account.PrivateKey;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.wavesj.exceptions.NodeException;
@@ -22,15 +21,15 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 import static im.mak.paddle.Node.node;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 
 public class EthereumTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private Address senderAddress;
-    private final PrivateKey senderPrivateKey = PrivateKey.fromSeed("0x8c7D940a36408D378B4A6df4ce041983af78110d");
-    private final String ethAddressWithoutTheFirstBytes = "8c7D940a36408D378B4A6df4ce041983af78110d";
+    private final String senderEthAddress = "0x2A0eaaDD531CcC84Fc56Fb44645274A96583DFA7";
+    private final String senderEthPrivateKey = "0f1477865b6b251e1d400b0efc4b4d9e2fdd7c32fa8d3de3bcac3c3abfe7c07c";
+    private final String ethAddressWithoutTheFirstBytes = "2A0eaaDD531CcC84Fc56Fb44645274A96583DFA7";
     private ECKeyPair ecKeyPair;
 
     private Account recipient;
@@ -47,11 +46,11 @@ public class EthereumTransactionSubscriptionGrpcTest extends BaseGrpcTest {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    node().faucet().transfer(senderAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
-                    ecKeyPair = ECKeyPair.create(senderPrivateKey.bytes());
+                    node().faucet().transfer(senderAddress, 1_0000_0000L, AssetId.WAVES, i -> i.additionalFee(0));
+                    ecKeyPair = ECKeyPair.create(Hex.decode(senderEthPrivateKey));
                 },
                 () -> {
-                    recipient = new Account(DEFAULT_FAUCET);
+                    recipient = new Account();
                     recipientAddress = recipient.address();
                 },
                 () -> amountTransfer = Amount.of(1),
@@ -60,7 +59,7 @@ public class EthereumTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     }
 
     @Test
-    @DisplayName("Check subscription on transfer transaction")
+    @DisplayName("Check subscription on Ethereum transfer transaction")
     void subscribeTestForTransferTransaction() throws NodeException, IOException {
         EthereumTransaction ethTxId = EthereumTransaction.transfer(
                 recipientAddress,
@@ -71,12 +70,11 @@ public class EthereumTransactionSubscriptionGrpcTest extends BaseGrpcTest {
                 System.currentTimeMillis(),
                 ecKeyPair
         );
-
+        System.out.println(ethTxId);
         node().broadcastEthTransaction(ethTxId);
-
+        node().waitForTransaction(ethTxId.id());
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, 1, height, ethTxId.toString());
-        System.out.println(getAppend());
     }
 
     private static String getWavesAddressFromETH(String wavesAddressFormat) throws IOException {

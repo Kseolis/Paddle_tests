@@ -21,7 +21,7 @@ public class BaseGrpcTest {
     private static String dAppFunctionName;
 
     protected final Channel CHANNEL = ManagedChannelBuilder
-            .forAddress(devNetGRPCAddress, devNetGRPCPort)
+            .forAddress(dockerGRPCAddress, dockerGRPCPort)
             .usePlaintext()
             .build();
 

@@ -19,6 +19,7 @@ import com.wavesplatform.transactions.common.*;
 import com.wavesplatform.transactions.data.DataEntry;
 import im.mak.paddle.internal.Settings;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -84,9 +85,11 @@ public class Node extends com.wavesplatform.wavesj.Node {
                         .of("0.0.0.0", port)));
                 portBindings.put(String.valueOf(dockerGRPCPort), singletonList(PortBinding
                         .of("0.0.0.0", dockerGRPCPort)));
+
+                File configPath = new File("src/main/resources/docker");
                 HostConfig hostConfig = HostConfig.builder()
                         .binds(HostConfig.Bind
-                                .from("/Users/vnikolaenko/projects/Paddle_tests/src/main/resources/docker")
+                                .from(configPath.getAbsolutePath())
                                 .to("/etc/waves")
                                 .build())
                         .portBindings(portBindings)

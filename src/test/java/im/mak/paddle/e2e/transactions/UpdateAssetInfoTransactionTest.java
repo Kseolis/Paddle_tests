@@ -4,6 +4,7 @@ import com.wavesplatform.transactions.UpdateAssetInfoTransaction;
 import com.wavesplatform.transactions.account.PublicKey;
 import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.wavesj.info.IssueTransactionInfo;
+import com.wavesplatform.wavesj.info.UpdateAssetInfoTransactionInfo;
 import im.mak.paddle.Account;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -36,14 +37,9 @@ public class UpdateAssetInfoTransactionTest {
 
     @Test
     @DisplayName("Update asset info")
-    void leaseMinimumWavesAssets() {
-        for (int v = 1; v <= LATEST_VERSION; v++) {
-            UpdateAssetInfoTransaction txSender = new UpdateAssetInfoTransaction(accountPublicKey, assetId, "Edited asset", "Edited description");
-            node().broadcast(txSender);
-            node().waitForTransaction(txSender.assetId());
-            System.out.println(txSender);
-
-        }
+    void updateAssetInfoTest() {
+        UpdateAssetInfoTransactionInfo txSender = account.updateAssetInfo(assetId, "Edited asset", "Edited description");
+        System.out.println(txSender);
     }
 
 }

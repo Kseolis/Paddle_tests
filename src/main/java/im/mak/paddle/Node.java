@@ -127,8 +127,7 @@ public class Node extends com.wavesplatform.wavesj.Node {
                 throw new NodeError(e);
             }
 
-            //TODO uncomment for use
-            /*if (conf.autoShutdown)
+            if (conf.autoShutdown)
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     try {
                         if (docker.listContainers().stream().anyMatch(c -> c.id().equals(containerId))) {
@@ -139,7 +138,7 @@ public class Node extends com.wavesplatform.wavesj.Node {
                     } catch (DockerException | InterruptedException e) {
                         e.printStackTrace();
                     }
-                }));*/
+                }));
         }
         return conf.apiUrl;
     }

@@ -1,26 +1,18 @@
-package im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers;
+package im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.waves_transactions_handlers;
 
-import com.google.protobuf.ByteString;
 import com.wavesplatform.crypto.base.Base58;
-import com.wavesplatform.events.protobuf.Events.BlockchainUpdated.Append;
-import com.wavesplatform.protobuf.block.BlockOuterClass;
 import com.wavesplatform.protobuf.transaction.TransactionOuterClass.Transaction;
 
 import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.getAppend;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.BlockInfo.blockInfo;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.BlockInfo.microBlockInfo;
 
-public class TransactionsHandler {
-    private static BlockOuterClass.Block blockInfo;
-    private static BlockOuterClass.MicroBlock microBlockInfo;
-
+public class WavesTransactionsHandler {
     public static Transaction getWavesTransactionAtIndex(int index) {
         if (blockInfo == null) {
             return microBlockInfo.getTransactions(index).getWavesTransaction();
         }
         return blockInfo.getTransactions(index).getWavesTransaction();
-    }
-
-    public static ByteString getEthereumTransactionAtIndex(int index) {
-        return microBlockInfo.getTransactions(index).getEthereumTransaction();
     }
 
     public static String getTxId(int index) {
@@ -51,13 +43,5 @@ public class TransactionsHandler {
 
     public static long getTransactionVersion(int txIndex) {
         return getWavesTransactionAtIndex(txIndex).getVersion();
-    }
-
-    public static void setBlockInfo(Append append) {
-        blockInfo = append.getBlock().getBlock();
-        if (blockInfo.toString().isBlank()) {
-            blockInfo = null;
-        }
-        microBlockInfo = append.getMicroBlock().getMicroBlock().getMicroBlock();
     }
 }

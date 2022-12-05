@@ -1,21 +1,18 @@
 package im.mak.paddle.blockchain_updates.transactions_checkers;
 
 import com.wavesplatform.crypto.base.Base58;
-import com.wavesplatform.transactions.account.Address;
 import im.mak.paddle.Account;
 import im.mak.paddle.helpers.transaction_senders.LeaseTransactionSender;
-
-import java.util.Arrays;
 
 import static com.wavesplatform.transactions.LeaseTransaction.LATEST_VERSION;
 import static im.mak.paddle.blockchain_updates.BaseGrpcTest.CHAIN_ID;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.TransactionMetadataHandler.getLeaseTransactionMetadata;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Leasing.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.LeaseTransactionHandler.getLeaseAssetAmount;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.LeaseTransactionHandler.getLeaseTransactionPublicKeyHash;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.getTransactionVersion;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.waves_transactions_handlers.LeaseTransactionHandler.getLeaseAssetAmount;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.waves_transactions_handlers.LeaseTransactionHandler.getLeaseTransactionPublicKeyHash;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.waves_transactions_handlers.WavesTransactionsHandler.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.waves_transactions_handlers.WavesTransactionsHandler.getTransactionVersion;
 import static im.mak.paddle.util.Constants.ACTIVE_STATUS_LEASE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;

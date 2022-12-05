@@ -1,6 +1,6 @@
-package im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers;
+package im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.waves_transactions_handlers;
 
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.getWavesTransactionAtIndex;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.waves_transactions_handlers.WavesTransactionsHandler.getWavesTransactionAtIndex;
 
 public class IssueTransactionHandler {
     public static String getAssetName(int txIndex) {

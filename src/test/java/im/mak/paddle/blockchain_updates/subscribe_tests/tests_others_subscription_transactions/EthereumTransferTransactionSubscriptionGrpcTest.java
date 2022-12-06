@@ -53,8 +53,8 @@ public class EthereumTransferTransactionSubscriptionGrpcTest extends BaseGrpcTes
     @Test
     @DisplayName("Check subscription on Ethereum transfer transaction")
     void subscribeTestForTransferTransaction() throws NodeException, IOException {
-        EthereumTransactionSender txSender = new EthereumTransactionSender(senderAddress, recipientAddress, amountTransfer);
-        txSender.sendingAnEthereumTransaction(MIN_FEE);
+        EthereumTransactionSender txSender = new EthereumTransactionSender(senderAddress, recipientAddress, amountTransfer, MIN_FEE);
+        txSender.sendingAnEthereumTransaction();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txSender.getEthTxId().toString());
         GrpcEthereumTransferCheckers checkers = new GrpcEthereumTransferCheckers(getTxIndex(), txSender, amountTransfer.value());

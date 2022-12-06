@@ -30,10 +30,10 @@ public class GrpcEthereumTransferCheckers {
         this.amountVal = amountVal;
         this.senderPublicKey = txSender.getEthTx().sender().toString();
         this.senderAddress = txSender.getEthTx().sender().address().toString();
-        this.senderBalanceBeforeTx = txSender.getSenderBalanceBeforeTransaction();
-        this.senderBalanceAfterTx = txSender.getSenderBalanceAfterTransaction();
-        this.recipientBalanceBeforeTx = txSender.getRecipientBalanceBeforeTransaction();
-        this.recipientBalanceAfterTx = txSender.getRecipientBalanceAfterTransaction();
+        this.senderBalanceBeforeTx = txSender.getSenderBalanceBeforeEthTransaction();
+        this.senderBalanceAfterTx = txSender.getSenderBalanceAfterEthTransaction();
+        this.recipientBalanceBeforeTx = txSender.getRecipientBalanceBeforeEthTransaction();
+        this.recipientBalanceAfterTx = txSender.getRecipientBalanceAfterEthTransaction();
         this.ethTxId = txSender.getEthTx().id();
         this.fee = txSender.getEthTx().fee().value();
         this.timestamp = txSender.getEthTx().timestamp();

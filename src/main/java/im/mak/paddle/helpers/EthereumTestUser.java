@@ -14,7 +14,7 @@ public class EthereumTestUser {
 
     private final String ethAddressWithoutTheFirstBytes = "2A0eaaDD531CcC84Fc56Fb44645274A96583DFA7";
     private final Address senderAddress = Address.as(wavesAddressFromETH(ethAddressWithoutTheFirstBytes));
-    private ECKeyPair ecKeyPair = ECKeyPair.create(Hex.decode(senderEthPrivateKey));
+    private final ECKeyPair ecKeyPair = ECKeyPair.create(Hex.decode(senderEthPrivateKey));
 
     private EthereumTestUser() throws IOException {}
 
@@ -27,14 +27,6 @@ public class EthereumTestUser {
 
     public ECKeyPair getEcKeyPair() {
         return ecKeyPair;
-    }
-
-    public String getSenderEthPrivateKey() {
-        return senderEthPrivateKey;
-    }
-
-    public String getEthAddressWithoutTheFirstBytes() {
-        return ethAddressWithoutTheFirstBytes;
     }
 
     public Address getSenderAddress() {

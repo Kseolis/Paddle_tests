@@ -3,6 +3,7 @@ package im.mak.paddle.helpers.transaction_senders;
 import com.wavesplatform.transactions.EthereumTransaction;
 import com.wavesplatform.transactions.account.Address;
 import com.wavesplatform.transactions.common.Amount;
+import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.common.Id;
 import com.wavesplatform.wavesj.exceptions.NodeException;
 
@@ -17,23 +18,26 @@ public class EthereumTransactionSender extends BaseTransactionSender {
     private final Amount amountTransfer;
     private EthereumTransaction ethTx;
     private Id ethTxId;
+    private long timestamp;
+    private final long fee;
 
-    private long senderBalanceBeforeTransaction;
-    private long senderBalanceAfterTransaction;
-    private long recipientBalanceBeforeTransaction;
-    private long recipientBalanceAfterTransaction;
+    private long senderWavesBalanceBeforeTransaction;
+    private long senderWavesBalanceAfterTransaction;
+    private long recipientWavesBalanceBeforeTransaction;
+    private long recipientWavesBalanceAfterTransaction;
+    private long senderAssetBalanceAfterTransaction;
+    private long recipientAssetBalanceAfterTransaction;
 
-    public EthereumTransactionSender(Address senderAddress, Address recipientAddress, Amount amountTransfer) {
+    public EthereumTransactionSender(Address senderAddress, Address recipientAddress, Amount amountTransfer, long fee) {
         this.senderAddress = senderAddress;
         this.recipientAddress = recipientAddress;
         this.amountTransfer = amountTransfer;
+        this.fee = fee;
     }
 
-    public void sendingAnEthereumTransaction(long fee) throws NodeException, IOException {
-        senderBalanceBeforeTransaction = node().getBalance(senderAddress);
-        senderBalanceAfterTransaction = senderBalanceBeforeTransaction - amountTransfer.value() - fee;
-        recipientBalanceBeforeTransaction = node().getBalance(recipientAddress);
-        recipientBalanceAfterTransaction = recipientBalanceBeforeTransaction + amountTransfer.value();
+    public void sendingAnEthereumTransaction() throws NodeException, IOException {
+        calculateBalances();
+        timestamp = System.currentTimeMillis();
 
         ethTx = EthereumTransaction.transfer(
                 recipientAddress,
@@ -41,7 +45,7 @@ public class EthereumTransactionSender extends BaseTransactionSender {
                 EthereumTransaction.DEFAULT_GAS_PRICE,
                 node().chainId(),
                 fee,
-                System.currentTimeMillis(),
+                timestamp,
                 getEthInstance().getEcKeyPair()
         );
         ethTxId = ethTx.id();
@@ -60,20 +64,32 @@ public class EthereumTransactionSender extends BaseTransactionSender {
         return senderAddress;
     }
 
-    public long getSenderBalanceBeforeTransaction() {
-        return senderBalanceBeforeTransaction;
+    public long getSenderBalanceBeforeEthTransaction() {
+        return senderWavesBalanceBeforeTransaction;
     }
 
-    public long getSenderBalanceAfterTransaction() {
-        return senderBalanceAfterTransaction;
+    public long getSenderBalanceAfterEthTransaction() {
+        return senderWavesBalanceAfterTransaction;
     }
 
-    public long getRecipientBalanceBeforeTransaction() {
-        return recipientBalanceBeforeTransaction;
+    public long getRecipientBalanceBeforeEthTransaction() {
+        return recipientWavesBalanceBeforeTransaction;
     }
 
-    public long getRecipientBalanceAfterTransaction() {
-        return recipientBalanceAfterTransaction;
+    public long getRecipientBalanceAfterEthTransaction() {
+        return recipientWavesBalanceAfterTransaction;
+    }
+
+    public long getSenderAssetBalanceAfterTransaction() {
+        return senderAssetBalanceAfterTransaction;
+    }
+
+    public long getRecipientAssetBalanceAfterTransaction() {
+        return recipientAssetBalanceAfterTransaction;
+    }
+
+    public long getEthTimestamp() {
+        return timestamp;
     }
 
     public Amount getAmountTransfer() {
@@ -84,7 +100,28 @@ public class EthereumTransactionSender extends BaseTransactionSender {
         return ethTx;
     }
 
+    public long getEthFee() {
+        return fee;
+    }
+
     public Id getEthTxId() {
         return ethTxId;
+    }
+
+    private void calculateBalances() {
+        AssetId asset = amountTransfer.assetId().isWaves() ? AssetId.as("") : amountTransfer.assetId();
+
+        senderWavesBalanceBeforeTransaction = node().getBalance(senderAddress);
+        senderWavesBalanceAfterTransaction = senderWavesBalanceBeforeTransaction - fee;
+        recipientWavesBalanceBeforeTransaction = node().getBalance(recipientAddress);
+        recipientWavesBalanceAfterTransaction = recipientWavesBalanceBeforeTransaction;
+
+        if (asset.isWaves()) {
+            senderWavesBalanceAfterTransaction -= amountTransfer.value();
+            recipientWavesBalanceAfterTransaction += amountTransfer.value();
+        } else {
+            senderAssetBalanceAfterTransaction = node().getAssetBalance(senderAddress, amountTransfer.assetId()) - amountTransfer.value();
+            recipientAssetBalanceAfterTransaction = node().getAssetBalance(recipientAddress, amountTransfer.assetId()) + amountTransfer.value();
+        }
     }
 }

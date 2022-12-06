@@ -324,8 +324,8 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void ethereumSetUp() throws IOException, NodeException {
-        ethTx = new EthereumTransactionSender(ethSenderAddress, recipient.address(), wavesAmount);
-        ethTx.sendingAnEthereumTransaction(MIN_FEE);
+        ethTx = new EthereumTransactionSender(ethSenderAddress, recipient.address(), wavesAmount, MIN_FEE);
+        ethTx.sendingAnEthereumTransaction();
         ethTxId = ethTx.getEthTxId();
         checkHeight();
     }

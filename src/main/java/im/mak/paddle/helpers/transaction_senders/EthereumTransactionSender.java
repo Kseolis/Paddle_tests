@@ -5,33 +5,36 @@ import com.wavesplatform.transactions.account.Address;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.Id;
 import com.wavesplatform.wavesj.exceptions.NodeException;
-import org.web3j.crypto.ECKeyPair;
 
 import java.io.IOException;
 
 import static im.mak.paddle.Node.node;
+import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
 
 public class EthereumTransactionSender extends BaseTransactionSender {
     private final Address senderAddress;
     private final Address recipientAddress;
     private final Amount amountTransfer;
-    private final ECKeyPair ecKeyPair;
     private EthereumTransaction ethTx;
     private Id ethTxId;
 
     private long senderBalanceBeforeTransaction;
     private long senderBalanceAfterTransaction;
+    private long recipientBalanceBeforeTransaction;
+    private long recipientBalanceAfterTransaction;
 
-    public EthereumTransactionSender(Address senderAddress, Address recipientAddress, Amount amountTransfer, ECKeyPair ecKeyPair) {
+    public EthereumTransactionSender(Address senderAddress, Address recipientAddress, Amount amountTransfer) {
         this.senderAddress = senderAddress;
         this.recipientAddress = recipientAddress;
         this.amountTransfer = amountTransfer;
-        this.ecKeyPair = ecKeyPair;
     }
 
     public void sendingAnEthereumTransaction(long fee) throws NodeException, IOException {
         senderBalanceBeforeTransaction = node().getBalance(senderAddress);
         senderBalanceAfterTransaction = senderBalanceBeforeTransaction - amountTransfer.value() - fee;
+        recipientBalanceBeforeTransaction = node().getBalance(recipientAddress);
+        recipientBalanceAfterTransaction = recipientBalanceBeforeTransaction + amountTransfer.value();
+
         ethTx = EthereumTransaction.transfer(
                 recipientAddress,
                 amountTransfer,
@@ -39,7 +42,7 @@ public class EthereumTransactionSender extends BaseTransactionSender {
                 node().chainId(),
                 fee,
                 System.currentTimeMillis(),
-                ecKeyPair
+                getEthInstance().getEcKeyPair()
         );
         ethTxId = ethTx.id();
 
@@ -65,12 +68,16 @@ public class EthereumTransactionSender extends BaseTransactionSender {
         return senderBalanceAfterTransaction;
     }
 
-    public Amount getAmountTransfer() {
-        return amountTransfer;
+    public long getRecipientBalanceBeforeTransaction() {
+        return recipientBalanceBeforeTransaction;
     }
 
-    public ECKeyPair getEcKeyPair() {
-        return ecKeyPair;
+    public long getRecipientBalanceAfterTransaction() {
+        return recipientBalanceAfterTransaction;
+    }
+
+    public Amount getAmountTransfer() {
+        return amountTransfer;
     }
 
     public EthereumTransaction getEthTx() {

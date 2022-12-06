@@ -16,6 +16,7 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.se
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.BlockInfo.setBlockInfo;
 
 public class SubscribeHandler {
+    private static int txIndex;
     public static void subscribeResponseHandler(Channel channel, int fromHeight, int toHeight, String txId) {
         SubscribeRequest request = SubscribeRequest
                 .newBuilder()
@@ -41,10 +42,13 @@ public class SubscribeHandler {
         for (int i = 0; i < transactionIdsCount; i++) {
             String transactionId = Base58.encode(append.getTransactionIds(i).toByteArray());
             if (transactionId.equals(txId)) {
-                System.out.println(append);
+                txIndex = i;
                 setBlockInfo(append);
                 setAppend(append);
             }
         }
+    }
+    public static int getTxIndex() {
+        return txIndex;
     }
 }

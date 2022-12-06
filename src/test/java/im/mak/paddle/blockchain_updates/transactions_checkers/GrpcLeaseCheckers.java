@@ -6,7 +6,7 @@ import im.mak.paddle.helpers.transaction_senders.LeaseTransactionSender;
 
 import static com.wavesplatform.transactions.LeaseTransaction.LATEST_VERSION;
 import static im.mak.paddle.blockchain_updates.BaseGrpcTest.CHAIN_ID;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.TransactionMetadataHandler.getLeaseTransactionMetadata;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.TransactionMetadataHandler.getLeaseTransactionMetadata;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Leasing.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.waves_transactions_handlers.LeaseTransactionHandler.getLeaseAssetAmount;

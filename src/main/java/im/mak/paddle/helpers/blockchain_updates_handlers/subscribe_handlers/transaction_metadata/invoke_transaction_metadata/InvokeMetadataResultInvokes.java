@@ -1,4 +1,4 @@
-package im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata;
+package im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata;
 
 import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.protobuf.transaction.InvokeScriptResultOuterClass.InvokeScriptResult;

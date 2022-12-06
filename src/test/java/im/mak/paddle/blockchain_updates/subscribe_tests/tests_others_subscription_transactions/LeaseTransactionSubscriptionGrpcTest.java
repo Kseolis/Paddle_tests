@@ -19,9 +19,7 @@ import static im.mak.paddle.util.Constants.DEFAULT_FAUCET;
 
 public class LeaseTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private Account sender;
-
     private Account recipient;
-
     private int amountLease;
     private static final DefaultDApp420Complexity accWithDApp = new DefaultDApp420Complexity(DEFAULT_FAUCET);
 

@@ -29,10 +29,10 @@ public class EthereumTransferTransactionTest {
     private static Address senderAddress;
     private static Account recipient;
     private static Address recipientAddress;
-    private static Amount minAmountTransfer;
-    private static Amount amountTransfer;
     private static AssetId issuedAssetId;
     private static AssetId issuedSmartAssetId;
+    private static Amount minAmountTransfer;
+    private static Amount amountTransfer;
     private static Amount transferAmountSimpleIssuedAsset;
     private static Amount transferAmountSmartIssuedAsset;
 
@@ -116,18 +116,16 @@ public class EthereumTransferTransactionTest {
     }
 
     private void checkBalancesAfterTx(EthereumTransactionSender txSender, AssetId assetId) {
-        if (assetId.isWaves()) {
+        assertAll(
+                () -> assertThat(node().getBalance(senderAddress)).isEqualTo(txSender.getSenderBalanceAfterEthTransaction()),
+                () -> assertThat(node().getBalance(recipientAddress)).isEqualTo(txSender.getRecipientBalanceAfterEthTransaction())
+        );
+        if (!assetId.isWaves()) {
             assertAll(
-                    () -> assertThat(node().getBalance(senderAddress)).isEqualTo(txSender.getSenderBalanceAfterEthTransaction()),
-                    () -> assertThat(node().getBalance(recipientAddress)).isEqualTo(txSender.getRecipientBalanceAfterEthTransaction())
-            );
-        } else {
-            assertAll(
-                    () -> assertThat(node().getBalance(senderAddress)).isEqualTo(txSender.getSenderBalanceAfterEthTransaction()),
-                    () -> assertThat(node().getBalance(recipientAddress)).isEqualTo(txSender.getRecipientBalanceAfterEthTransaction()),
                     () -> assertThat(node().getAssetBalance(senderAddress, assetId)).isEqualTo(txSender.getSenderAssetBalanceAfterTransaction()),
                     () -> assertThat(node().getAssetBalance(recipientAddress, assetId)).isEqualTo(txSender.getRecipientAssetBalanceAfterTransaction())
             );
         }
     }
 }
+

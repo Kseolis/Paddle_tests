@@ -1,4 +1,4 @@
-package im.mak.paddle.e2e.transactions;
+package im.mak.paddle.transactions;
 
 import static com.wavesplatform.transactions.ReissueTransaction.LATEST_VERSION;
 

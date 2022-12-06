@@ -1,4 +1,4 @@
-package im.mak.paddle.e2e.transactions;
+package im.mak.paddle.transactions;
 
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;

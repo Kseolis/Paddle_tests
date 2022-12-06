@@ -7,27 +7,25 @@ import com.wavesplatform.wavesj.exceptions.NodeException;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.blockchain_updates.transactions_checkers.GrpcEthereumTransferCheckers;
+import im.mak.paddle.helpers.EthereumTestUser;
 import im.mak.paddle.helpers.transaction_senders.EthereumTransactionSender;
-import org.testcontainers.shaded.org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.web3j.crypto.ECKeyPair;
 
 import java.io.IOException;
 
 import static im.mak.paddle.Node.node;
-import static im.mak.paddle.helpers.Convert.wavesAddressFromETH;
+import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
+import static im.mak.paddle.helpers.Randomizer.getRandomInt;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.MIN_FEE;
 
 public class EthereumTransferTransactionSubscriptionGrpcTest extends BaseGrpcTest {
+    private EthereumTestUser ethInstance;
     private Address senderAddress;
-    private final String senderEthPrivateKey = "0f1477865b6b251e1d400b0efc4b4d9e2fdd7c32fa8d3de3bcac3c3abfe7c07c";
-    private final String ethAddressWithoutTheFirstBytes = "2A0eaaDD531CcC84Fc56Fb44645274A96583DFA7";
-    private ECKeyPair ecKeyPair;
     private Account recipient;
     private Address recipientAddress;
     private Amount amountTransfer;
@@ -37,25 +35,25 @@ public class EthereumTransferTransactionSubscriptionGrpcTest extends BaseGrpcTes
         async(
                 () -> {
                     try {
-                        senderAddress = Address.as(wavesAddressFromETH(ethAddressWithoutTheFirstBytes));
+                        ethInstance = getEthInstance();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
+                    senderAddress = ethInstance.getSenderAddress();
                     node().faucet().transfer(senderAddress, 1_0000_0000L, AssetId.WAVES, i -> i.additionalFee(0));
-                    ecKeyPair = ECKeyPair.create(Hex.decode(senderEthPrivateKey));
                 },
                 () -> {
                     recipient = new Account();
                     recipientAddress = recipient.address();
                 },
-                () -> amountTransfer = Amount.of(1)
+                () -> amountTransfer = Amount.of(getRandomInt(100, 100_000))
         );
     }
 
     @Test
     @DisplayName("Check subscription on Ethereum transfer transaction")
     void subscribeTestForTransferTransaction() throws NodeException, IOException {
-        EthereumTransactionSender txSender = new EthereumTransactionSender(senderAddress, recipientAddress, amountTransfer, ecKeyPair);
+        EthereumTransactionSender txSender = new EthereumTransactionSender(senderAddress, recipientAddress, amountTransfer);
         txSender.sendingAnEthereumTransaction(MIN_FEE);
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txSender.getEthTxId().toString());

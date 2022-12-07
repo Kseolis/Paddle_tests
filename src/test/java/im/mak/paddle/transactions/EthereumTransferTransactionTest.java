@@ -7,7 +7,7 @@ import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.wavesj.exceptions.NodeException;
 import im.mak.paddle.Account;
 import im.mak.paddle.helpers.EthereumTestUser;
-import im.mak.paddle.helpers.transaction_senders.EthereumTransactionSender;
+import im.mak.paddle.helpers.transaction_senders.EthereumTransferTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -67,8 +67,8 @@ public class EthereumTransferTransactionTest {
     @Test
     @DisplayName("Test of transferring a minimum amount using an Ethereum transaction")
     void subscribeTestForTransferMinimumAmountTransaction() throws NodeException, IOException {
-        EthereumTransactionSender txSender = new EthereumTransactionSender(senderAddress, recipientAddress, minAmountTransfer, MIN_FEE);
-        txSender.sendingAnEthereumTransaction();
+        EthereumTransferTransactionSender txSender = new EthereumTransferTransactionSender(senderAddress, recipientAddress, minAmountTransfer, MIN_FEE);
+        txSender.sendingAnEthereumTransferTransaction();
         checkEthereumTransfer(txSender);
         checkBalancesAfterTx(txSender, minAmountTransfer.assetId());
     }
@@ -76,8 +76,8 @@ public class EthereumTransferTransactionTest {
     @Test
     @DisplayName("Test of transferring a random amount using an Ethereum transaction")
     void subscribeTestForTransferTransaction() throws NodeException, IOException {
-        EthereumTransactionSender txSender = new EthereumTransactionSender(senderAddress, recipientAddress, amountTransfer, MIN_FEE);
-        txSender.sendingAnEthereumTransaction();
+        EthereumTransferTransactionSender txSender = new EthereumTransferTransactionSender(senderAddress, recipientAddress, amountTransfer, MIN_FEE);
+        txSender.sendingAnEthereumTransferTransaction();
         checkEthereumTransfer(txSender);
         checkBalancesAfterTx(txSender, amountTransfer.assetId());
     }
@@ -85,8 +85,8 @@ public class EthereumTransferTransactionTest {
     @Test
     @DisplayName("Test of transferring issued asset a random amount using an Ethereum transaction")
     void subscribeTestForTransferIssuedAssetTransaction() throws NodeException, IOException {
-        EthereumTransactionSender txSender = new EthereumTransactionSender(senderAddress, recipientAddress, transferAmountSimpleIssuedAsset, MIN_FEE);
-        txSender.sendingAnEthereumTransaction();
+        EthereumTransferTransactionSender txSender = new EthereumTransferTransactionSender(senderAddress, recipientAddress, transferAmountSimpleIssuedAsset, MIN_FEE);
+        txSender.sendingAnEthereumTransferTransaction();
         checkEthereumTransfer(txSender);
         checkBalancesAfterTx(txSender, transferAmountSimpleIssuedAsset.assetId());
     }
@@ -94,13 +94,13 @@ public class EthereumTransferTransactionTest {
     @Test
     @DisplayName("Test of transferring issued smart asset a random amount using an Ethereum transaction")
     void subscribeTestForTransferIssuedSmartAssetTransaction() throws NodeException, IOException {
-        EthereumTransactionSender txSender = new EthereumTransactionSender(senderAddress, recipientAddress, transferAmountSmartIssuedAsset, SUM_FEE);
-        txSender.sendingAnEthereumTransaction();
+        EthereumTransferTransactionSender txSender = new EthereumTransferTransactionSender(senderAddress, recipientAddress, transferAmountSmartIssuedAsset, SUM_FEE);
+        txSender.sendingAnEthereumTransferTransaction();
         checkEthereumTransfer(txSender);
         checkBalancesAfterTx(txSender, transferAmountSmartIssuedAsset.assetId());
     }
 
-    private void checkEthereumTransfer(EthereumTransactionSender txSender) {
+    private void checkEthereumTransfer(EthereumTransferTransactionSender txSender) {
         assertAll(
                 () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
                 () -> assertThat(txSender.getEthTx().chainId()).isEqualTo(node().chainId()),
@@ -115,7 +115,7 @@ public class EthereumTransferTransactionTest {
         );
     }
 
-    private void checkBalancesAfterTx(EthereumTransactionSender txSender, AssetId assetId) {
+    private void checkBalancesAfterTx(EthereumTransferTransactionSender txSender, AssetId assetId) {
         assertAll(
                 () -> assertThat(node().getBalance(senderAddress)).isEqualTo(txSender.getSenderBalanceAfterEthTransaction()),
                 () -> assertThat(node().getBalance(recipientAddress)).isEqualTo(txSender.getRecipientBalanceAfterEthTransaction())

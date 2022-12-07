@@ -8,7 +8,7 @@ import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.blockchain_updates.transactions_checkers.GrpcEthereumTransferCheckers;
 import im.mak.paddle.helpers.EthereumTestUser;
-import im.mak.paddle.helpers.transaction_senders.EthereumTransactionSender;
+import im.mak.paddle.helpers.transaction_senders.EthereumTransferTransactionSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,8 +60,8 @@ public class EthereumTransferTransactionSubscriptionGrpcTest extends BaseGrpcTes
     @Test
     @DisplayName("Check subscription on Ethereum transfer transaction")
     void subscribeTestForWavesTransferTransaction() throws NodeException, IOException {
-        EthereumTransactionSender txSender = new EthereumTransactionSender(senderAddress, recipientAddress, amountTransfer, MIN_FEE);
-        txSender.sendingAnEthereumTransaction();
+        EthereumTransferTransactionSender txSender = new EthereumTransferTransactionSender(senderAddress, recipientAddress, amountTransfer, MIN_FEE);
+        txSender.sendingAnEthereumTransferTransaction();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txSender.getEthTxId().toString());
         GrpcEthereumTransferCheckers checkers = new GrpcEthereumTransferCheckers(getTxIndex(), txSender, amountTransfer);
@@ -72,8 +72,8 @@ public class EthereumTransferTransactionSubscriptionGrpcTest extends BaseGrpcTes
     @Test
     @DisplayName("Check subscription on Ethereum transfer smart asset transaction")
     void subscribeTestForSmartAssetTransferTransaction() throws NodeException, IOException {
-        EthereumTransactionSender txSender = new EthereumTransactionSender(senderAddress, recipientAddress, transferAmountSmartIssuedAsset, SUM_FEE);
-        txSender.sendingAnEthereumTransaction();
+        EthereumTransferTransactionSender txSender = new EthereumTransferTransactionSender(senderAddress, recipientAddress, transferAmountSmartIssuedAsset, SUM_FEE);
+        txSender.sendingAnEthereumTransferTransaction();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txSender.getEthTxId().toString());
         GrpcEthereumTransferCheckers checkers = new GrpcEthereumTransferCheckers(getTxIndex(), txSender, transferAmountSmartIssuedAsset);

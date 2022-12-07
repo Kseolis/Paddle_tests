@@ -2,7 +2,7 @@ package im.mak.paddle.blockchain_updates.transactions_checkers;
 
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.Id;
-import im.mak.paddle.helpers.transaction_senders.EthereumTransactionSender;
+import im.mak.paddle.helpers.transaction_senders.EthereumTransferTransactionSender;
 
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.EthereumTransactionMetadataHandler.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.TransactionMetadataHandler.getSenderAddressMetadata;
@@ -30,7 +30,7 @@ public class GrpcEthereumTransferCheckers {
     private final Amount amount;
     private final String recipientAddress;
 
-    public GrpcEthereumTransferCheckers(int txIndex, EthereumTransactionSender txSender, Amount amount) {
+    public GrpcEthereumTransferCheckers(int txIndex, EthereumTransferTransactionSender txSender, Amount amount) {
         this.txIndex = txIndex;
         this.amount = amount;
         this.senderPublicKey = txSender.getEthTx().sender().toString();

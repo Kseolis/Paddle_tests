@@ -25,7 +25,9 @@ public class EthereumTransactionSender extends BaseTransactionSender {
     private long senderWavesBalanceAfterTransaction;
     private long recipientWavesBalanceBeforeTransaction;
     private long recipientWavesBalanceAfterTransaction;
+    private long senderAssetBalanceBeforeTransaction;
     private long senderAssetBalanceAfterTransaction;
+    private long recipientAssetBalanceBeforeTransaction;
     private long recipientAssetBalanceAfterTransaction;
 
     public EthereumTransactionSender(Address senderAddress, Address recipientAddress, Amount amountTransfer, long fee) {
@@ -80,20 +82,22 @@ public class EthereumTransactionSender extends BaseTransactionSender {
         return recipientWavesBalanceAfterTransaction;
     }
 
+    public long getSenderAssetBalanceBeforeTransaction() {
+        return senderAssetBalanceBeforeTransaction;
+    }
+
     public long getSenderAssetBalanceAfterTransaction() {
         return senderAssetBalanceAfterTransaction;
     }
-
+    public long getRecipientAssetBalanceBeforeTransaction() {
+        return recipientAssetBalanceBeforeTransaction;
+    }
     public long getRecipientAssetBalanceAfterTransaction() {
         return recipientAssetBalanceAfterTransaction;
     }
 
     public long getEthTimestamp() {
         return timestamp;
-    }
-
-    public Amount getAmountTransfer() {
-        return amountTransfer;
     }
 
     public EthereumTransaction getEthTx() {
@@ -120,8 +124,11 @@ public class EthereumTransactionSender extends BaseTransactionSender {
             senderWavesBalanceAfterTransaction -= amountTransfer.value();
             recipientWavesBalanceAfterTransaction += amountTransfer.value();
         } else {
-            senderAssetBalanceAfterTransaction = node().getAssetBalance(senderAddress, amountTransfer.assetId()) - amountTransfer.value();
-            recipientAssetBalanceAfterTransaction = node().getAssetBalance(recipientAddress, amountTransfer.assetId()) + amountTransfer.value();
+            senderAssetBalanceBeforeTransaction = node().getAssetBalance(senderAddress, amountTransfer.assetId());
+            senderAssetBalanceAfterTransaction = senderAssetBalanceBeforeTransaction - amountTransfer.value();
+
+            recipientAssetBalanceBeforeTransaction = node().getAssetBalance(recipientAddress, amountTransfer.assetId());
+            recipientAssetBalanceAfterTransaction = recipientAssetBalanceBeforeTransaction + amountTransfer.value();
         }
     }
 }

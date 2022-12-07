@@ -92,7 +92,7 @@ public class EthereumTransferTransactionTest {
     }
 
     @Test
-    @DisplayName("Test of transferring issued asset a random amount using an Ethereum transaction")
+    @DisplayName("Test of transferring issued smart asset a random amount using an Ethereum transaction")
     void subscribeTestForTransferIssuedSmartAssetTransaction() throws NodeException, IOException {
         EthereumTransactionSender txSender = new EthereumTransactionSender(senderAddress, recipientAddress, transferAmountSmartIssuedAsset, SUM_FEE);
         txSender.sendingAnEthereumTransaction();

@@ -1,5 +1,6 @@
 package im.mak.paddle.blockchain_updates.transactions_checkers;
 
+import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.Id;
 import im.mak.paddle.helpers.transaction_senders.EthereumTransactionSender;
 
@@ -16,24 +17,35 @@ public class GrpcEthereumTransferCheckers {
     private final Id ethTxId;
     private final String senderPublicKey;
     private final String senderAddress;
-    private final long senderBalanceBeforeTx;
-    private final long senderBalanceAfterTx;
-    private final long recipientBalanceBeforeTx;
-    private final long recipientBalanceAfterTx;
+    private final long senderWavesBalanceBeforeTx;
+    private final long senderWavesBalanceAfterTx;
+    private final long senderAssetBalanceBeforeTx;
+    private final long senderAssetBalanceAfterTx;
+    private final long recipientWavesBalanceBeforeTx;
+    private final long recipientWavesBalanceAfterTx;
+    private final long recipientAssetBalanceBeforeTx;
+    private final long recipientAssetBalanceAfterTx;
     private final long timestamp;
     private final long fee;
-    private final long amountVal;
+    private final Amount amount;
     private final String recipientAddress;
 
-    public GrpcEthereumTransferCheckers(int txIndex, EthereumTransactionSender txSender, long amountVal) {
+    public GrpcEthereumTransferCheckers(int txIndex, EthereumTransactionSender txSender, Amount amount) {
         this.txIndex = txIndex;
-        this.amountVal = amountVal;
+        this.amount = amount;
         this.senderPublicKey = txSender.getEthTx().sender().toString();
         this.senderAddress = txSender.getEthTx().sender().address().toString();
-        this.senderBalanceBeforeTx = txSender.getSenderBalanceBeforeEthTransaction();
-        this.senderBalanceAfterTx = txSender.getSenderBalanceAfterEthTransaction();
-        this.recipientBalanceBeforeTx = txSender.getRecipientBalanceBeforeEthTransaction();
-        this.recipientBalanceAfterTx = txSender.getRecipientBalanceAfterEthTransaction();
+
+        this.senderWavesBalanceBeforeTx = txSender.getSenderBalanceBeforeEthTransaction();
+        this.senderWavesBalanceAfterTx = txSender.getSenderBalanceAfterEthTransaction();
+        this.senderAssetBalanceBeforeTx = txSender.getSenderAssetBalanceBeforeTransaction();
+        this.senderAssetBalanceAfterTx = txSender.getSenderAssetBalanceAfterTransaction();
+
+        this.recipientWavesBalanceBeforeTx = txSender.getRecipientBalanceBeforeEthTransaction();
+        this.recipientWavesBalanceAfterTx = txSender.getRecipientBalanceAfterEthTransaction();
+        this.recipientAssetBalanceBeforeTx = txSender.getRecipientAssetBalanceBeforeTransaction();
+        this.recipientAssetBalanceAfterTx = txSender.getRecipientAssetBalanceAfterTransaction();
+
         this.ethTxId = txSender.getEthTx().id();
         this.fee = txSender.getEthTx().fee().value();
         this.timestamp = txSender.getEthTx().timestamp();
@@ -48,15 +60,39 @@ public class GrpcEthereumTransferCheckers {
                 () -> assertThat(getEthereumTransactionFeeMetadata(txIndex)).isEqualTo(fee),
                 () -> assertThat(getEthereumTransactionSenderPublicKeyMetadata(txIndex)).isEqualTo(senderPublicKey),
                 () -> assertThat(getEthereumTransferRecipientAddressMetadata(txIndex)).isEqualTo(recipientAddress),
-                () -> assertThat(getEthereumTransferAmountMetadata(txIndex)).isEqualTo(amountVal),
-                // check sender asset balance
-                () -> assertThat(getAddress(txIndex, 0)).isEqualTo(senderAddress),
-                () -> assertThat(getAmountBefore(txIndex, 0)).isEqualTo(senderBalanceBeforeTx),
-                () -> assertThat(getAmountAfter(txIndex, 0)).isEqualTo(senderBalanceAfterTx),
-                // check recipient balance
-                () -> assertThat(getAddress(txIndex, 1)).isEqualTo(recipientAddress),
-                () -> assertThat(getAmountBefore(txIndex, 1)).isEqualTo(recipientBalanceBeforeTx),
-                () -> assertThat(getAmountAfter(txIndex, 1)).isEqualTo(recipientBalanceAfterTx)
+                () -> assertThat(getEthereumTransferAmountMetadata(txIndex)).isEqualTo(amount.value())
         );
+    }
+
+    public void checkEthereumTransferBalances() {
+        if (amount.assetId().isWaves()) {
+            assertAll(
+                    // check sender asset balance
+                    () -> assertThat(getAddress(txIndex, 0)).isEqualTo(senderAddress),
+                    () -> assertThat(getAmountBefore(txIndex, 0)).isEqualTo(senderWavesBalanceBeforeTx),
+                    () -> assertThat(getAmountAfter(txIndex, 0)).isEqualTo(senderWavesBalanceAfterTx),
+                    // check recipient balance
+                    () -> assertThat(getAddress(txIndex, 1)).isEqualTo(recipientAddress),
+                    () -> assertThat(getAmountBefore(txIndex, 1)).isEqualTo(recipientWavesBalanceBeforeTx),
+                    () -> assertThat(getAmountAfter(txIndex, 1)).isEqualTo(recipientWavesBalanceAfterTx)
+            );
+        } else {
+            assertAll(
+                    // check sender asset balance
+                    () -> assertThat(getAddress(txIndex, 0)).isEqualTo(senderAddress),
+                    () -> assertThat(getAmountBefore(txIndex, 0)).isEqualTo(senderWavesBalanceBeforeTx),
+                    () -> assertThat(getAmountAfter(txIndex, 0)).isEqualTo(senderWavesBalanceAfterTx),
+                    // check recipient balance
+                    () -> assertThat(getAddress(txIndex, 1)).isEqualTo(senderAddress),
+                    () -> assertThat(getAssetIdAmountAfter(txIndex, 1)).isEqualTo(amount.assetId().toString()),
+                    () -> assertThat(getAmountBefore(txIndex, 1)).isEqualTo(senderAssetBalanceBeforeTx),
+                    () -> assertThat(getAmountAfter(txIndex, 1)).isEqualTo(senderAssetBalanceAfterTx),
+                    // check recipient balance
+                    () -> assertThat(getAddress(txIndex, 2)).isEqualTo(recipientAddress),
+                    () -> assertThat(getAssetIdAmountAfter(txIndex, 2)).isEqualTo(amount.assetId().toString()),
+                    () -> assertThat(getAmountBefore(txIndex, 2)).isEqualTo(recipientAssetBalanceBeforeTx),
+                    () -> assertThat(getAmountAfter(txIndex, 2)).isEqualTo(recipientAssetBalanceAfterTx)
+            );
+        }
     }
 }

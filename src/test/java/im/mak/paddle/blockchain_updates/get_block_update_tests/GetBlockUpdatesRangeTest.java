@@ -176,7 +176,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
         handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, ethTxId.toString());
         int index = handler.getTxIndex();
-        GrpcEthereumTransferCheckers ethereumTransferCheckers = new GrpcEthereumTransferCheckers(index, ethTx, wavesAmount.value());
+        GrpcEthereumTransferCheckers ethereumTransferCheckers = new GrpcEthereumTransferCheckers(index, ethTx, wavesAmount);
         ethereumTransferCheckers.checkEthereumTransfer();
     }
 }

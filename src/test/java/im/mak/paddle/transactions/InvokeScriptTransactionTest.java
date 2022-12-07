@@ -23,7 +23,7 @@ import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class InvokeScriptTransactionSubscribeTest {
+public class InvokeScriptTransactionTest {
     private PrepareInvokeTestsData testData;
     private Account caller;
     private Account dAppAccount;
@@ -52,8 +52,7 @@ public class InvokeScriptTransactionSubscribeTest {
 
         for (int v = 1; v <= LATEST_VERSION; v++) {
             InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-            InvokeScriptTransactionSender txSender =
-                    new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, amounts);
+            InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, amounts);
 
             setVersion(v);
             calcBalances.balancesAfterPaymentInvoke(caller, dAppAccount, amounts, assetId);

@@ -16,33 +16,54 @@ import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
 import static com.wavesplatform.transactions.EthereumTransaction.DEFAULT_GAS_PRICE;
 
 public class EthereumInvokeTransactionSender extends BaseTransactionSender {
-    private final Address senderAddress;
     private final Address recipientAddress;
-    private final Amount amountTransfer;
+    private final List<Amount> payments;
     private EthereumTransaction ethTx;
     private Id ethTxId;
     private long timestamp;
     private final long fee;
 
-    public EthereumInvokeTransactionSender(Address senderAddress, Address recipientAddress, Amount amountTransfer, long fee) {
-        this.senderAddress = senderAddress;
+    public EthereumInvokeTransactionSender(Address recipientAddress, List<Amount> payments, long fee) {
         this.recipientAddress = recipientAddress;
-        this.amountTransfer = amountTransfer;
+        this.payments = payments;
         this.fee = fee;
     }
 
-    public void sendingAnEthereumInvokeTransaction(Function function, List<Amount> payments) throws NodeException, IOException {
+    public void sendingAnEthereumInvokeTransaction(Function function) throws NodeException, IOException {
         byte chainId = node().chainId();
         ECKeyPair keyPair = getEthInstance().getEcKeyPair();
         timestamp = System.currentTimeMillis();
 
         ethTx = EthereumTransaction.invocation(recipientAddress, function, payments, DEFAULT_GAS_PRICE, chainId, fee, timestamp, keyPair);
-
         ethTxId = ethTx.id();
 
         node().broadcastEthTransaction(ethTx);
         node().waitForTransaction(ethTxId);
 
         txInfo = node().getTransactionInfo(ethTxId);
+    }
+
+    public Address getRecipientAddress() {
+        return recipientAddress;
+    }
+
+    public List<Amount> getPayments() {
+        return payments;
+    }
+
+    public EthereumTransaction getEthTx() {
+        return ethTx;
+    }
+
+    public Id getEthTxId() {
+        return ethTxId;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public long getFee() {
+        return fee;
     }
 }

@@ -46,6 +46,7 @@ public class CalculateBalancesAfterEthTransactions {
 
         for (Amount amountTransfer : amounts) {
             AssetId asset = amountTransfer.assetId().isWaves() ? AssetId.as("") : amountTransfer.assetId();
+
             if (asset.isWaves()) {
                 senderWavesBalanceAfterTransaction -= amountTransfer.value();
                 recipientWavesBalanceAfterTransaction += amountTransfer.value();
@@ -57,6 +58,9 @@ public class CalculateBalancesAfterEthTransactions {
             }
         }
     }
+
+
+
 
     public long getSenderBalanceBeforeEthTransaction() {
         return senderWavesBalanceBeforeTransaction;

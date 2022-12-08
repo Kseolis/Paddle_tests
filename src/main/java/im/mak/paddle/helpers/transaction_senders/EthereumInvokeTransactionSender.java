@@ -33,7 +33,7 @@ public class EthereumInvokeTransactionSender extends BaseTransactionSender {
         this.ethInvokeFee = ethInvokeFee;
     }
 
-    public void sendingAnEthereumInvokeTransaction(Function function) throws NodeException, IOException {
+    public void sendingAnEthereumInvokeTransaction(Function function, List<Amount> amounts) throws NodeException, IOException {
         byte chainId = node().chainId();
         ECKeyPair keyPair = getEthInstance().getEcKeyPair();
         timestamp = System.currentTimeMillis();
@@ -41,7 +41,7 @@ public class EthereumInvokeTransactionSender extends BaseTransactionSender {
         ethTx = EthereumTransaction.invocation(recipientAddress, function, payments, DEFAULT_GAS_PRICE, chainId, ethInvokeFee, timestamp, keyPair);
         ethTxId = ethTx.id();
 
-        balances.calculateBalancesForAmounts(senderAddress, recipientAddress, payments, ethInvokeFee);
+        balances.calculateBalancesForAmounts(senderAddress, recipientAddress, amounts, ethInvokeFee);
 
         node().broadcastEthTransaction(ethTx);
         node().waitForTransaction(ethTxId);

@@ -69,7 +69,8 @@ public class EthereumTransferTransactionTest {
     void subscribeTestForTransferMinimumAmountTransaction() throws NodeException, IOException {
         EthereumTransferTransactionSender txSender = new EthereumTransferTransactionSender(senderAddress, recipientAddress, minAmountTransfer, MIN_FEE);
         txSender.sendingAnEthereumTransferTransaction();
-        checkEthereumTransfer(txSender);
+        EthereumTransaction.Transfer payload = (EthereumTransaction.Transfer) txSender.getEthTx().payload();
+        checkEthereumTransfer(txSender, payload, minAmountTransfer);
         checkBalancesAfterTx(txSender, minAmountTransfer.assetId());
     }
 
@@ -78,7 +79,8 @@ public class EthereumTransferTransactionTest {
     void subscribeTestForTransferTransaction() throws NodeException, IOException {
         EthereumTransferTransactionSender txSender = new EthereumTransferTransactionSender(senderAddress, recipientAddress, amountTransfer, MIN_FEE);
         txSender.sendingAnEthereumTransferTransaction();
-        checkEthereumTransfer(txSender);
+        EthereumTransaction.Transfer payload = (EthereumTransaction.Transfer) txSender.getEthTx().payload();
+        checkEthereumTransfer(txSender, payload, amountTransfer);
         checkBalancesAfterTx(txSender, amountTransfer.assetId());
     }
 
@@ -87,7 +89,8 @@ public class EthereumTransferTransactionTest {
     void subscribeTestForTransferIssuedAssetTransaction() throws NodeException, IOException {
         EthereumTransferTransactionSender txSender = new EthereumTransferTransactionSender(senderAddress, recipientAddress, transferAmountSimpleIssuedAsset, MIN_FEE);
         txSender.sendingAnEthereumTransferTransaction();
-        checkEthereumTransfer(txSender);
+        EthereumTransaction.Transfer payload = (EthereumTransaction.Transfer) txSender.getEthTx().payload();
+        checkEthereumTransfer(txSender, payload, transferAmountSimpleIssuedAsset);
         checkBalancesAfterTx(txSender, transferAmountSimpleIssuedAsset.assetId());
     }
 
@@ -96,11 +99,12 @@ public class EthereumTransferTransactionTest {
     void subscribeTestForTransferIssuedSmartAssetTransaction() throws NodeException, IOException {
         EthereumTransferTransactionSender txSender = new EthereumTransferTransactionSender(senderAddress, recipientAddress, transferAmountSmartIssuedAsset, SUM_FEE);
         txSender.sendingAnEthereumTransferTransaction();
-        checkEthereumTransfer(txSender);
+        EthereumTransaction.Transfer payload = (EthereumTransaction.Transfer) txSender.getEthTx().payload();
+        checkEthereumTransfer(txSender, payload, transferAmountSmartIssuedAsset);
         checkBalancesAfterTx(txSender, transferAmountSmartIssuedAsset.assetId());
     }
 
-    private void checkEthereumTransfer(EthereumTransferTransactionSender txSender) {
+    private void checkEthereumTransfer(EthereumTransferTransactionSender txSender, EthereumTransaction.Transfer payload, Amount amount) {
         assertAll(
                 () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
                 () -> assertThat(txSender.getEthTx().chainId()).isEqualTo(node().chainId()),
@@ -111,19 +115,22 @@ public class EthereumTransferTransactionTest {
                 () -> assertThat(txSender.getEthTx().fee().assetId()).isEqualTo(WAVES),
                 () -> assertThat(txSender.getEthTx().fee().value()).isEqualTo(txSender.getEthFee()),
                 () -> assertThat(txSender.getEthTx().id()).isEqualTo(txSender.getEthTxId()),
-                () -> assertThat(txSender.getEthTx().sender().address()).isEqualTo(senderAddress)
+                () -> assertThat(txSender.getEthTx().sender().address()).isEqualTo(senderAddress),
+                () -> assertThat(payload.amount()).isEqualTo(amount),
+                () -> assertThat(payload.recipient()).isEqualTo(recipientAddress)
+
         );
     }
 
     private void checkBalancesAfterTx(EthereumTransferTransactionSender txSender, AssetId assetId) {
         assertAll(
-                () -> assertThat(node().getBalance(senderAddress)).isEqualTo(txSender.getSenderBalanceAfterEthTransaction()),
-                () -> assertThat(node().getBalance(recipientAddress)).isEqualTo(txSender.getRecipientBalanceAfterEthTransaction())
+                () -> assertThat(node().getBalance(senderAddress)).isEqualTo(txSender.getBalances().getSenderBalanceAfterEthTransaction()),
+                () -> assertThat(node().getBalance(recipientAddress)).isEqualTo(txSender.getBalances().getRecipientBalanceAfterEthTransaction())
         );
         if (!assetId.isWaves()) {
             assertAll(
-                    () -> assertThat(node().getAssetBalance(senderAddress, assetId)).isEqualTo(txSender.getSenderAssetBalanceAfterTransaction()),
-                    () -> assertThat(node().getAssetBalance(recipientAddress, assetId)).isEqualTo(txSender.getRecipientAssetBalanceAfterTransaction())
+                    () -> assertThat(node().getAssetBalance(senderAddress, assetId)).isEqualTo(txSender.getBalances().getSenderAssetBalanceAfterTransaction()),
+                    () -> assertThat(node().getAssetBalance(recipientAddress, assetId)).isEqualTo(txSender.getBalances().getRecipientAssetBalanceAfterTransaction())
             );
         }
     }

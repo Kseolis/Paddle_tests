@@ -6,6 +6,7 @@ import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.Id;
 import com.wavesplatform.transactions.invocation.Function;
 import com.wavesplatform.wavesj.exceptions.NodeException;
+import im.mak.paddle.helpers.CalculateBalancesAfterEthTransactions;
 import org.web3j.crypto.ECKeyPair;
 
 import java.io.IOException;
@@ -16,17 +17,20 @@ import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
 import static com.wavesplatform.transactions.EthereumTransaction.DEFAULT_GAS_PRICE;
 
 public class EthereumInvokeTransactionSender extends BaseTransactionSender {
+    private final Address senderAddress;
     private final Address recipientAddress;
     private final List<Amount> payments;
     private EthereumTransaction ethTx;
     private Id ethTxId;
     private long timestamp;
-    private final long fee;
+    private final long ethInvokeFee;
+    private final CalculateBalancesAfterEthTransactions balances = new CalculateBalancesAfterEthTransactions();
 
-    public EthereumInvokeTransactionSender(Address recipientAddress, List<Amount> payments, long fee) {
+    public EthereumInvokeTransactionSender(Address senderAddress, Address recipientAddress, List<Amount> payments, long ethInvokeFee) {
+        this.senderAddress = senderAddress;
         this.recipientAddress = recipientAddress;
         this.payments = payments;
-        this.fee = fee;
+        this.ethInvokeFee = ethInvokeFee;
     }
 
     public void sendingAnEthereumInvokeTransaction(Function function) throws NodeException, IOException {
@@ -34,9 +38,10 @@ public class EthereumInvokeTransactionSender extends BaseTransactionSender {
         ECKeyPair keyPair = getEthInstance().getEcKeyPair();
         timestamp = System.currentTimeMillis();
 
-        ethTx = EthereumTransaction.invocation(recipientAddress, function, payments, DEFAULT_GAS_PRICE, chainId, fee, timestamp, keyPair);
+        ethTx = EthereumTransaction.invocation(recipientAddress, function, payments, DEFAULT_GAS_PRICE, chainId, ethInvokeFee, timestamp, keyPair);
         ethTxId = ethTx.id();
 
+        balances.calculateBalancesForAmounts(senderAddress, recipientAddress, payments, fee);
         node().broadcastEthTransaction(ethTx);
         node().waitForTransaction(ethTxId);
 
@@ -51,6 +56,10 @@ public class EthereumInvokeTransactionSender extends BaseTransactionSender {
         return payments;
     }
 
+    public CalculateBalancesAfterEthTransactions getBalances() {
+        return balances;
+    }
+
     public EthereumTransaction getEthTx() {
         return ethTx;
     }
@@ -63,7 +72,7 @@ public class EthereumInvokeTransactionSender extends BaseTransactionSender {
         return timestamp;
     }
 
-    public long getFee() {
-        return fee;
+    public long getEthInvokeFee() {
+        return ethInvokeFee;
     }
 }

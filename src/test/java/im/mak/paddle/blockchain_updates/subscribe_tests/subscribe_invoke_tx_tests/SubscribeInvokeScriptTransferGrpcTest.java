@@ -51,7 +51,7 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
         final Account caller = testData.getCallerAccount();
         final Account assetDAppAccount = testData.getAssetDAppAccount();
         final Account dAppAccount = testData.getDAppAccount();
-        final List<Amount> amounts = testData.getAmounts();
+        final List<Amount> amounts = testData.getPayments();
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, assetDAppAccount, dAppCall);
 

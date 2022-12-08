@@ -51,7 +51,7 @@ public class SubscribeInvokeDoubleNestedCallerTest extends BaseGrpcTest {
             final Account assetDAppAccount = testData.getAssetDAppAccount();
             final AssetId assetId = testData.getAssetId();
             final DAppCall dAppCall = testData.getDAppCall();
-            final List<Amount> amounts = testData.getAmounts();
+            final List<Amount> amounts = testData.getPayments();
 
             final InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
 

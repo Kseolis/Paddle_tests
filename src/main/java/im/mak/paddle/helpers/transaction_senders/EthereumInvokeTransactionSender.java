@@ -41,7 +41,8 @@ public class EthereumInvokeTransactionSender extends BaseTransactionSender {
         ethTx = EthereumTransaction.invocation(recipientAddress, function, payments, DEFAULT_GAS_PRICE, chainId, ethInvokeFee, timestamp, keyPair);
         ethTxId = ethTx.id();
 
-        balances.calculateBalancesForAmounts(senderAddress, recipientAddress, payments, fee);
+        balances.calculateBalancesForAmounts(senderAddress, recipientAddress, payments, ethInvokeFee);
+
         node().broadcastEthTransaction(ethTx);
         node().waitForTransaction(ethTxId);
 

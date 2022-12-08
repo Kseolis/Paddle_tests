@@ -46,7 +46,7 @@ public class SubscribeInvokeScriptPaymentsGrpcTest extends BaseGrpcTest {
         final DAppCall dAppCall = testData.getDAppCall();
         final Account caller = testData.getCallerAccount();
         final Account dAppAccount = testData.getDAppAccount();
-        final List<Amount> amounts = testData.getAmounts();
+        final List<Amount> amounts = testData.getPayments();
         final long wavesAmountValue = testData.getWavesAmount().value();
         final long assetAmountValue = testData.getAssetAmount().value();
         final String intArgToStr = String.valueOf(testData.getIntArg());

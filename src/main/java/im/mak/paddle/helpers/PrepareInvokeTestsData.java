@@ -68,7 +68,8 @@ public class PrepareInvokeTestsData {
 
     private final Map<String, String> assetData = new HashMap<>();
     private final Map<String, String> assetDataForIssue = new HashMap<>();
-    private final List<Amount> amounts = new ArrayList<>();
+    private final List<Amount> payments = new ArrayList<>();
+    private final List<Amount> otherAmounts = new ArrayList<>();
 
     public PrepareInvokeTestsData() {
         String name = randomNumAndLetterString(3) + "_asset";
@@ -141,11 +142,10 @@ public class PrepareInvokeTestsData {
         final String script = defaultFunctionBuilder(functionArgs, functions, libVersion);
 
         dAppAccount.setScript(script);
-
         dAppCall = dAppAccount.setData(intArg, base64String, boolArg, stringArg);
 
-        amounts.clear();
-        amounts.add(wavesAmount);
+        payments.clear();
+        payments.add(wavesAmount);
 
         setFee(invokeFee);
         setExtraFee(ONE_WAVES);
@@ -162,8 +162,8 @@ public class PrepareInvokeTestsData {
 
         dAppCall = dAppAccount.setData(intArg);
 
-        amounts.clear();
-        amounts.add(wavesAmount);
+        payments.clear();
+        payments.add(wavesAmount);
 
         setFee(invokeFee);
         setExtraFee(0);
@@ -182,8 +182,9 @@ public class PrepareInvokeTestsData {
         amountAfterInvokeIssuedAsset = getIssueAssetVolume() - assetAmount.value();
         amountAfterInvokeDAppIssuedAsset = Integer.parseInt(assetData.get(VOLUME)) - assetAmount.value();
 
-        amounts.clear();
-        amounts.add(assetAmount);
+        payments.clear();
+        otherAmounts.clear();
+        otherAmounts.add(assetAmount);
 
         setFee(SUM_FEE);
         setExtraFee(ONE_WAVES);
@@ -219,7 +220,7 @@ public class PrepareInvokeTestsData {
 
         dAppCall = assetDAppAccount.setDataAssetId();
 
-        amounts.clear();
+        payments.clear();
 
         setFee(SUM_FEE);
         setExtraFee(extraFee);
@@ -239,8 +240,9 @@ public class PrepareInvokeTestsData {
         amountAfterInvokeIssuedAsset = getIssueAssetVolume() + assetAmount.value();
         amountAfterInvokeDAppIssuedAsset = Integer.parseInt(assetData.get(VOLUME)) + assetAmount.value();
 
-        amounts.clear();
-        amounts.add(assetAmount);
+        payments.clear();
+        otherAmounts.clear();
+        otherAmounts.add(assetAmount);
 
         setFee(SUM_FEE);
         setExtraFee(ONE_WAVES);
@@ -257,8 +259,8 @@ public class PrepareInvokeTestsData {
 
         dAppCall = dAppAccount.setData(callerAddressBytes);
 
-        amounts.clear();
-        amounts.add(wavesAmount);
+        payments.clear();
+        payments.add(wavesAmount);
 
         setFee(SUM_FEE);
         setExtraFee(ONE_WAVES);
@@ -274,8 +276,8 @@ public class PrepareInvokeTestsData {
 
         dAppAccount.setScript(script);
 
-        amounts.clear();
-        amounts.add(wavesAmount);
+        payments.clear();
+        payments.add(wavesAmount);
 
         leaseId = Base58.decode(dAppAccount.lease(callerAccount, wavesAmount.value()).tx().id().toString());
         dAppCall = dAppAccount.setData(leaseId);
@@ -295,7 +297,7 @@ public class PrepareInvokeTestsData {
 
         dAppCall = assetDAppAccount.setDataAssetId(Base58.decode(assetId.toString()));
 
-        amounts.clear();
+        payments.clear();
 
         setFee(SUM_FEE);
         setExtraFee(ONE_WAVES);
@@ -314,9 +316,10 @@ public class PrepareInvokeTestsData {
         assetDAppAccount.setScript(script);
         dAppCall = assetDAppAccount.setDataAssetAndAddress(Base58.decode(assetId.toString()), dAppAddressBytes);
 
-        amounts.clear();
-        amounts.add(wavesAmount);
-        amounts.add(assetAmount);
+        payments.clear();
+        otherAmounts.clear();
+        otherAmounts.add(wavesAmount);
+        otherAmounts.add(assetAmount);
 
         setFee(SUM_FEE);
         setExtraFee(ONE_WAVES);
@@ -333,9 +336,9 @@ public class PrepareInvokeTestsData {
 
         dAppCall = dAppAccount.setData(intArg);
 
-        amounts.clear();
-        amounts.add(wavesAmount);
-        amounts.add(assetAmount);
+        payments.clear();
+        payments.add(wavesAmount);
+        payments.add(assetAmount);
 
         setFee(SUM_FEE);
         setExtraFee(ONE_WAVES);
@@ -379,9 +382,10 @@ public class PrepareInvokeTestsData {
         dAppCall = dAppAccount.setData
                 (assetDAppAddressBytes, intArg, keyForDAppEqualBar, key2ForDAppEqualBalance, assetId.bytes());
 
-        amounts.clear();
-        amounts.add(wavesAmount);
-        amounts.add(assetAmount);
+        payments.clear();
+        otherAmounts.clear();
+        otherAmounts.add(wavesAmount);
+        otherAmounts.add(assetAmount);
         setExtraFee(0);
     }
 
@@ -443,10 +447,10 @@ public class PrepareInvokeTestsData {
                 assetId.bytes()
         );
 
-        amounts.clear();
-        amounts.add(wavesAmount);
-        amounts.add(secondWavesAmount);
-        amounts.add(assetAmount);
+        payments.clear();
+        otherAmounts.add(wavesAmount);
+        otherAmounts.add(secondWavesAmount);
+        otherAmounts.add(assetAmount);
         setExtraFee(0);
     }
 
@@ -454,10 +458,12 @@ public class PrepareInvokeTestsData {
         return dAppCall;
     }
 
-    public List<Amount> getAmounts() {
-        return amounts;
+    public List<Amount> getPayments() {
+        return payments;
     }
-
+    public List<Amount> getOtherAmounts() {
+        return otherAmounts;
+    }
     public AssetId getAssetId() {
         return assetId;
     }

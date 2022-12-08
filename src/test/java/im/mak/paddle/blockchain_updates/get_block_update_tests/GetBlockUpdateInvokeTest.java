@@ -42,7 +42,7 @@ public class GetBlockUpdateInvokeTest extends BaseGrpcTest {
         caller = testData.getCallerAccount();
         dAppAccount = testData.getDAppAccount();
         assetDAppAccount = testData.getAssetDAppAccount();
-        amounts = testData.getAmounts();
+        amounts = testData.getPayments();
     }
 
     @Test

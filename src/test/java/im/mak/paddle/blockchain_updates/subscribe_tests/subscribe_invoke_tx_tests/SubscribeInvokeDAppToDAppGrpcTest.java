@@ -45,7 +45,7 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
         final Account caller = testData.getCallerAccount();
         final Account dAppAccount = testData.getDAppAccount();
         final Account assetDAppAccount = testData.getAssetDAppAccount();
-        final List<Amount> amounts = testData.getAmounts();
+        final List<Amount> amounts = testData.getPayments();
 
         final InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
         setVersion(LATEST_VERSION);

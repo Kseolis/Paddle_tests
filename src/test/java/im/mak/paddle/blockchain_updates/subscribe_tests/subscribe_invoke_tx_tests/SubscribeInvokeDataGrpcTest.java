@@ -45,10 +45,10 @@ public class SubscribeInvokeDataGrpcTest extends BaseGrpcTest {
         final DAppCall dAppCall = testData.getDAppCall();
         final Account caller = testData.getCallerAccount();
         final Account dAppAccount = testData.getDAppAccount();
-        final List<Amount> amounts = testData.getAmounts();
+        final List<Amount> amounts = testData.getPayments();
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender
-                (caller, dAppAccount, dAppCall, testData.getAmounts());
+                (caller, dAppAccount, dAppCall, testData.getPayments());
 
         setVersion(LATEST_VERSION);
         calcBalances.balancesAfterPaymentInvoke(caller, dAppAccount, amounts, assetId);

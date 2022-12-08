@@ -49,7 +49,7 @@ public class SubscribeInvokeDeleteEntryGrpcTest extends BaseGrpcTest {
         final DAppCall dAppCall = testData.getDAppCall();
         final Account caller = testData.getCallerAccount();
         final Account dAppAccount = testData.getDAppAccount();
-        final List<Amount> amounts = testData.getAmounts();
+        final List<Amount> amounts = testData.getPayments();
 
         InvokeScriptTransactionSender txSender =
                 new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, amounts);

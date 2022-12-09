@@ -54,7 +54,7 @@ public class SubscribeInvokeSponsorFeeGrpcTest extends BaseGrpcTest {
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, assetDAppAccount, dAppCall);
 
         setVersion(LATEST_VERSION);
-        calcBalances.balancesAfterPaymentInvoke(caller, assetDAppAccount, amounts, assetId);
+        calcBalances.balancesAfterPaymentInvoke(caller.address(), assetDAppAccount.address(), amounts, assetId);
         txSender.invokeSender();
 
         String txId = txSender.getInvokeScriptId();

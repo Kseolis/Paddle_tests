@@ -35,14 +35,11 @@ public class PrepareInvokeTestsData {
 
     private DataDApp otherDAppAccount;
     private String otherDAppAddress;
-    private String otherDAppPublicKey;
-    private String otherDAppPublicKeyHash;
     private byte[] otherDAppAddressBytes;
 
     private AssetDAppAccount assetDAppAccount;
     private String assetDAppAddress;
     private String assetDAppPublicKey;
-    private String assetDAppPublicKeyHash;
     private byte[] assetDAppAddressBytes;
     private AssetId assetId;
 
@@ -98,7 +95,6 @@ public class PrepareInvokeTestsData {
                     assetDAppAccount = new AssetDAppAccount(DEFAULT_FAUCET, "true");
                     assetDAppAddress = assetDAppAccount.address().toString();
                     assetDAppPublicKey = assetDAppAccount.publicKey().toString();
-                    assetDAppPublicKeyHash = Base58.encode(assetDAppAccount.address().publicKeyHash());
                     assetDAppAddressBytes = Base58.decode(assetDAppAddress);
                     assetId = assetDAppAccount.issue(i -> i
                             .decimals(Integer.parseInt(assetData.get(DECIMALS)))
@@ -121,8 +117,6 @@ public class PrepareInvokeTestsData {
                 () -> {
                     otherDAppAccount = new DataDApp(DEFAULT_FAUCET, "true");
                     otherDAppAddress = otherDAppAccount.address().toString();
-                    otherDAppPublicKey = otherDAppAccount.publicKey().toString();
-                    otherDAppPublicKeyHash = Base58.encode(otherDAppAccount.address().publicKeyHash());
                     otherDAppAddressBytes = Base58.decode(otherDAppAddress);
                 }
         );
@@ -133,8 +127,8 @@ public class PrepareInvokeTestsData {
         assetAmount = Amount.of(getRandomInt(10, 10000), assetId);
     }
 
-    public void prepareDataForDataDAppTests() {
-        invokeFee = SUM_FEE + ONE_WAVES;
+    public void prepareDataForDataDAppTests(long fee, long extraFee) {
+        invokeFee = fee + extraFee;
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
         final String functionArgs = "intVal:Int, binVal:ByteVector, boolVal:Boolean, strVal:String";
         final String functions = "[\nIntegerEntry(\"int\", intVal),\nBinaryEntry(\"byte\", binVal),\n" +
@@ -148,7 +142,7 @@ public class PrepareInvokeTestsData {
         payments.add(wavesAmount);
 
         setFee(invokeFee);
-        setExtraFee(ONE_WAVES);
+        setExtraFee(extraFee);
     }
 
     public void prepareDataForDeleteEntryTests() {
@@ -248,9 +242,9 @@ public class PrepareInvokeTestsData {
         setExtraFee(ONE_WAVES);
     }
 
-    public void prepareDataForLeaseTests() {
+    public void prepareDataForLeaseTests(long fee, long extraFee) {
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
-        invokeFee = SUM_FEE + ONE_WAVES;
+        invokeFee = fee + extraFee;
 
         final String functionArgs = "address:ByteVector";
         final String functions = "[\nLease(Address(address), " + wavesAmount.value() + ")\n]\n";
@@ -262,13 +256,13 @@ public class PrepareInvokeTestsData {
         payments.clear();
         payments.add(wavesAmount);
 
-        setFee(SUM_FEE);
-        setExtraFee(ONE_WAVES);
+        setFee(fee);
+        setExtraFee(extraFee);
     }
 
-    public void prepareDataForLeaseCancelTests() {
+    public void prepareDataForLeaseCancelTests(long fee, long extraFee) {
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
-        invokeFee = SUM_FEE + ONE_WAVES;
+        invokeFee = fee + extraFee;
 
         final String functionArgs = "leaseId:ByteVector";
         final String functions = "[\nLeaseCancel(leaseId)\n]\n";
@@ -282,8 +276,8 @@ public class PrepareInvokeTestsData {
         leaseId = Base58.decode(dAppAccount.lease(callerAccount, wavesAmount.value()).tx().id().toString());
         dAppCall = dAppAccount.setData(leaseId);
 
-        setFee(SUM_FEE);
-        setExtraFee(ONE_WAVES);
+        setFee(fee);
+        setExtraFee(extraFee);
     }
 
     public void prepareDataForSponsorFeeTests() {
@@ -517,10 +511,6 @@ public class PrepareInvokeTestsData {
         return assetDAppAddress;
     }
 
-    public String getAssetDAppPublicKeyHash() {
-        return assetDAppPublicKeyHash;
-    }
-
     public String getCallerPublicKey() {
         return callerPublicKey;
     }
@@ -549,10 +539,6 @@ public class PrepareInvokeTestsData {
         return assetDataForIssue;
     }
 
-    public byte[] getDAppAddressBase58() {
-        return dAppAddressBytes;
-    }
-
     public String getKeyForDAppEqualBar() {
         return keyForDAppEqualBar;
     }
@@ -561,24 +547,12 @@ public class PrepareInvokeTestsData {
         return key2ForDAppEqualBalance;
     }
 
-    public byte[] getCallerAddressBytes() {
-        return callerAddressBytes;
-    }
-
-    public byte[] getAssetDAppAddressBytes() {
-        return assetDAppAddressBytes;
-    }
-
     public DataDApp getOtherDAppAccount() {
         return otherDAppAccount;
     }
 
     public String getOtherDAppAddress() {
         return otherDAppAddress;
-    }
-
-    public byte[] getOtherDAppAddressBytes() {
-        return otherDAppAddressBytes;
     }
 
     public String getKeyForDAppEqualBaz() {

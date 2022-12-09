@@ -56,7 +56,7 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, assetDAppAccount, dAppCall);
 
         setVersion(LATEST_VERSION);
-        calcBalances.balancesAfterCallerScriptTransfer(caller, assetDAppAccount, dAppAccount, amounts, assetId);
+        calcBalances.balancesAfterCallerScriptTransfer(caller.address(), assetDAppAccount.address(), dAppAccount.address(), amounts, assetId);
         txSender.invokeSender();
 
         String txId = txSender.getInvokeScriptId();

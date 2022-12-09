@@ -55,7 +55,7 @@ public class SubscribeInvokeDeleteEntryGrpcTest extends BaseGrpcTest {
                 new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, amounts);
 
         setVersion(LATEST_VERSION);
-        calcBalances.balancesAfterPaymentInvoke(caller, dAppAccount, amounts, assetId);
+        calcBalances.balancesAfterPaymentInvoke(caller.address(), dAppAccount.address(), amounts, assetId);
         txSender.invokeSenderWithPayment();
 
         final String txId = txSender.getInvokeScriptId();

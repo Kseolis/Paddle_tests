@@ -124,13 +124,13 @@ public class EthereumTransferTransactionTest {
 
     private void checkBalancesAfterTx(EthereumTransferTransactionSender txSender, AssetId assetId) {
         assertAll(
-                () -> assertThat(node().getBalance(senderAddress)).isEqualTo(txSender.getBalances().getSenderBalanceAfterEthTransaction()),
-                () -> assertThat(node().getBalance(recipientAddress)).isEqualTo(txSender.getBalances().getRecipientBalanceAfterEthTransaction())
+                () -> assertThat(node().getBalance(senderAddress)).isEqualTo(txSender.getSenderBalanceAfterEthTransaction()),
+                () -> assertThat(node().getBalance(recipientAddress)).isEqualTo(txSender.getRecipientBalanceAfterEthTransaction())
         );
         if (!assetId.isWaves()) {
             assertAll(
-                    () -> assertThat(node().getAssetBalance(senderAddress, assetId)).isEqualTo(txSender.getBalances().getSenderAssetBalanceAfterTransaction()),
-                    () -> assertThat(node().getAssetBalance(recipientAddress, assetId)).isEqualTo(txSender.getBalances().getRecipientAssetBalanceAfterTransaction())
+                    () -> assertThat(node().getAssetBalance(senderAddress, assetId)).isEqualTo(txSender.getSenderAssetBalanceAfterTransaction()),
+                    () -> assertThat(node().getAssetBalance(recipientAddress, assetId)).isEqualTo(txSender.getRecipientAssetBalanceAfterTransaction())
             );
         }
     }

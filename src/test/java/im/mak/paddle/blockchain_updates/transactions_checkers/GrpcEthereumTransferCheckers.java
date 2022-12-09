@@ -36,15 +36,15 @@ public class GrpcEthereumTransferCheckers {
         this.senderPublicKey = txSender.getEthTx().sender().toString();
         this.senderAddress = txSender.getEthTx().sender().address().toString();
 
-        this.senderWavesBalanceBeforeTx = txSender.getBalances().getSenderBalanceBeforeEthTransaction();
-        this.senderWavesBalanceAfterTx = txSender.getBalances().getSenderBalanceAfterEthTransaction();
-        this.senderAssetBalanceBeforeTx = txSender.getBalances().getSenderAssetBalanceBeforeTransaction();
-        this.senderAssetBalanceAfterTx = txSender.getBalances().getSenderAssetBalanceAfterTransaction();
+        this.senderWavesBalanceBeforeTx = txSender.getSenderBalanceBeforeEthTransaction();
+        this.senderWavesBalanceAfterTx = txSender.getSenderBalanceAfterEthTransaction();
+        this.senderAssetBalanceBeforeTx = txSender.getSenderAssetBalanceBeforeTransaction();
+        this.senderAssetBalanceAfterTx = txSender.getSenderAssetBalanceAfterTransaction();
 
-        this.recipientWavesBalanceBeforeTx = txSender.getBalances().getRecipientBalanceBeforeEthTransaction();
-        this.recipientWavesBalanceAfterTx = txSender.getBalances().getRecipientBalanceAfterEthTransaction();
-        this.recipientAssetBalanceBeforeTx = txSender.getBalances().getRecipientAssetBalanceBeforeTransaction();
-        this.recipientAssetBalanceAfterTx = txSender.getBalances().getRecipientAssetBalanceAfterTransaction();
+        this.recipientWavesBalanceBeforeTx = txSender.getRecipientBalanceBeforeEthTransaction();
+        this.recipientWavesBalanceAfterTx = txSender.getRecipientBalanceAfterEthTransaction();
+        this.recipientAssetBalanceBeforeTx = txSender.getRecipientAssetBalanceBeforeTransaction();
+        this.recipientAssetBalanceAfterTx = txSender.getRecipientAssetBalanceAfterTransaction();
 
         this.ethTxId = txSender.getEthTx().id();
         this.fee = txSender.getEthTx().fee().value();

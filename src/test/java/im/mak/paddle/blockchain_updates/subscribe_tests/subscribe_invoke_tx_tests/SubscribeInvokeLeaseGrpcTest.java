@@ -38,7 +38,7 @@ public class SubscribeInvokeLeaseGrpcTest extends BaseGrpcTest {
     void subscribeInvokeWithLease() {
         long amountValue = testData.getWavesAmount().value();
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        testData.prepareDataForLeaseTests();
+        testData.prepareDataForLeaseTests(SUM_FEE, ONE_WAVES);
 
         final AssetId assetId = testData.getAssetId();
         final DAppCall dAppCall = testData.getDAppCall();
@@ -49,7 +49,7 @@ public class SubscribeInvokeLeaseGrpcTest extends BaseGrpcTest {
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, amounts);
 
         setVersion(LATEST_VERSION);
-        calcBalances.balancesAfterPaymentInvoke(caller, dAppAccount, amounts, assetId);
+        calcBalances.balancesAfterPaymentInvoke(caller.address(), dAppAccount.address(), amounts, assetId);
         txSender.invokeSenderWithPayment();
 
         String txId = txSender.getInvokeScriptId();

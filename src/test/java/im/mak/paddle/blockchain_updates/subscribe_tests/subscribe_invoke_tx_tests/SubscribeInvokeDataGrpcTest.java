@@ -38,7 +38,7 @@ public class SubscribeInvokeDataGrpcTest extends BaseGrpcTest {
     @DisplayName("subscribe invoke with DataDApp")
     void subscribeInvokeWithDataDApp() {
         long payment = testData.getWavesAmount().value();
-        testData.prepareDataForDataDAppTests();
+        testData.prepareDataForDataDAppTests(SUM_FEE, ONE_WAVES);
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
 
         final AssetId assetId = testData.getAssetId();
@@ -51,7 +51,7 @@ public class SubscribeInvokeDataGrpcTest extends BaseGrpcTest {
                 (caller, dAppAccount, dAppCall, testData.getPayments());
 
         setVersion(LATEST_VERSION);
-        calcBalances.balancesAfterPaymentInvoke(caller, dAppAccount, amounts, assetId);
+        calcBalances.balancesAfterPaymentInvoke(caller.address(), dAppAccount.address(), amounts, assetId);
         txSender.invokeSenderWithPayment();
 
         final String txId = txSender.getInvokeScriptId();

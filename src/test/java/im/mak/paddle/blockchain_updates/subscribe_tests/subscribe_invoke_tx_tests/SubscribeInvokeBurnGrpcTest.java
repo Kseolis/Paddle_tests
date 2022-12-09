@@ -50,7 +50,7 @@ public class SubscribeInvokeBurnGrpcTest extends BaseGrpcTest {
                 new InvokeScriptTransactionSender(caller, assetDAppAccount, dAppCall);
 
         setVersion(LATEST_VERSION);
-        calcBalances.balancesAfterBurnAssetInvoke(caller, assetDAppAccount, amounts, assetId);
+        calcBalances.balancesAfterBurnAssetInvoke(caller.address(), assetDAppAccount.address(), amounts, assetId);
 
         txSender.invokeSender();
 

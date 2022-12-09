@@ -59,11 +59,21 @@ public class SubscribeInvokeDoubleNestedCallerTest extends BaseGrpcTest {
 
             if (s.equals(callerForScript)) {
                 calcBalances.balancesAfterDoubleNestedForCaller(
-                        caller, dAppAccount, otherDAppAccount, assetDAppAccount, amounts, assetId
+                        caller.address(),
+                        dAppAccount.address(),
+                        otherDAppAccount.address(),
+                        assetDAppAccount.address(),
+                        amounts,
+                        assetId
                 );
             } else if (s.equals(originCallerForScript)) {
                 calcBalances.balancesAfterDoubleNestedForOriginCaller(
-                        caller, dAppAccount, otherDAppAccount, assetDAppAccount, amounts, assetId
+                        caller.address(),
+                        dAppAccount.address(),
+                        otherDAppAccount.address(),
+                        assetDAppAccount.address(),
+                        amounts,
+                        assetId
                 );
             }
             txSender.invokeSender();

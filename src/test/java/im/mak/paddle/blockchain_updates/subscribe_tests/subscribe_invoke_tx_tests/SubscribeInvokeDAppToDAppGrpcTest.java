@@ -49,7 +49,7 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
 
         final InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
         setVersion(LATEST_VERSION);
-        calcBalances.balancesAfterDAppToDApp(caller, dAppAccount, assetDAppAccount, amounts, assetId);
+        calcBalances.balancesAfterDAppToDApp(caller.address(), dAppAccount.address(), assetDAppAccount.address(), amounts, assetId);
         txSender.invokeSender();
 
         final String txId = txSender.getInvokeScriptId();

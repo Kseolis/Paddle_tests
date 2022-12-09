@@ -193,25 +193,6 @@ public class InvokeScriptTransactionTest {
     }
 
     @Test
-    @DisplayName("invoke with payments")
-    void invokeScriptPayments() {
-        testData.prepareDataForPaymentsTests();
-        dAppCall = testData.getDAppCall();
-
-        for (int v = 1; v <= LATEST_VERSION; v++) {
-            InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-            InvokeScriptTransactionSender txSender =
-                    new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, payments);
-
-            setVersion(v);
-            calcBalances.balancesAfterCallerInvokeAsset(caller, dAppAccount, payments, assetId);
-            txSender.invokeSenderWithPayment();
-            checkInvokeTransaction(caller, testData.getInvokeFee(), txSender, payments);
-            checkBalancesAfterInvoke(caller, dAppAccount, calcBalances);
-        }
-    }
-
-    @Test
     @DisplayName("invoke dApp to dApp")
     void invokeDAppToDApp() {
         testData.prepareDataForDAppToDAppTests(SUM_FEE);

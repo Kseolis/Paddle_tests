@@ -325,25 +325,6 @@ public class PrepareInvokeTestsData {
         setExtraFee(ONE_WAVES);
     }
 
-    public void prepareDataForPaymentsTests() {
-        invokeFee = ONE_WAVES + SUM_FEE;
-        final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
-
-        final String arg = "intVal:Int";
-        final String functions = "IntegerEntry(\"int\", intVal)";
-        final String script = assetsFunctionBuilder(libVersion, "unit", functions, arg, getDAppPublicKey());
-        dAppAccount.setScript(script);
-
-        dAppCall = dAppAccount.setData(intArg);
-
-        payments.clear();
-        payments.add(wavesAmount);
-        payments.add(assetAmount);
-
-        setFee(SUM_FEE);
-        setExtraFee(ONE_WAVES);
-    }
-
     public void prepareDataForDAppToDAppTests(long fee) {
         invokeFee = fee;
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);

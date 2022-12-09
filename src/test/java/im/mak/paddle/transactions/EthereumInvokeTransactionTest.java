@@ -11,6 +11,7 @@ import im.mak.paddle.helpers.EthereumTestUser;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.dapps.AssetDAppAccount;
 import im.mak.paddle.helpers.transaction_senders.EthereumInvokeTransactionSender;
+import im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTx;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -100,11 +101,9 @@ public class EthereumInvokeTransactionTest {
         EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(senderAddress, assetDAppAddress, payments, invokeBurnFee);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction(), payments);
 
-        System.out.println(txSender.getEthTx());
-
         EthereumTransaction.Invocation payload = (EthereumTransaction.Invocation) txSender.getEthTx().payload();
         checkEthereumInvoke(txSender, payload);
-        checkBalancesAfterTx(txSender, WAVES);
+        checkBalancesAfterTx(txSender, testData.getAssetId());
     }
 
     @Test
@@ -123,7 +122,7 @@ public class EthereumInvokeTransactionTest {
 
         EthereumTransaction.Invocation payload = (EthereumTransaction.Invocation) txSender.getEthTx().payload();
         checkEthereumInvoke(txSender, payload);
-        checkBalancesAfterTx(txSender, WAVES);
+        checkBalancesAfterTx(txSender, testData.getAssetId());
     }
 
     @Test
@@ -160,6 +159,9 @@ public class EthereumInvokeTransactionTest {
         testData.prepareDataForSponsorFeeTests();
         dAppCall = testData.getDAppCall();
         payments.add(Amount.of(0));
+
+        InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+
         long invokeBurnFee = testData.getInvokeFee();
         AssetDAppAccount assetDAppAccount = testData.getAssetDAppAccount();
         Address assetDAppAddress = assetDAppAccount.address();
@@ -170,7 +172,7 @@ public class EthereumInvokeTransactionTest {
 
         EthereumTransaction.Invocation payload = (EthereumTransaction.Invocation) txSender.getEthTx().payload();
         checkEthereumInvoke(txSender, payload);
-        checkBalancesAfterTx(txSender, WAVES);
+        checkBalancesAfterTx(txSender, testData.getAssetId());
     }
 
     @Test
@@ -189,7 +191,21 @@ public class EthereumInvokeTransactionTest {
 
         EthereumTransaction.Invocation payload = (EthereumTransaction.Invocation) txSender.getEthTx().payload();
         checkEthereumInvoke(txSender, payload);
-        checkBalancesAfterTx(txSender, WAVES);
+        checkBalancesAfterTx(txSender, testData.getAssetId());
+    }
+
+    @Test
+    @DisplayName("Ethereum invoke dApp to dApp")
+    void ethereumInvokeDAppToDAppTest() throws NodeException, IOException {
+        testData.prepareDataForDAppToDAppTests(SUM_FEE);
+        dAppCall = testData.getDAppCall();
+        payments.add(Amount.of(0));
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(senderAddress, recipientAddress, payments, SUM_FEE);
+        txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction(), testData.getOtherAmounts());
+
+        EthereumTransaction.Invocation payload = (EthereumTransaction.Invocation) txSender.getEthTx().payload();
+        checkEthereumInvoke(txSender, payload);
+        checkBalancesAfterTx(txSender, testData.getAssetId());
     }
 
     private void checkEthereumInvoke(EthereumInvokeTransactionSender txSender, EthereumTransaction.Invocation payload) {

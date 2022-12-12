@@ -72,6 +72,7 @@ public class LeaseTransactionTest {
         txSender.leaseTransactionSender(amount, LATEST_VERSION);
         leaseTransactionCheck(amount, SUM_FEE, txSender);
         node().faucet().transfer(smartAcc, DEFAULT_FAUCET, AssetId.WAVES);
+        smartAcc.cancelLease(txSender.getLeaseTx().id());
     }
 
     private void leaseTransactionCheck(long amount, long fee, LeaseTransactionSender txSender) {

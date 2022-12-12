@@ -79,7 +79,7 @@ public class PrepareInvokeTestsData {
 
         async(
                 () -> {
-                    callerAccount = new Account(DEFAULT_FAUCET);
+                    callerAccount = new Account(DEFAULT_FAUCET * 2);
                     callerAddress = callerAccount.address().toString();
                     callerPublicKey = callerAccount.publicKey().toString();
                     callerPublicKeyHash = Base58.encode(callerAccount.address().publicKeyHash());

@@ -148,8 +148,7 @@ public class InvokeCalculationsBalancesAfterTx {
         }
     }
 
-    public void balancesAfterDoubleNestedForOriginCaller
-            (Address caller, Address dApp, Address otherDApp, Address acc, List<Amount> amounts, AssetId id) {
+    public void balancesAfterDoubleNestedForOriginCaller(Address caller, Address dApp, Address otherDApp, Address acc, List<Amount> amounts, AssetId id) {
         long maxFirstWavesAmountValue = 10000;
         prepareFourAccBalances(caller, dApp, acc, otherDApp, id);
         invokeResultData = String.valueOf(testData.getIntArg() * 2);
@@ -157,13 +156,14 @@ public class InvokeCalculationsBalancesAfterTx {
         if (!amounts.isEmpty()) {
             amounts.forEach(a -> {
                 if (a.assetId().isWaves() && a.value() <= maxFirstWavesAmountValue) {
-                    dAppBalanceWavesAfterTransaction += a.value();
                     accBalanceWavesAfterTransaction -= a.value();
                     callerBalanceWavesAfterTransaction += a.value();
                 } else if (a.assetId().isWaves() && a.value() > maxFirstWavesAmountValue) {
                     otherDAppBalanceWavesAfterTransaction -= a.value();
                     callerBalanceWavesAfterTransaction += a.value();
-                } else if (a.assetId().equals(id)) {
+                }
+
+                if (a.assetId().equals(id)) {
                     dAppBalanceIssuedAssetsAfterTransaction -= a.value();
                     accBalanceIssuedAssetsAfterTransaction += a.value();
                 }

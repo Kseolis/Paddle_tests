@@ -365,7 +365,6 @@ public class PrepareInvokeTestsData {
     }
 
     public void prepareDataForDoubleNestedTest(long fee, String firstRecipient, String secondRecipient) {
-        setExtraFee(0);
         invokeFee = fee;
         final int libVersion = getRandomInt(5, MAX_LIB_VERSION);
 
@@ -413,16 +412,10 @@ public class PrepareInvokeTestsData {
         assetDAppAccount.setScript(dApp2);
         otherDAppAccount.setScript(dApp3);
 
-        dAppCall = dAppAccount.setData(
-                otherDAppAddressBytes,
-                assetDAppAddressBytes,
-                intArg,
-                keyForDAppEqualBar,
-                key2ForDAppEqualBalance,
-                assetId.bytes()
-        );
+        dAppCall = dAppAccount.setData(otherDAppAddressBytes, assetDAppAddressBytes, intArg, keyForDAppEqualBar, key2ForDAppEqualBalance, assetId.bytes());
 
         payments.clear();
+        otherAmounts.clear();
         otherAmounts.add(wavesAmount);
         otherAmounts.add(secondWavesAmount);
         otherAmounts.add(assetAmount);
@@ -436,9 +429,11 @@ public class PrepareInvokeTestsData {
     public List<Amount> getPayments() {
         return payments;
     }
+
     public List<Amount> getOtherAmounts() {
         return otherAmounts;
     }
+
     public AssetId getAssetId() {
         return assetId;
     }

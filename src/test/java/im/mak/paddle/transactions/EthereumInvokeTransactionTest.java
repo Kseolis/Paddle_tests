@@ -36,7 +36,6 @@ public class EthereumInvokeTransactionTest {
     private static Account recipient;
     private static Address recipientAddress;
     private static AssetId assetId;
-
     private static List<Amount> payments = new ArrayList<>();
     private DAppCall dAppCall;
 
@@ -58,7 +57,6 @@ public class EthereumInvokeTransactionTest {
                     recipient = testData.getDAppAccount();
                     recipientAddress = recipient.address();
                 }
-
         );
     }
 
@@ -235,6 +233,59 @@ public class EthereumInvokeTransactionTest {
         thirdAccountBalanceCheck(assetDAppAddress, calcBalances);
     }
 
+    @Test
+    @DisplayName("Ethereum invoke double nested for i.caller")
+    void ethereumInvokeDoubleNestedForCaller() throws NodeException, IOException {
+        testData.prepareDataForDoubleNestedTest(SUM_FEE, "i.caller", "i.caller");
+        dAppCall = testData.getDAppCall();
+        payments.add(Amount.of(0));
+        Address otherDAppAddress = testData.getOtherDAppAccount().address();
+        Address assetDAppAddress = testData.getAssetDAppAccount().address();
+
+        InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+        calcBalances.balancesAfterDoubleNestedForCaller(senderAddress, recipientAddress, otherDAppAddress, assetDAppAddress, testData.getOtherAmounts(), assetId);
+
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(recipientAddress, payments, SUM_FEE);
+        txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
+
+        EthereumTransaction.Invocation payload = (EthereumTransaction.Invocation) txSender.getEthTx().payload();
+        assertAll(
+                () -> checkEthereumInvoke(txSender, payload),
+                () -> checkBalancesAfterTx(txSender, calcBalances, testData.getAssetId()),
+                () -> thirdAccountBalanceCheck(assetDAppAddress, calcBalances),
+                () -> fourthAccountBalanceCheck(otherDAppAddress, calcBalances)
+        );
+    }
+
+    @Test
+    @DisplayName("Ethereum invoke double nested for i.originCaller")
+    void ethereumInvokeDoubleNestedForOriginCaller() throws NodeException, IOException {
+        testData.prepareDataForDoubleNestedTest(SUM_FEE, "i.originCaller", "i.originCaller");
+        dAppCall = testData.getDAppCall();
+        payments.add(Amount.of(0));
+        Address otherDAppAddress = testData.getOtherDAppAccount().address();
+        Address assetDAppAddress = testData.getAssetDAppAccount().address();
+
+        InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+        calcBalances.balancesAfterDoubleNestedForCaller(senderAddress,
+                recipientAddress,
+                otherDAppAddress,
+                assetDAppAddress,
+                testData.getOtherAmounts(),
+                assetId);
+
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(recipientAddress, payments, SUM_FEE);
+        txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
+
+        EthereumTransaction.Invocation payload = (EthereumTransaction.Invocation) txSender.getEthTx().payload();
+        assertAll(
+                () -> checkEthereumInvoke(txSender, payload),
+                () -> checkBalancesAfterTx(txSender, calcBalances, testData.getAssetId()),
+                () -> thirdAccountBalanceCheck(assetDAppAddress, calcBalances),
+                () -> fourthAccountBalanceCheck(otherDAppAddress, calcBalances)
+        );
+    }
+
     private void checkEthereumInvoke(EthereumInvokeTransactionSender txSender, EthereumTransaction.Invocation payload) {
         assertAll(
                 () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
@@ -270,6 +321,13 @@ public class EthereumInvokeTransactionTest {
         assertThat(node().getBalance(acc)).isEqualTo(calcBalances.getAccBalanceWavesAfterTransaction());
         if (assetId != null) {
             assertThat(node().getAssetBalance(acc, assetId)).isEqualTo(calcBalances.getAccBalanceIssuedAssetsAfterTransaction());
+        }
+    }
+
+    private void fourthAccountBalanceCheck(Address dApp2, InvokeCalculationsBalancesAfterTx calcBalances) {
+        assertThat(node().getBalance(dApp2)).isEqualTo(calcBalances.getOtherDAppBalanceWavesAfterTransaction());
+        if (assetId != null) {
+            assertThat(node().getAssetBalance(dApp2, assetId)).isEqualTo(calcBalances.getOtherDAppBalanceIssuedAssetsAfterTransaction());
         }
     }
 }

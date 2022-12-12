@@ -127,8 +127,7 @@ public class InvokeCalculationsBalancesAfterTx {
         }
     }
 
-    public void balancesAfterDoubleNestedForCaller
-            (Address caller, Address dApp, Address otherDApp, Address acc, List<Amount> amounts, AssetId id) {
+    public void balancesAfterDoubleNestedForCaller(Address caller, Address dApp, Address otherDApp, Address acc, List<Amount> amounts, AssetId id) {
         long maxFirstWavesAmountValue = 10000;
         prepareFourAccBalances(caller, dApp, acc, otherDApp, id);
         invokeResultData = String.valueOf(testData.getIntArg() * 2);

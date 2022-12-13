@@ -45,14 +45,14 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
         final Account caller = testData.getCallerAccount();
         final Account dAppAccount = testData.getDAppAccount();
         final Account assetDAppAccount = testData.getAssetDAppAccount();
-        final List<Amount> amounts = testData.getPayments();
+        final List<Amount> amounts = testData.getOtherAmounts();
 
-        final InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
+        InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
         setVersion(LATEST_VERSION);
         calcBalances.balancesAfterDAppToDApp(caller.address(), dAppAccount.address(), assetDAppAccount.address(), amounts, assetId);
         txSender.invokeSender();
 
-        final String txId = txSender.getInvokeScriptId();
+        String txId = txSender.getInvokeScriptId();
 
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);

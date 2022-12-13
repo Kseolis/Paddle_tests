@@ -28,6 +28,7 @@ import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
 import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataArgs.getBinaryValueBase58ArgumentEthereumMetadata;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeTransactionMetadata.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumTransactionMetadata.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.TransactionMetadataHandler.getSenderAddressMetadata;
@@ -104,7 +105,7 @@ public class SubscribeEthereumInvokeBurnGrpcTest extends BaseGrpcTest {
                 () -> assertThat(getEthereumTransactionSenderPublicKeyMetadata(txIndex)).isEqualTo(txSender.getEthTx().sender().toString()),
                 () -> assertThat(getEthereumInvokeDAppAddress(txIndex)).isEqualTo(assetDAppAddressString),
                 () -> assertThat(getEthereumInvokeFunctionName(txIndex)).isEqualTo(dAppCallFunction.name()),
-                () -> assertThat(getEthereumInvokeBinaryArgument(txIndex, 0)).isEqualTo(assetIdStr),
+                () -> assertThat(getBinaryValueBase58ArgumentEthereumMetadata(txIndex, 0)).isEqualTo(assetIdStr),
 
                 () -> checkEthereumInvokeIssueAssetMetadata(txIndex, 0, getIssueAssetData()),
                 () -> checkEthereumInvokeBurnMetadata(txIndex, 0, testData.getAssetAmount()),

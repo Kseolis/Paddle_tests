@@ -59,7 +59,6 @@ public class SubscribeEthereumInvokeBurnGrpcTest extends BaseGrpcTest {
                 () -> {
                     testData = new PrepareInvokeTestsData();
                     calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-                    calcBalances.balancesAfterBurnAssetInvoke(senderAddress, assetDAppAddress, payments, assetId);
                     testData.prepareDataForBurnTests();
                     dAppCall = testData.getDAppCall();
                     dAppCallFunction = dAppCall.getFunction();
@@ -87,6 +86,7 @@ public class SubscribeEthereumInvokeBurnGrpcTest extends BaseGrpcTest {
     @Test
     @DisplayName("Subscribe Ethereum invoke with Burn")
     void subscribeInvokeWithBurn() throws NodeException, IOException {
+        calcBalances.balancesAfterBurnAssetInvoke(senderAddress, assetDAppAddress, payments, assetId);
         EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, testData.getInvokeFee());
         txSender.sendingAnEthereumInvokeTransaction(dAppCallFunction);
         String txId = txSender.getEthTxId().toString();

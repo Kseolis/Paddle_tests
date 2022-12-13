@@ -22,15 +22,12 @@ import java.util.List;
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.ethereum_invoke_transaction_checkers.EthereumInvokeMetadataAssertions.*;
-import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeMetadataAssertions.*;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateDataEntries;
 import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.TransactionMetadataHandler.getSenderAddressMetadata;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataArgs.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeTransactionMetadata.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumTransactionMetadata.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.waves_transactions_handlers.WavesTransactionsHandler.getTxId;
@@ -94,7 +91,7 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
     }
 
     @Test
-    @DisplayName("subscribe invoke dApp to dApp")
+    @DisplayName("subscribe ethereum invoke dApp to dApp")
     void subscribeInvokeWithDAppToDApp() throws NodeException, IOException {
         calcBalances.balancesAfterDAppToDApp(senderAddress, dAppAddress, assetDAppAddress, payments, assetId);
 
@@ -105,12 +102,11 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
         prepareInvoke(dAppAccount, testData);
 
-        System.out.println(getAppend());
 
-        assertionsCheckDAppToDAppInvoke(testData, txSender, getTxIndex(), txId);
+        assertionsCheckDAppToDAppInvoke(testData, txSender, getTxIndex());
     }
 
-    public void assertionsCheckDAppToDAppInvoke(PrepareInvokeTestsData data, EthereumInvokeTransactionSender txSender, int txIndex, String txId) {
+    public void assertionsCheckDAppToDAppInvoke(PrepareInvokeTestsData data, EthereumInvokeTransactionSender txSender, int txIndex) {
         String key1 = data.getKeyForDAppEqualBar();
         String key2 = data.getKey2ForDAppEqualBalance();
         assertAll(
@@ -138,67 +134,47 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
                         key2,
                         String.valueOf(calcBalances.getAccBalanceWavesAfterTransaction())),
 
-
                 () -> checkEthereumResultInvokesMetadata(txIndex, 0, data.getAssetDAppAddress(), key1),
-
                 () -> checkEthereumResultInvokesMetadataPayments(txIndex, 0, 0, assetIdStr, data.getAssetAmount().value()),
+                () -> checkEthereumStateChangeIntData(txIndex, 0, 0, data),
+                () -> checkEthereumStateChangesTransfers(txIndex, 0, 0, WAVES_STRING_ID, data.getWavesAmount().value(), data.getDAppAddress()),
+                () -> checkEthereumStateChangesBurn(txIndex, 0, 0, data.getAssetAmount()),
+                () -> checkEthereumStateChangesReissue(txIndex, 0, 0, data),
+                () -> checkEthereumStateChangesSponsorFee(txIndex, 0, 0, data),
+                () -> checkEthereumStateChangesLease(txIndex, 0, 0, data),
+                () -> checkEthereumStateChangesLeaseCancel(txIndex, 0, 0),
 
-                () -> checkStateChangesTransfers(txIndex, 0, 0,
-                        WAVES_STRING_ID,
-                        data.getWavesAmount().value(),
-                        data.getDAppAddress()
-                )/*,
-                () -> checkStateChangesBurn(txIndex, 0, 0, data.getAssetAmount()),
-                () -> checkStateChangesReissue(txIndex, 0, 0, data),
-                () -> checkStateChangesData(txIndex, 0, 0, data),
-                () -> checkStateChangesSponsorFee(txIndex, 0, 0, data),
-                () -> checkStateChangesLease(txIndex, 0, 0, data),
-                () -> checkStateChangesLeaseCancel(txIndex, 0, 0),
-*/
-
-
-/*                () -> checkStateUpdateBalance(txIndex,
-                        0,
-                        data.getDAppAddress(),
-                        WAVES_STRING_ID,
-                        calcBalances.getDAppBalanceWavesBeforeTransaction(),
-                        calcBalances.getDAppBalanceWavesAfterTransaction()),
-                () -> checkStateUpdateBalance(txIndex,
-                        1,
-                        data.getDAppAddress(),
-                        assetIdStr,
-                        calcBalances.getDAppBalanceIssuedAssetsBeforeTransaction(),
-                        calcBalances.getDAppBalanceIssuedAssetsAfterTransaction()),
-
-                () -> checkStateUpdateBalance(txIndex,
-                        2,
-                        data.getAssetDAppAddress(),
-                        WAVES_STRING_ID,
-                        calcBalances.getAccBalanceWavesBeforeTransaction(),
-                        calcBalances.getAccBalanceWavesAfterTransaction()),
-                () -> checkStateUpdateBalance(txIndex,
-                        3,
-                        data.getAssetDAppAddress(),
-                        assetIdStr,
-                        calcBalances.getAccBalanceIssuedAssetsBeforeTransaction(),
-                        calcBalances.getAccBalanceIssuedAssetsAfterTransaction()),
-
-                () -> checkStateUpdateBalance(txIndex,
-                        4,
-                        data.getCallerAddress(),
+                () -> checkStateUpdateBalance(txIndex, 0,
+                        senderAddressString,
                         WAVES_STRING_ID,
                         calcBalances.getCallerBalanceWavesBeforeTransaction(),
                         calcBalances.getCallerBalanceWavesAfterTransaction()),
+                () -> checkStateUpdateBalance(txIndex, 1,
+                        senderAddressString,
+                        assetIdStr,
+                        calcBalances.getCallerBalanceIssuedAssetsBeforeTransaction(), 0),
 
+               /* () -> checkStateUpdateBalance(txIndex,
+                        2,
+                        dAppAddressString,
+                        WAVES_STRING_ID,
+                        calcBalances.getDAppBalanceWavesBeforeTransaction(),
+                        calcBalances.getDAppBalanceWavesAfterTransaction()), */
+                () -> checkStateUpdateBalance(txIndex,
+                        3,
+                        assetDAppAddressString,
+                        WAVES_STRING_ID,
+                        calcBalances.getAccBalanceWavesBeforeTransaction(),
+                        calcBalances.getAccBalanceWavesAfterTransaction()),
 
-                () -> checkStateUpdateDataEntries(txIndex, 0,
-                        data.getDAppAddress(),
-                        key1,
-                        calcBalances.getInvokeResultData()),
-                () -> checkStateUpdateDataEntries(txIndex, 1,
-                        data.getDAppAddress(),
-                        key2,
-                        String.valueOf(calcBalances.getAccBalanceWavesAfterTransaction()))*/
+                () -> checkStateUpdateBalance(txIndex,
+                        4,
+                        assetDAppAddressString,
+                        assetIdStr,
+                        calcBalances.getAccBalanceIssuedAssetsBeforeTransaction(),
+                        calcBalances.getAccBalanceIssuedAssetsAfterTransaction()),
+                () -> checkStateUpdateDataEntries(txIndex, 0, data.getDAppAddress(), key1, calcBalances.getInvokeResultData()),
+                () -> checkStateUpdateDataEntries(txIndex, 1, data.getDAppAddress(), key2, String.valueOf(calcBalances.getAccBalanceWavesAfterTransaction()))
         );
     }
 }

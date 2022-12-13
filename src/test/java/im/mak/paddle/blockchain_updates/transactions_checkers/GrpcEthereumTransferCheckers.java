@@ -4,7 +4,9 @@ import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.Id;
 import im.mak.paddle.helpers.transaction_senders.EthereumTransferTransactionSender;
 
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.EthereumTransactionMetadataHandler.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumTransactionMetadata.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumTransferTransactionMetadataHandler.getEthereumTransferAmountMetadata;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumTransferTransactionMetadataHandler.getEthereumTransferRecipientAddressMetadata;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.TransactionMetadataHandler.getSenderAddressMetadata;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.getAmountAfter;

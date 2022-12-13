@@ -12,8 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class InvokeStateUpdateAssertions {
-    public static void checkStateUpdateBalance
-            (int stateUpdIndex, int balanceIndex, String address, String assetId, long before, long after) {
+    public static void checkStateUpdateBalance(int stateUpdIndex, int balanceIndex, String address, String assetId, long before, long after) {
         if (assetId != null) {
             assertThat(getAssetIdAmountAfter(stateUpdIndex, balanceIndex)).isEqualTo(assetId);
         }
@@ -24,8 +23,7 @@ public class InvokeStateUpdateAssertions {
         );
     }
 
-    public static void checkStateUpdateIndividualLeases
-            (int index, int dataIndex, long sum, String senderPK, String recipientAddress, String status) {
+    public static void checkStateUpdateIndividualLeases(int index, int dataIndex, long sum, String senderPK, String recipientAddress, String status) {
         assertAll(
                 () -> assertThat(getStatusAfterFromIndividualLeases(index, dataIndex)).isEqualTo(status),
                 () -> assertThat(getAmountFromIndividualLeases(index, dataIndex)).isEqualTo(sum),
@@ -59,8 +57,7 @@ public class InvokeStateUpdateAssertions {
         }
     }
 
-    public static void checkStateUpdateAssets
-            (int txIndex, int assetIndex, Map<String, String> assetData, long quantityAfter) {
+    public static void checkStateUpdateAssets(int txIndex, int assetIndex, Map<String, String> assetData, long quantityAfter) {
         String assetId = assetData.get(ASSET_ID);
         if (!getAssetIdFromAssetBefore(txIndex, assetIndex).isBlank()) {
             if (assetId != null) {

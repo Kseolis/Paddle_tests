@@ -216,11 +216,9 @@ public class InvokeMetadataAssertions {
         }
     }
 
-    public static void checkResultInvokesMetadataPayments(int metadataIndex, int dataIndex, int payIndex,
-                                                          String assetId, long amount) {
+    public static void checkResultInvokesMetadataPayments(int metadataIndex, int dataIndex, int payIndex, String assetId, long amount) {
         if (assetId != null) {
-            assertThat(getInvokeMetadataResultInvokesPaymentAssetId(metadataIndex, dataIndex, payIndex))
-                    .isEqualTo(assetId);
+            assertThat(getInvokeMetadataResultInvokesPaymentAssetId(metadataIndex, dataIndex, payIndex)).isEqualTo(assetId);
         }
         assertThat(getInvokeMetadataResultInvokesPaymentAmount(metadataIndex, dataIndex, payIndex)).isEqualTo(amount);
     }

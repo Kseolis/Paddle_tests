@@ -7,22 +7,15 @@ import com.wavesplatform.protobuf.transaction.InvokeScriptResultOuterClass.Invok
 
 public class InvokeMetadataResultInvokes extends BaseInvokeMetadata {
     public static String getInvokeMetadataResultInvokesDApp(int metadataIndex, int dataIndex) {
-        return Base58.encode(getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
-                .getDApp()
-                .toByteArray());
+        return Base58.encode(getInvokeMetadataResultInvokes(metadataIndex, dataIndex).getDApp().toByteArray());
     }
 
     public static String getInvokeMetadataResultInvokesCallFunc(int metadataIndex, int dataIndex) {
-        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
-                .getCall()
-                .getFunction();
+        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex).getCall().getFunction();
     }
 
     public static String getInvokeMetadataResultInvokesCallStringArgs(int metadataIndex, int dataIndex, int argIndex) {
-        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
-                .getCall()
-                .getArgs(argIndex)
-                .getStringValue();
+        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex).getCall().getArgs(argIndex).getStringValue();
     }
 
     public static String getInvokeMetadataResultInvokesCallBinArgs(int metadataIndex, int dataIndex, int argIndex) {
@@ -35,28 +28,19 @@ public class InvokeMetadataResultInvokes extends BaseInvokeMetadata {
     }
 
     public static String getInvokeMetadataResultInvokesCallIntArgs(int metadataIndex, int dataIndex, int argIndex) {
-        return String.valueOf(getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
-                .getCall()
-                .getArgs(argIndex)
-                .getIntegerValue());
+        return String.valueOf(getInvokeMetadataResultInvokes(metadataIndex, dataIndex).getCall().getArgs(argIndex).getIntegerValue());
     }
 
     public static String getInvokeMetadataResultInvokesCallBoolArgs(int metadataIndex, int dataIndex, int argIndex) {
-        return String.valueOf(getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
-                .getCall()
-                .getArgs(argIndex)
-                .getBooleanValue());
+        return String.valueOf(getInvokeMetadataResultInvokes(metadataIndex, dataIndex).getCall().getArgs(argIndex).getBooleanValue());
     }
 
     public static String getInvokeMetadataResultInvokesPaymentAssetId(int metadataIndex, int dataIndex, int payIndex) {
-        return Base58.encode(getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
-                .getPayments(payIndex).getAssetId().toByteArray());
+        return Base58.encode(getInvokeMetadataResultInvokes(metadataIndex, dataIndex).getPayments(payIndex).getAssetId().toByteArray());
     }
 
     public static long getInvokeMetadataResultInvokesPaymentAmount(int metadataIndex, int dataIndex, int payIndex) {
-        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
-                .getPayments(payIndex)
-                .getAmount();
+        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex).getPayments(payIndex).getAmount();
     }
 
     public static String getStateChangesTransferAddress(int metadataIndex, int dataIndex, int transferIndex) {
@@ -68,16 +52,11 @@ public class InvokeMetadataResultInvokes extends BaseInvokeMetadata {
     }
 
     public static Payment getStateChangesTransfers(int metadataIndex, int dataIndex, int transferIndex) {
-        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
-                .getStateChanges()
-                .getTransfers(transferIndex);
+        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex).getStateChanges().getTransfers(transferIndex);
     }
 
     public static long getStateChangesTransferAmount(int metadataIndex, int dataIndex, int transferIndex) {
-        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
-                .getStateChanges()
-                .getTransfers(transferIndex)
-                .getAmount().getAmount();
+        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex).getStateChanges().getTransfers(transferIndex).getAmount().getAmount();
     }
 
     public static String getStateChangesTransferAssetId(int metadataIndex, int dataIndex, int transferIndex) {
@@ -98,17 +77,11 @@ public class InvokeMetadataResultInvokes extends BaseInvokeMetadata {
     }
 
     public static long getStateChangesBurnAmount(int metadataIndex, int dataIndex, int transferIndex) {
-        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
-                .getStateChanges()
-                .getBurns(transferIndex)
-                .getAmount();
+        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex).getStateChanges().getBurns(transferIndex).getAmount();
     }
 
     public static String getStateChangesDataKey(int metadataIndex, int dataIndex, int transferIndex) {
-        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
-                .getStateChanges()
-                .getData(transferIndex)
-                .getKey();
+        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex).getStateChanges().getData(transferIndex).getKey();
     }
 
     public static long getStateChangesDataIntVal(int metadataIndex, int dataIndex, int transferIndex) {
@@ -128,17 +101,11 @@ public class InvokeMetadataResultInvokes extends BaseInvokeMetadata {
     }
 
     public static long getStateChangesReissueAmount(int metadataIndex, int dataIndex, int transferIndex) {
-        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
-                .getStateChanges()
-                .getReissues(transferIndex)
-                .getAmount();
+        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex).getStateChanges().getReissues(transferIndex).getAmount();
     }
 
     public static boolean getStateChangesReissueReissuable(int metadataIndex, int dataIndex, int transferIndex) {
-        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
-                .getStateChanges()
-                .getReissues(transferIndex)
-                .getIsReissuable();
+        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex).getStateChanges().getReissues(transferIndex).getIsReissuable();
     }
 
     public static String getStateChangesSponsorFeeAssetId(int metadataIndex, int dataIndex, int transferIndex) {
@@ -169,10 +136,7 @@ public class InvokeMetadataResultInvokes extends BaseInvokeMetadata {
     }
 
     public static long getStateChangesLeasesAmount(int metadataIndex, int dataIndex, int transferIndex) {
-        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
-                .getStateChanges()
-                .getLeases(transferIndex)
-                .getAmount();
+        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex).getStateChanges().getLeases(transferIndex).getAmount();
     }
 
     public static String getStateChangesLeasesId(int metadataIndex, int dataIndex, int transferIndex) {
@@ -188,30 +152,20 @@ public class InvokeMetadataResultInvokes extends BaseInvokeMetadata {
         return Base58.encode(getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
                 .getStateChanges()
                 .getLeaseCancels(transferIndex)
-                .getLeaseId().toByteArray());
+                .getLeaseId()
+                .toByteArray());
     }
 
     public static String getNestedStateChangesTransferAddress(int metadataIndex, int dataIndex, int transferIndex) {
-        return Base58.encode(getNestedStateChange(metadataIndex, dataIndex)
-                .getTransfers(transferIndex)
-                .getAddress()
-                .toByteArray()
-        );
+        return Base58.encode(getNestedStateChange(metadataIndex, dataIndex).getTransfers(transferIndex).getAddress().toByteArray());
     }
 
     public static String getNestedStateChangesInvokes(int metadataIndex, int dataIndex, int transferIndex) {
-        return Base58.encode(getNestedStateChange(metadataIndex, dataIndex)
-                .getTransfers(transferIndex)
-                .getAddress()
-                .toByteArray()
-        );
+        return Base58.encode(getNestedStateChange(metadataIndex, dataIndex).getTransfers(transferIndex).getAddress().toByteArray());
     }
 
     public static long getNestedStateChangesTransferAmount(int metadataIndex, int dataIndex, int transferIndex) {
-        return getNestedStateChange(metadataIndex, dataIndex)
-                .getTransfers(transferIndex)
-                .getAmount()
-                .getAmount();
+        return getNestedStateChange(metadataIndex, dataIndex).getTransfers(transferIndex).getAmount().getAmount();
     }
 
     public static String getNestedStateChangesTransferAssetId(int metadataIndex, int dataIndex, int transferIndex) {
@@ -224,23 +178,14 @@ public class InvokeMetadataResultInvokes extends BaseInvokeMetadata {
     }
 
     public static String getNestedStateChangesInvokesDApp(int metadataIndex, int dataIndex, int nestedInvokesIndex) {
-        return Base58.encode(getNestedStateChange(metadataIndex, dataIndex)
-                .getInvokes(nestedInvokesIndex)
-                .getDApp()
-                .toByteArray()
-        );
+        return Base58.encode(getNestedStateChange(metadataIndex, dataIndex).getInvokes(nestedInvokesIndex).getDApp().toByteArray());
     }
 
-    public static String getNestedStateChangesTransferInvokesCallFunction
-            (int metadataIndex, int dataIndex, int nestedInvokesIndex) {
-        return getNestedStateChange(metadataIndex, dataIndex)
-                .getInvokes(nestedInvokesIndex)
-                .getCall()
-                .getFunction();
+    public static String getNestedStateChangesTransferInvokesCallFunction(int metadataIndex, int dataIndex, int nestedInvokesIndex) {
+        return getNestedStateChange(metadataIndex, dataIndex).getInvokes(nestedInvokesIndex).getCall().getFunction();
     }
 
-    public static String getNestedStateChangesTransferInvokesCallIntArg
-            (int metadataIndex, int dataIndex, int nestedInvokesIndex, int args) {
+    public static String getNestedStateChangesTransferInvokesCallIntArg(int metadataIndex, int dataIndex, int nestedInvokesIndex, int args) {
         return String.valueOf(getNestedStateChange(metadataIndex, dataIndex)
                 .getInvokes(nestedInvokesIndex)
                 .getCall()
@@ -249,8 +194,7 @@ public class InvokeMetadataResultInvokes extends BaseInvokeMetadata {
         );
     }
 
-    public static String getNestedStateChangesTransferInvokesCallStringArg
-            (int metadataIndex, int dataIndex, int nestedInvokesIndex, int args) {
+    public static String getNestedStateChangesTransferInvokesCallStringArg(int metadataIndex, int dataIndex, int nestedInvokesIndex, int args) {
         return getNestedStateChange(metadataIndex, dataIndex)
                 .getInvokes(nestedInvokesIndex)
                 .getCall()
@@ -258,8 +202,7 @@ public class InvokeMetadataResultInvokes extends BaseInvokeMetadata {
                 .getStringValue();
     }
 
-    public static String getNestedStateChangesTransferInvokesCallBooleanArg
-            (int metadataIndex, int dataIndex, int nestedInvokesIndex, int args) {
+    public static String getNestedStateChangesTransferInvokesCallBooleanArg(int metadataIndex, int dataIndex, int nestedInvokesIndex, int args) {
         return String.valueOf(getNestedStateChange(metadataIndex, dataIndex)
                 .getInvokes(nestedInvokesIndex)
                 .getCall()
@@ -268,13 +211,13 @@ public class InvokeMetadataResultInvokes extends BaseInvokeMetadata {
         );
     }
 
-    public static String getNestedStateChangesTransferInvokesCallBinArg
-            (int metadataIndex, int dataIndex, int nestedInvokesIndex, int args) {
+    public static String getNestedStateChangesTransferInvokesCallBinArg(int metadataIndex, int dataIndex, int nestedInvokesIndex, int args) {
         return Base58.encode(getNestedStateChange(metadataIndex, dataIndex)
                 .getInvokes(nestedInvokesIndex)
                 .getCall()
                 .getArgs(args)
-                .getBinaryValue().toByteArray()
+                .getBinaryValue()
+                .toByteArray()
         );
     }
 
@@ -291,10 +234,7 @@ public class InvokeMetadataResultInvokes extends BaseInvokeMetadata {
     }
 
     public static long getDoubleNestedStateChangesTransferAmount(int metadataIndex, int dataIndex, int invokesIndex, int transferIndex) {
-        return getDoubleNestedStateChange(metadataIndex, dataIndex, invokesIndex)
-                .getTransfers(transferIndex)
-                .getAmount()
-                .getAmount();
+        return getDoubleNestedStateChange(metadataIndex, dataIndex, invokesIndex).getTransfers(transferIndex).getAmount().getAmount();
     }
 
     public static String getDoubleNestedStateChangesTransferAssetId(int metadataIndex, int dataIndex, int invokesIndex, int transferIndex) {
@@ -307,13 +247,10 @@ public class InvokeMetadataResultInvokes extends BaseInvokeMetadata {
     }
 
     private static InvokeScriptResult getNestedStateChange(int metadataIndex, int dataIndex) {
-        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex)
-                .getStateChanges();
+        return getInvokeMetadataResultInvokes(metadataIndex, dataIndex).getStateChanges();
     }
 
     private static InvokeScriptResult getDoubleNestedStateChange(int metadataIndex, int dataIndex, int invokesIndex) {
-        return getNestedStateChange(metadataIndex, dataIndex)
-                .getInvokes(invokesIndex)
-                .getStateChanges();
+        return getNestedStateChange(metadataIndex, dataIndex).getInvokes(invokesIndex).getStateChanges();
     }
 }

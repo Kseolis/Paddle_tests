@@ -50,7 +50,6 @@ public class SubscribeEthereumInvokeBurnGrpcTest extends BaseGrpcTest {
     private Account assetDAppAccount;
     private Address assetDAppAddress;
     private String assetDAppAddressString;
-
     private List<Amount> payments;
 
     @BeforeEach
@@ -59,6 +58,7 @@ public class SubscribeEthereumInvokeBurnGrpcTest extends BaseGrpcTest {
                 () -> {
                     testData = new PrepareInvokeTestsData();
                     calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+                    calcBalances.balancesAfterBurnAssetInvoke(senderAddress, assetDAppAddress, payments, assetId);
                     testData.prepareDataForBurnTests();
                     dAppCall = testData.getDAppCall();
                     dAppCallFunction = dAppCall.getFunction();
@@ -86,10 +86,9 @@ public class SubscribeEthereumInvokeBurnGrpcTest extends BaseGrpcTest {
     @Test
     @DisplayName("Subscribe Ethereum invoke with Burn")
     void subscribeInvokeWithBurn() throws NodeException, IOException {
-        calcBalances.balancesAfterBurnAssetInvoke(senderAddress, assetDAppAddress, payments, assetId);
-        final EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, testData.getInvokeFee());
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, testData.getInvokeFee());
         txSender.sendingAnEthereumInvokeTransaction(dAppCallFunction);
-        final String txId = txSender.getEthTxId().toString();
+        String txId = txSender.getEthTxId().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
         prepareInvoke(assetDAppAccount, testData);
@@ -123,10 +122,8 @@ public class SubscribeEthereumInvokeBurnGrpcTest extends BaseGrpcTest {
                         null,
                         0,
                         testData.getAmountAfterInvokeIssuedAsset()),
-
                 () -> checkStateUpdateAssets(txIndex, 0, getIssueAssetData(), testData.getAmountAfterInvokeIssuedAsset()),
                 () -> checkStateUpdateAssets(txIndex, 1, testData.getAssetData(), testData.getAmountAfterInvokeDAppIssuedAsset())
-
         );
     }
 }

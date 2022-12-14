@@ -25,6 +25,7 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.ethereum_in
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateDataEntries;
 import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.TransactionMetadataHandler.getSenderAddressMetadata;
@@ -101,6 +102,7 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
         prepareInvoke(dAppAccount, testData);
+        System.out.println(getAppend());
         assertionsCheckDAppToDAppInvoke(testData, txSender, getTxIndex());
     }
 
@@ -121,6 +123,8 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
                 () -> checkArgumentsEthereumMetadata(txIndex, 2, STRING, key1),
                 () -> checkArgumentsEthereumMetadata(txIndex, 3, STRING, key2),
                 () -> checkArgumentsEthereumMetadata(txIndex, 4, BINARY_BASE58, assetIdStr),
+                () -> checkEthereumPaymentMetadata(txIndex, 0, WAVES_STRING_ID, testData.getWavesAmount().value()),
+                () -> checkEthereumPaymentMetadata(txIndex, 1, assetIdStr, testData.getAssetAmount().value()),
 
                 () -> checkEthereumDataMetadata(txIndex, 0,
                         INTEGER,

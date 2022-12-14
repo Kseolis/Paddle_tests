@@ -22,20 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class EthereumInvokeMetadataAssertions {
     public static void checkEthereumInvokeIssueAssetMetadata(int metadataIndex, int dataIndex, Map<String, String> assetData) {
         assertAll(
-                () -> assertThat(getEthereumInvokeIssuesName(metadataIndex, dataIndex))
-                        .isEqualTo(assetData.get(NAME)),
-                () -> assertThat(getEthereumInvokeIssuesDescription(metadataIndex, dataIndex))
-                        .isEqualTo(assetData.get(DESCRIPTION)),
-                () -> assertThat(getEthereumInvokeIssuesAmount(metadataIndex, dataIndex))
-                        .isEqualTo(Long.valueOf(assetData.get(VOLUME))),
-                () -> assertThat(getEthereumInvokeIssuesDecimals(metadataIndex, dataIndex))
-                        .isEqualTo(Long.parseLong(assetData.get(DECIMALS))),
-                () -> assertThat(getEthereumInvokeIssuesReissuable(metadataIndex, dataIndex))
-                        .isEqualTo(Boolean.parseBoolean(assetData.get(REISSUE)))
+                () -> assertThat(getEthereumInvokeIssuesName(metadataIndex, dataIndex)).isEqualTo(assetData.get(NAME)),
+                () -> assertThat(getEthereumInvokeIssuesDescription(metadataIndex, dataIndex)).isEqualTo(assetData.get(DESCRIPTION)),
+                () -> assertThat(getEthereumInvokeIssuesAmount(metadataIndex, dataIndex)).isEqualTo(Long.valueOf(assetData.get(VOLUME))),
+                () -> assertThat(getEthereumInvokeIssuesDecimals(metadataIndex, dataIndex)).isEqualTo(Long.parseLong(assetData.get(DECIMALS))),
+                () -> assertThat(getEthereumInvokeIssuesReissuable(metadataIndex, dataIndex)).isEqualTo(Boolean.parseBoolean(assetData.get(REISSUE)))
         );
         if (assetData.get(NONCE) != null) {
-            assertThat(getEthereumInvokeIssuesNonce(metadataIndex, dataIndex))
-                    .isEqualTo(Long.parseLong(assetData.get(NONCE)));
+            assertThat(getEthereumInvokeIssuesNonce(metadataIndex, dataIndex)).isEqualTo(Long.parseLong(assetData.get(NONCE)));
         }
     }
 
@@ -110,71 +104,10 @@ public class EthereumInvokeMetadataAssertions {
         );
     }
 
-    public static void checkEthereumStateChangeIntData(int metadataIndex, int dataIndex, int payIndex, PrepareInvokeTestsData data) {
-        int intArg = data.getIntArg();
-        assertAll(
-                () -> assertThat(getEthereumStateChangesDataKey(metadataIndex, dataIndex, payIndex)).isEqualTo(DATA_ENTRY_INT),
-                () -> assertThat(getEthereumStateChangesIntegerValue(metadataIndex, dataIndex, payIndex)).isEqualTo(intArg)
-        );
-    }
-
-    public static void checkEthereumStateChangesBurn(int metadataIndex, int dataIndex, int payIndex, Amount amount) {
-        String assetId = amount.assetId().toString();
-        long amountValue = amount.value();
-        if (assetId != null) {
-            assertThat(getEthereumStateChangesBurnAssetId(metadataIndex, dataIndex, payIndex)).isEqualTo(assetId);
-        }
-        assertThat(getEthereumStateChangesBurnAmount(metadataIndex, dataIndex, payIndex)).isEqualTo(amountValue);
-    }
-
-    public static void checkEthereumStateChangesReissue(int metadataIndex, int dataIndex, int payIndex, PrepareInvokeTestsData data) {
-        String assetId = data.getAssetAmount().assetId().toString();
-        long amountValue = data.getAssetAmount().value();
-        boolean reissue = Boolean.parseBoolean(data.getAssetData().get(REISSUE));
-        if (assetId != null) {
-            assertThat(getEthereumStateChangesReissueAssetId(metadataIndex, dataIndex, payIndex)).isEqualTo(assetId);
-        }
-        assertAll(
-                () -> assertThat(getEthereumStateChangesReissueAmount(metadataIndex, dataIndex, payIndex)).isEqualTo(amountValue),
-                () -> assertThat(getEthereumStateChangesReissueReissuable(metadataIndex, dataIndex, payIndex)).isEqualTo(reissue)
-        );
-    }
-
-    public static void checkEthereumStateChangesSponsorFee(int metadataIndex, int dataIndex, int payIndex, PrepareInvokeTestsData data) {
-        assertAll(
-                () -> assertThat(getEthereumStateChangesSponsorFeesAssetId(metadataIndex, dataIndex, payIndex))
-                        .isEqualTo(data.getAssetAmount().assetId().toString()),
-                () -> assertThat(getEthereumStateChangesSponsorFeesAmount(metadataIndex, dataIndex, payIndex))
-                        .isEqualTo(data.getAssetAmount().value())
-        );
-    }
-
-    public static void checkEthereumStateChangesLease(int metadataIndex, int dataIndex, int payIndex, PrepareInvokeTestsData data) {
-        assertAll(
-                () -> assertThat(getEthereumStateChangesLeaseRecipientPKHash(metadataIndex, dataIndex, payIndex)).isEqualTo(data.getDAppPublicKeyHash()),
-                () -> assertThat(getEthereumStateChangesLeaseAmount(metadataIndex, dataIndex, payIndex)).isEqualTo(data.getWavesAmount().value())
-        );
-    }
-
     public static void checkEthereumPaymentMetadata(int metadataIndex, int paymentIndex, String assetId, long amount) {
         if (assetId != null) {
             assertThat(getEthereumInvokeMetadataPaymentsAssetId(metadataIndex, paymentIndex)).isEqualTo(assetId);
         }
         assertThat(getEthereumInvokeMetadataPaymentsAmount(metadataIndex, paymentIndex)).isEqualTo(amount);
-    }
-
-    public static void checkEthereumStateChangesLeaseCancel(int metadataIndex, int dataIndex, int leaseIndex) {
-        String leaseId = getEthereumStateChangesLeaseId(metadataIndex, dataIndex, leaseIndex);
-        assertThat(getEthereumStateChangesLeaseCancelsLeasesId(metadataIndex, dataIndex, leaseIndex)).isEqualTo(leaseId);
-    }
-
-    public static void checkEthereumStateChangesTransfers(int metadataIndex, int dataIndex, int transferIndex, String assetId, long amountValue, String address) {
-        if (assetId != null) {
-            assertThat(getEthereumStateChangesTransfersAmountAssetId(metadataIndex, dataIndex, transferIndex)).isEqualTo(assetId);
-        }
-        assertAll(
-                () -> assertThat(getEthereumStateChangesTransfersAmountAddress(metadataIndex, dataIndex, transferIndex)).isEqualTo(address),
-                () -> assertThat(getEthereumStateChangesTransfersAmountValue(metadataIndex, dataIndex, transferIndex)).isEqualTo(amountValue)
-        );
     }
 }

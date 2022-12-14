@@ -22,9 +22,9 @@ import java.util.List;
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.ethereum_invoke_transaction_checkers.EthereumInvokeMetadataAssertions.*;
+import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateDataEntries;
 import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.TransactionMetadataHandler.getSenderAddressMetadata;
@@ -106,8 +106,6 @@ public class SubscribeEthereumInvokeDataGrpcTest extends BaseGrpcTest {
         subscribeResponseHandler(CHANNEL, height, height, txId);
         prepareInvoke(dAppAccount, testData);
 
-        System.out.println(getAppend());
-
         assertionsCheck(txSender, getTxIndex());
     }
 
@@ -131,12 +129,7 @@ public class SubscribeEthereumInvokeDataGrpcTest extends BaseGrpcTest {
                 () -> checkEthereumDataMetadata(txIndex, 0, INTEGER, DATA_ENTRY_INT, intVal),
                 () -> checkEthereumDataMetadata(txIndex, 1, BINARY_BASE64, DATA_ENTRY_BYTE, binVal),
                 () -> checkEthereumDataMetadata(txIndex, 2, BOOLEAN, DATA_ENTRY_BOOL, boolArg),
-                () -> checkEthereumDataMetadata(txIndex, 3, STRING, DATA_ENTRY_STR, strVal)
-/*
-                () -> checkStateUpdateDataEntries(txIndex, 0, getDAppAccountAddress(), DATA_ENTRY_INT, intVal),
-                () -> checkStateUpdateDataEntries(txIndex, 1, getDAppAccountAddress(), DATA_ENTRY_BYTE, binVal),
-                () -> checkStateUpdateDataEntries(txIndex, 2, getDAppAccountAddress(), DATA_ENTRY_BOOL, boolArg),
-                () -> checkStateUpdateDataEntries(txIndex, 3, getDAppAccountAddress(), DATA_ENTRY_STR, strVal)
+                () -> checkEthereumDataMetadata(txIndex, 3, STRING, DATA_ENTRY_STR, strVal),
 
                 () -> checkStateUpdateBalance(txIndex,
                         0,
@@ -149,7 +142,12 @@ public class SubscribeEthereumInvokeDataGrpcTest extends BaseGrpcTest {
                         getDAppAccountAddress(),
                         WAVES_STRING_ID,
                         calcBalances.getDAppBalanceWavesBeforeTransaction(),
-                        calcBalances.getDAppBalanceWavesAfterTransaction())*/
+                        calcBalances.getDAppBalanceWavesAfterTransaction()),
+
+                () -> checkStateUpdateDataEntries(txIndex, 0, getDAppAccountAddress(), DATA_ENTRY_INT, intVal),
+                () -> checkStateUpdateDataEntries(txIndex, 1, getDAppAccountAddress(), DATA_ENTRY_BYTE, binVal),
+                () -> checkStateUpdateDataEntries(txIndex, 2, getDAppAccountAddress(), DATA_ENTRY_BOOL, boolArg),
+                () -> checkStateUpdateDataEntries(txIndex, 3, getDAppAccountAddress(), DATA_ENTRY_STR, strVal)
         );
     }
 }

@@ -22,10 +22,10 @@ import java.util.List;
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.ethereum_invoke_transaction_checkers.EthereumInvokeMetadataAssertions.*;
+import static im.mak.paddle.blockchain_updates.transactions_checkers.ethereum_invoke_transaction_checkers.EthereumInvokeStateUpdateAssertions.*;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateDataEntries;
 import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.getAppend;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.TransactionMetadataHandler.getSenderAddressMetadata;
@@ -102,7 +102,6 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
         prepareInvoke(dAppAccount, testData);
-        System.out.println(getAppend());
         assertionsCheckDAppToDAppInvoke(testData, txSender, getTxIndex());
     }
 

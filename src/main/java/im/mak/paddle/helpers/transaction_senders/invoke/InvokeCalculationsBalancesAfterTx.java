@@ -171,6 +171,26 @@ public class InvokeCalculationsBalancesAfterTx {
         }
     }
 
+    public void balancesAfterEthereumDAppToDApp(Address caller, Address dApp, Address acc, List<Amount> amounts, AssetId id) {
+        prepareThreeAccBalances(caller, dApp, acc, id);
+        invokeResultData = String.valueOf(testData.getIntArg() * 2);
+
+        if (!amounts.isEmpty()) {
+            amounts.forEach(
+                    a -> {
+                        if (a.assetId().isWaves()) {
+                            callerBalanceWavesAfterTransaction -= a.value();
+                            dAppBalanceWavesAfterTransaction += a.value() * 2;
+                            accBalanceWavesAfterTransaction -= a.value();
+                        } else if (a.assetId().equals(id)) {
+                            callerBalanceIssuedAssetsAfterTransaction -= a.value();
+                            accBalanceIssuedAssetsAfterTransaction += a.value();
+                        }
+                    }
+            );
+        }
+    }
+
     public long getCallerBalanceWavesBeforeTransaction() {
         return callerBalanceWavesBeforeTransaction;
     }

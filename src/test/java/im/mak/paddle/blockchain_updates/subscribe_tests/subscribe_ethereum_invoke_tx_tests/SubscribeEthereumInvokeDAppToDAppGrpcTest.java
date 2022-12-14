@@ -87,22 +87,20 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
                 }
         );
         assetDAppAccount.transfer(senderAddress, testData.getAssetAmount());
+
         fromHeight = node().getHeight();
     }
 
     @Test
     @DisplayName("subscribe ethereum invoke dApp to dApp")
     void subscribeInvokeWithDAppToDApp() throws NodeException, IOException {
-        calcBalances.balancesAfterDAppToDApp(senderAddress, dAppAddress, assetDAppAddress, payments, assetId);
-
+        calcBalances.balancesAfterEthereumDAppToDApp(senderAddress, dAppAddress, assetDAppAddress, payments, assetId);
         EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, testData.getInvokeFee());
         txSender.sendingAnEthereumInvokeTransaction(dAppCallFunction);
         String txId = txSender.getEthTxId().toString();
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
         prepareInvoke(dAppAccount, testData);
-
-
         assertionsCheckDAppToDAppInvoke(testData, txSender, getTxIndex());
     }
 
@@ -154,12 +152,12 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
                         assetIdStr,
                         calcBalances.getCallerBalanceIssuedAssetsBeforeTransaction(), 0),
 
-               /* () -> checkStateUpdateBalance(txIndex,
+               () -> checkStateUpdateBalance(txIndex,
                         2,
                         dAppAddressString,
                         WAVES_STRING_ID,
                         calcBalances.getDAppBalanceWavesBeforeTransaction(),
-                        calcBalances.getDAppBalanceWavesAfterTransaction()), */
+                        calcBalances.getDAppBalanceWavesAfterTransaction()),
                 () -> checkStateUpdateBalance(txIndex,
                         3,
                         assetDAppAddressString,

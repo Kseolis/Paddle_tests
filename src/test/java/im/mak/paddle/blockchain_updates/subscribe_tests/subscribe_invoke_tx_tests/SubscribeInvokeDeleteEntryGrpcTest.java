@@ -61,7 +61,6 @@ public class SubscribeInvokeDeleteEntryGrpcTest extends BaseGrpcTest {
                     payments = testData.getPayments();
                     payment = testData.getWavesAmount().value();
                     intVal = String.valueOf(testData.getIntArg());
-
                 },
                 () -> intValueAfter = String.valueOf(0),
                 () -> fromHeight = node().getHeight(),

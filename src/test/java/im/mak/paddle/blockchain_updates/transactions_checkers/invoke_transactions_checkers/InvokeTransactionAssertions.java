@@ -17,7 +17,6 @@ public class InvokeTransactionAssertions extends BaseGrpcTest {
                 () -> assertThat(getSenderPublicKeyFromTransaction(txIndex)).isEqualTo(senderPublicKey),
                 () -> assertThat(getTransactionVersion(txIndex)).isEqualTo(LATEST_VERSION),
                 () -> assertThat(getInvokeTransactionPublicKeyHash(txIndex)).isEqualTo(getDAppAccountPublicKeyHash()),
-                //  () -> assertThat(getInvokeTransactionFunctionCall(txIndex)).isEqualTo();
                 () -> assertThat(getTxId(txIndex)).isEqualTo(txId)
         );
     }

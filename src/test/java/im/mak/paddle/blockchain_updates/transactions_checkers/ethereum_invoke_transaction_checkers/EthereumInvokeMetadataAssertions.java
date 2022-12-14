@@ -6,6 +6,8 @@ import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import java.util.Map;
 
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataArgs.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataPayment.getEthereumInvokeMetadataPaymentsAmount;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataPayment.getEthereumInvokeMetadataPaymentsAssetId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResult.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultData.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultStateChanges.*;
@@ -152,6 +154,13 @@ public class EthereumInvokeMetadataAssertions {
                 () -> assertThat(getEthereumStateChangesLeaseRecipientPKHash(metadataIndex, dataIndex, payIndex)).isEqualTo(data.getDAppPublicKeyHash()),
                 () -> assertThat(getEthereumStateChangesLeaseAmount(metadataIndex, dataIndex, payIndex)).isEqualTo(data.getWavesAmount().value())
         );
+    }
+
+    public static void checkEthereumPaymentMetadata(int metadataIndex, int paymentIndex, String assetId, long amount) {
+        if (assetId != null) {
+            assertThat(getEthereumInvokeMetadataPaymentsAssetId(metadataIndex, paymentIndex)).isEqualTo(assetId);
+        }
+        assertThat(getEthereumInvokeMetadataPaymentsAmount(metadataIndex, paymentIndex)).isEqualTo(amount);
     }
 
     public static void checkEthereumStateChangesLeaseCancel(int metadataIndex, int dataIndex, int leaseIndex) {

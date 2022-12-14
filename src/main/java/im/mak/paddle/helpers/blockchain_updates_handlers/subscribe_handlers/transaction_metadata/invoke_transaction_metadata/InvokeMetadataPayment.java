@@ -8,8 +8,6 @@ public class InvokeMetadataPayment extends BaseInvokeMetadata {
     }
 
     public static String getInvokeMetadataPaymentsAssetId(int metadataIndex, int argIndex) {
-        return Base58.encode(
-                getInvokeMetadata(metadataIndex).getPayments(argIndex).getAssetId().toByteArray()
-        );
+        return Base58.encode(getInvokeMetadata(metadataIndex).getPayments(argIndex).getAssetId().toByteArray());
     }
 }

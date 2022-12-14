@@ -20,6 +20,7 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateDataEntries;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Constants.*;
@@ -62,7 +63,7 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
         prepareInvoke(dAppAccount, testData);
-        assertionsCheckDAppToDAppInvoke(testData, calcBalances, txId, 0);
+        assertionsCheckDAppToDAppInvoke(testData, calcBalances, txId, getTxIndex());
     }
 
     public static void assertionsCheckDAppToDAppInvoke

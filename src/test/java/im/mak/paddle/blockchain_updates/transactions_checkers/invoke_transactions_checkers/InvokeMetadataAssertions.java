@@ -59,16 +59,11 @@ public class InvokeMetadataAssertions {
 
     public static void checkIssueAssetMetadata(int metadataIndex, int dataIndex, Map<String, String> assetData) {
         assertAll(
-                () -> assertThat(getInvokeMetadataResultIssueName(metadataIndex, dataIndex))
-                        .isEqualTo(assetData.get(NAME)),
-                () -> assertThat(getInvokeMetadataResultIssueDescription(metadataIndex, dataIndex))
-                        .isEqualTo(assetData.get(DESCRIPTION)),
-                () -> assertThat(getInvokeMetadataResultIssueAmount(metadataIndex, dataIndex))
-                        .isEqualTo(Long.valueOf(assetData.get(VOLUME))),
-                () -> assertThat(getInvokeMetadataResultIssueDecimals(metadataIndex, dataIndex))
-                        .isEqualTo(Long.parseLong(assetData.get(DECIMALS))),
-                () -> assertThat(getInvokeMetadataResultIssueReissuable(metadataIndex, dataIndex))
-                        .isEqualTo(Boolean.parseBoolean(assetData.get(REISSUE)))
+                () -> assertThat(getInvokeMetadataResultIssueName(metadataIndex, dataIndex)).isEqualTo(assetData.get(NAME)),
+                () -> assertThat(getInvokeMetadataResultIssueDescription(metadataIndex, dataIndex)).isEqualTo(assetData.get(DESCRIPTION)),
+                () -> assertThat(getInvokeMetadataResultIssueAmount(metadataIndex, dataIndex)).isEqualTo(Long.valueOf(assetData.get(VOLUME))),
+                () -> assertThat(getInvokeMetadataResultIssueDecimals(metadataIndex, dataIndex)).isEqualTo(Long.parseLong(assetData.get(DECIMALS))),
+                () -> assertThat(getInvokeMetadataResultIssueReissuable(metadataIndex, dataIndex)).isEqualTo(Boolean.parseBoolean(assetData.get(REISSUE)))
         );
         if (assetData.get(NONCE) != null) {
             assertThat(getInvokeMetadataResultIssueNonce(metadataIndex, dataIndex))

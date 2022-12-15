@@ -1,25 +1,45 @@
 package im.mak.paddle.blockchain_updates.transactions_checkers.ethereum_invoke_transaction_checkers;
 
 import com.wavesplatform.transactions.common.Amount;
-import im.mak.paddle.helpers.PrepareInvokeTestsData;
+import com.wavesplatform.transactions.invocation.Function;
+import im.mak.paddle.helpers.transaction_senders.EthereumInvokeTransactionSender;
 
 import java.util.Map;
 
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.TransactionMetadataHandler.getSenderAddressMetadata;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataArgs.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataPayment.getEthereumInvokeMetadataPaymentsAmount;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataPayment.getEthereumInvokeMetadataPaymentsAssetId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResult.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultData.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultStateChanges.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeResultIssues.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeTransactionMetadata.getEthereumInvokeDAppAddress;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeTransactionMetadata.getEthereumInvokeFunctionName;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumMetadataResultBurn.getEthereumInvokeBurnAmounts;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumMetadataResultBurn.getEthereumInvokeBurnAssetId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumTransactionMetadata.*;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.NONCE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class EthereumInvokeMetadataAssertions {
+    public static void checkEthereumMainMetadata(EthereumInvokeTransactionSender txSender, int txIndex, String address) {
+        assertAll(
+                () -> assertThat(getSenderAddressMetadata(txIndex)).isEqualTo(address),
+                () -> assertThat(getEthereumTransactionTimestampMetadata(txIndex)).isEqualTo(txSender.getEthTx().timestamp()),
+                () -> assertThat(getEthereumTransactionFeeMetadata(txIndex)).isEqualTo(txSender.getEthInvokeFee()),
+                () -> assertThat(getEthereumTransactionSenderPublicKeyMetadata(txIndex)).isEqualTo(txSender.getEthTx().sender().toString())
+        );
+    }
+
+    public static void checkEthereumInvokeMainInfo(int txIndex, String dAppAddress, Function dAppFunction) {
+        assertAll(
+                () -> assertThat(getEthereumInvokeDAppAddress(txIndex)).isEqualTo(dAppAddress),
+                () -> assertThat(getEthereumInvokeFunctionName(txIndex)).isEqualTo(dAppFunction.name())
+        );
+    }
+
     public static void checkEthereumInvokeIssueAssetMetadata(int metadataIndex, int dataIndex, Map<String, String> assetData) {
         assertAll(
                 () -> assertThat(getEthereumInvokeIssuesName(metadataIndex, dataIndex)).isEqualTo(assetData.get(NAME)),

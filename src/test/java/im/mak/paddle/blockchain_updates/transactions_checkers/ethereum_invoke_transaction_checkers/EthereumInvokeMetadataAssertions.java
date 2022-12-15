@@ -12,6 +12,8 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataPayment.getEthereumInvokeMetadataPaymentsAssetId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResult.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultData.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultLease.getEthereumInvokeMetadataLeasesAmount;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultLease.getEthereumInvokeMetadataLeasesRecipientPublicKey;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeResultIssues.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeTransactionMetadata.getEthereumInvokeDAppAddress;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeTransactionMetadata.getEthereumInvokeFunctionName;
@@ -108,6 +110,13 @@ public class EthereumInvokeMetadataAssertions {
             assertThat(getEthereumInvokeBurnAssetId(metadataIndex, dataIndex)).isEqualTo(amount.assetId().toString());
         }
         assertThat(getEthereumInvokeBurnAmounts(metadataIndex, dataIndex)).isEqualTo(amount.value());
+    }
+
+    public static void checkEthereumLeaseMetadata(int metadataIndex, int dataIndex, String publicKeyHash, long amount) {
+        assertAll(
+                () -> assertThat(getEthereumInvokeMetadataLeasesRecipientPublicKey(metadataIndex, dataIndex)).isEqualTo(publicKeyHash),
+                () -> assertThat(getEthereumInvokeMetadataLeasesAmount(metadataIndex, dataIndex)).isEqualTo(amount)
+        );
     }
 
     public static void checkEthereumResultInvokesMetadataPayments(int metadataIndex, int dataIndex, int payIndex, String assetId, long amount) {

@@ -1,5 +1,6 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests;
 
+import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.transactions.common.Amount;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
@@ -15,8 +16,7 @@ import java.util.List;
 
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
-import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeMetadataAssertions.checkMainMetadata;
-import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeMetadataAssertions.checkPaymentMetadata;
+import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeMetadataAssertions.*;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.*;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeTransactionAssertions.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
@@ -45,6 +45,7 @@ public class SubscribeInvokeLeaseCancelGrpcTest extends BaseGrpcTest {
     private long invokeFee;
     private List<Amount> amounts;
     private long amountValue;
+    private String encodeLeaseId;
 
     @BeforeEach
     void before() {
@@ -68,7 +69,8 @@ public class SubscribeInvokeLeaseCancelGrpcTest extends BaseGrpcTest {
                     dAppPK = testData.getDAppPublicKey();
                 },
                 () -> amounts = testData.getPayments(),
-                () -> amountValue = testData.getWavesAmount().value()
+                () -> amountValue = testData.getWavesAmount().value(),
+                () -> encodeLeaseId = Base58.encode(testData.getLeaseId())
         );
 
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
@@ -92,11 +94,9 @@ public class SubscribeInvokeLeaseCancelGrpcTest extends BaseGrpcTest {
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, amounts);
         txSender.invokeSenderWithPayment();
         String txId = txSender.getInvokeScriptId();
-
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
         prepareInvoke(dAppAccount, testData);
-
         assertionsCheck(getTxIndex(), txId);
     }
 
@@ -106,6 +106,7 @@ public class SubscribeInvokeLeaseCancelGrpcTest extends BaseGrpcTest {
                 () -> checkMainMetadata(txIndex),
                 () -> checkPaymentsSubscribe(txIndex, 0, amountValue, WAVES_STRING_ID),
                 () -> checkPaymentMetadata(txIndex, 0, null, amountValue),
+                () -> checkArgumentsMetadata(txIndex, 0, BINARY_BASE58, encodeLeaseId),
                 () -> assertThat(getInvokeMetadataCancelLeaseId(txIndex, 0)).isEqualTo(testData.getLeaseId()),
 
                 () -> checkStateUpdateBalance(txIndex, 0, callerAddress, WAVES_STRING_ID, callerBalanceWavesBeforeTx, callerBalanceWavesAfterTx),

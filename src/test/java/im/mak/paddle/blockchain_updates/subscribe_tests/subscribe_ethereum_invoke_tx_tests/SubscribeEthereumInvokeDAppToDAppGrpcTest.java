@@ -28,9 +28,6 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.TransactionMetadataHandler.getSenderAddressMetadata;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeTransactionMetadata.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumTransactionMetadata.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.waves_transactions_handlers.WavesTransactionsHandler.getTxId;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Async.async;
@@ -110,13 +107,8 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
         String key2 = data.getKey2ForDAppEqualBalance();
         assertAll(
                 () -> assertThat(getTxId(txIndex)).isEqualTo(txSender.getEthTx().id().toString()),
-                () -> assertThat(getSenderAddressMetadata(txIndex)).isEqualTo(senderAddressString),
-                () -> assertThat(getEthereumTransactionTimestampMetadata(txIndex)).isEqualTo(txSender.getEthTx().timestamp()),
-                () -> assertThat(getEthereumTransactionFeeMetadata(txIndex)).isEqualTo(txSender.getEthInvokeFee()),
-                () -> assertThat(getEthereumTransactionSenderPublicKeyMetadata(txIndex)).isEqualTo(txSender.getEthTx().sender().toString()),
-                () -> assertThat(getEthereumInvokeDAppAddress(txIndex)).isEqualTo(dAppAddressString),
-                () -> assertThat(getEthereumInvokeFunctionName(txIndex)).isEqualTo(dAppCallFunction.name()),
-
+                () -> checkEthereumMainMetadata(txSender, txIndex, senderAddressString),
+                () -> checkEthereumInvokeMainInfo(txIndex, dAppAddressString, dAppCallFunction),
                 () -> checkArgumentsEthereumMetadata(txIndex, 0, BINARY_BASE58, assetDAppAddressString),
                 () -> checkArgumentsEthereumMetadata(txIndex, 1, INTEGER, String.valueOf(data.getIntArg())),
                 () -> checkArgumentsEthereumMetadata(txIndex, 2, STRING, key1),

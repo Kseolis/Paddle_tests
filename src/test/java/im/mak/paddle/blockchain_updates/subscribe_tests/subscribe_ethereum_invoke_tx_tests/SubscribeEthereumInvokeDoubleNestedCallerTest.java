@@ -86,8 +86,7 @@ public class SubscribeEthereumInvokeDoubleNestedCallerTest extends BaseGrpcTest 
         }
     }
 
-    public static void assertionsCheckDoubleNestedInvoke
-            (PrepareInvokeTestsData data, InvokeCalculationsBalancesAfterTx calcBalances, String txId, int txIndex, String callerType) {
+    public static void assertionsCheckDoubleNestedInvoke(PrepareInvokeTestsData data, InvokeCalculationsBalancesAfterTx calcBalances, String txId, int txIndex, String callerType) {
         String key1 = data.getKeyForDAppEqualBar();
         String key2 = data.getKey2ForDAppEqualBalance();
         String assetId = data.getAssetId().toString();

@@ -20,18 +20,14 @@ import java.io.IOException;
 import java.util.List;
 
 import static im.mak.paddle.Node.node;
-import static im.mak.paddle.blockchain_updates.transactions_checkers.ethereum_invoke_transaction_checkers.EthereumInvokeMetadataAssertions.checkEthereumInvokeBurnMetadata;
-import static im.mak.paddle.blockchain_updates.transactions_checkers.ethereum_invoke_transaction_checkers.EthereumInvokeMetadataAssertions.checkEthereumInvokeIssueAssetMetadata;
+import static im.mak.paddle.blockchain_updates.transactions_checkers.ethereum_invoke_transaction_checkers.EthereumInvokeMetadataAssertions.*;
+import static im.mak.paddle.blockchain_updates.transactions_checkers.ethereum_invoke_transaction_checkers.EthereumInvokeMetadataAssertions.checkEthereumInvokeMainInfo;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateAssets;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
 import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataArgs.getBinaryValueBase58ArgumentEthereumMetadata;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeTransactionMetadata.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumTransactionMetadata.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.TransactionMetadataHandler.getSenderAddressMetadata;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.waves_transactions_handlers.WavesTransactionsHandler.getTxId;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
@@ -99,14 +95,9 @@ public class SubscribeEthereumInvokeBurnGrpcTest extends BaseGrpcTest {
     private void assertionsCheck(EthereumInvokeTransactionSender txSender, int txIndex) {
         assertAll(
                 () -> assertThat(getTxId(txIndex)).isEqualTo(txSender.getEthTx().id().toString()),
-                () -> assertThat(getSenderAddressMetadata(txIndex)).isEqualTo(senderAddressString),
-                () -> assertThat(getEthereumTransactionTimestampMetadata(txIndex)).isEqualTo(txSender.getEthTx().timestamp()),
-                () -> assertThat(getEthereumTransactionFeeMetadata(txIndex)).isEqualTo(txSender.getEthInvokeFee()),
-                () -> assertThat(getEthereumTransactionSenderPublicKeyMetadata(txIndex)).isEqualTo(txSender.getEthTx().sender().toString()),
-                () -> assertThat(getEthereumInvokeDAppAddress(txIndex)).isEqualTo(assetDAppAddressString),
-                () -> assertThat(getEthereumInvokeFunctionName(txIndex)).isEqualTo(dAppCallFunction.name()),
-                () -> assertThat(getBinaryValueBase58ArgumentEthereumMetadata(txIndex, 0)).isEqualTo(assetIdStr),
-
+                () -> checkEthereumMainMetadata(txSender, txIndex, senderAddressString),
+                () -> checkEthereumInvokeMainInfo(txIndex, assetDAppAddressString, dAppCallFunction),
+                () -> checkArgumentsEthereumMetadata(txIndex, 0, BINARY_BASE58, assetIdStr),
                 () -> checkEthereumInvokeIssueAssetMetadata(txIndex, 0, getIssueAssetData()),
                 () -> checkEthereumInvokeBurnMetadata(txIndex, 0, testData.getAssetAmount()),
                 () -> checkStateUpdateBalance(txIndex, 0,

@@ -95,7 +95,7 @@ public class SubscribeEthereumInvokeIssueGrpcTest extends BaseGrpcTest {
     }
 
     @Test
-    @DisplayName("subscribe invoke with Issue")
+    @DisplayName("subscribe ethereum invoke with Issue")
     void prepareDataForIssueTests() throws NodeException, IOException {
         EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee);
         txSender.sendingAnEthereumInvokeTransaction(dAppCallFunction);

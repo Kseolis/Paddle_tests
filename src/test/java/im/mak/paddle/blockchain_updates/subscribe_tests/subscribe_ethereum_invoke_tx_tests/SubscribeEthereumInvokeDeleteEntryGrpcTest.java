@@ -98,7 +98,7 @@ public class SubscribeEthereumInvokeDeleteEntryGrpcTest extends BaseGrpcTest {
     }
 
     @Test
-    @DisplayName("subscribe invoke with DeleteEntry")
+    @DisplayName("subscribe ethereum invoke with DeleteEntry")
     void subscribeInvokeWithDeleteEntry() throws NodeException, IOException {
         EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, invokeFee);
         txSender.sendingAnEthereumInvokeTransaction(dAppCallFunction);

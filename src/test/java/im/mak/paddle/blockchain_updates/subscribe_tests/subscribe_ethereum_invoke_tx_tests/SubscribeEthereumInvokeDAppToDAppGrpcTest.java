@@ -37,6 +37,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
     private PrepareInvokeTestsData testData;
+    private String key1;
+    private String key2;
     private EthereumTestUser ethInstance;
     private Address senderAddress;
     private String senderAddressString;
@@ -59,6 +61,8 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
                 () -> {
                     testData = new PrepareInvokeTestsData();
                     testData.prepareDataForDAppToDAppTests(SUM_FEE);
+                    key1 = testData.getKeyForDAppEqualBar();
+                    key2 = testData.getKey2ForDAppEqualBalance();
                     calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
                     assetId = testData.getAssetId();
                     assetIdStr = assetId.toString();
@@ -99,18 +103,16 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
         prepareInvoke(dAppAccount, testData);
-        assertionsCheckDAppToDAppInvoke(testData, txSender, getTxIndex());
+        assertionsCheckDAppToDAppInvoke(txSender, getTxIndex());
     }
 
-    public void assertionsCheckDAppToDAppInvoke(PrepareInvokeTestsData data, EthereumInvokeTransactionSender txSender, int txIndex) {
-        String key1 = data.getKeyForDAppEqualBar();
-        String key2 = data.getKey2ForDAppEqualBalance();
+    public void assertionsCheckDAppToDAppInvoke(EthereumInvokeTransactionSender txSender, int txIndex) {
         assertAll(
                 () -> assertThat(getTxId(txIndex)).isEqualTo(txSender.getEthTx().id().toString()),
                 () -> checkEthereumMainMetadata(txSender, txIndex, senderAddressString),
                 () -> checkEthereumInvokeMainInfo(txIndex, dAppAddressString, dAppCallFunction),
                 () -> checkArgumentsEthereumMetadata(txIndex, 0, BINARY_BASE58, assetDAppAddressString),
-                () -> checkArgumentsEthereumMetadata(txIndex, 1, INTEGER, String.valueOf(data.getIntArg())),
+                () -> checkArgumentsEthereumMetadata(txIndex, 1, INTEGER, String.valueOf(testData.getIntArg())),
                 () -> checkArgumentsEthereumMetadata(txIndex, 2, STRING, key1),
                 () -> checkArgumentsEthereumMetadata(txIndex, 3, STRING, key2),
                 () -> checkArgumentsEthereumMetadata(txIndex, 4, BINARY_BASE58, assetIdStr),
@@ -127,14 +129,14 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
                         key2,
                         String.valueOf(calcBalances.getAccBalanceWavesAfterTransaction())),
 
-                () -> checkEthereumResultInvokesMetadata(txIndex, 0, data.getAssetDAppAddress(), key1),
-                () -> checkEthereumResultInvokesMetadataPayments(txIndex, 0, 0, assetIdStr, data.getAssetAmount().value()),
-                () -> checkEthereumStateChangeIntData(txIndex, 0, 0, data),
-                () -> checkEthereumStateChangesTransfers(txIndex, 0, 0, WAVES_STRING_ID, data.getWavesAmount().value(), data.getDAppAddress()),
-                () -> checkEthereumStateChangesBurn(txIndex, 0, 0, data.getAssetAmount()),
-                () -> checkEthereumStateChangesReissue(txIndex, 0, 0, data),
-                () -> checkEthereumStateChangesSponsorFee(txIndex, 0, 0, data),
-                () -> checkEthereumStateChangesLease(txIndex, 0, 0, data),
+                () -> checkEthereumResultInvokesMetadata(txIndex, 0, testData.getAssetDAppAddress(), key1),
+                () -> checkEthereumResultInvokesMetadataPayments(txIndex, 0, 0, assetIdStr, testData.getAssetAmount().value()),
+                () -> checkEthereumStateChangeIntData(txIndex, 0, 0, testData),
+                () -> checkEthereumStateChangesTransfers(txIndex, 0, 0, WAVES_STRING_ID, testData.getWavesAmount().value(), testData.getDAppAddress()),
+                () -> checkEthereumStateChangesBurn(txIndex, 0, 0, testData.getAssetAmount()),
+                () -> checkEthereumStateChangesReissue(txIndex, 0, 0, testData),
+                () -> checkEthereumStateChangesSponsorFee(txIndex, 0, 0, testData),
+                () -> checkEthereumStateChangesLease(txIndex, 0, 0, testData),
                 () -> checkEthereumStateChangesLeaseCancel(txIndex, 0, 0),
 
                 () -> checkStateUpdateBalance(txIndex, 0,
@@ -166,8 +168,8 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
                         assetIdStr,
                         calcBalances.getAccBalanceIssuedAssetsBeforeTransaction(),
                         calcBalances.getAccBalanceIssuedAssetsAfterTransaction()),
-                () -> checkStateUpdateDataEntries(txIndex, 0, data.getDAppAddress(), key1, calcBalances.getInvokeResultData()),
-                () -> checkStateUpdateDataEntries(txIndex, 1, data.getDAppAddress(), key2, String.valueOf(calcBalances.getAccBalanceWavesAfterTransaction()))
+                () -> checkStateUpdateDataEntries(txIndex, 0, testData.getDAppAddress(), key1, calcBalances.getInvokeResultData()),
+                () -> checkStateUpdateDataEntries(txIndex, 1, testData.getDAppAddress(), key2, String.valueOf(calcBalances.getAccBalanceWavesAfterTransaction()))
         );
     }
 }

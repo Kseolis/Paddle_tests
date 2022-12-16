@@ -127,15 +127,16 @@ public class EthereumInvokeTransactionTest {
     void ethereumInvokeScriptReissueTest() throws NodeException, IOException {
         testData.prepareDataForReissueTests();
         dAppCall = testData.getDAppCall();
-        payments.add(Amount.of(0));
-        long invokeBurnFee = testData.getInvokeFee();
+        payments = testData.getOtherAmounts();
+        long invokeReissueFee = testData.getInvokeFee();
         AssetDAppAccount assetDAppAccount = testData.getAssetDAppAccount();
         Address assetDAppAddress = assetDAppAccount.address();
         assetDAppAccount.transfer(senderAddress, Amount.of(10_000_000L, testData.getAssetId()));
-        InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        calcBalances.balancesAfterReissueAssetInvoke(senderAddress, assetDAppAddress, testData.getOtherAmounts(), assetId);
 
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeBurnFee);
+        InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+        calcBalances.balancesAfterEthereumReissueAssetInvoke(senderAddress, assetDAppAddress, payments, assetId, 2);
+
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeReissueFee);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
 
         EthereumTransaction.Invocation payload = (EthereumTransaction.Invocation) txSender.getEthTx().payload();

@@ -14,6 +14,7 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultData.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultLease.getEthereumInvokeMetadataLeasesAmount;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultLease.getEthereumInvokeMetadataLeasesRecipientPublicKey;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultReissue.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeResultIssues.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeTransactionMetadata.getEthereumInvokeDAppAddress;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeTransactionMetadata.getEthereumInvokeFunctionName;
@@ -110,6 +111,16 @@ public class EthereumInvokeMetadataAssertions {
             assertThat(getEthereumInvokeBurnAssetId(metadataIndex, dataIndex)).isEqualTo(amount.assetId().toString());
         }
         assertThat(getEthereumInvokeBurnAmounts(metadataIndex, dataIndex)).isEqualTo(amount.value());
+    }
+
+    public static void checkEthereumInvokeReissueMetadata(int metadataIndex, int dataIndex, String assetId, long amount, boolean reissue) {
+        if (assetId != null) {
+            assertThat(getEthereumInvokeReissueAssetId(metadataIndex, dataIndex)).isEqualTo(assetId);
+        }
+        assertAll(
+                () -> assertThat(getEthereumInvokeReissueAmounts(metadataIndex, dataIndex)).isEqualTo(amount),
+                () -> assertThat(getEthereumInvokeReissueReissuable(metadataIndex, dataIndex)).isEqualTo(reissue)
+        );
     }
 
     public static void checkEthereumLeaseMetadata(int metadataIndex, int dataIndex, String publicKeyHash, long amount) {

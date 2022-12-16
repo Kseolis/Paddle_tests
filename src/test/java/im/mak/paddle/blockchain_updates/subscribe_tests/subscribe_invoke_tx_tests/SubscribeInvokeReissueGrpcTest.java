@@ -82,10 +82,8 @@ public class SubscribeInvokeReissueGrpcTest extends BaseGrpcTest {
                 () -> amountAfterInvokeIssuedAsset = testData.getAmountAfterInvokeIssuedAsset(),
                 () -> amountAfterInvokeDAppIssuedAsset = testData.getAmountAfterInvokeDAppIssuedAsset()
         );
-
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
         calcBalances.balancesAfterReissueAssetInvoke(callerAddress, assetDAppAccount.address(), payments, assetId);
-
         async(
                 () -> {
                     callerBalanceWavesBeforeTx = calcBalances.getCallerBalanceWavesBeforeTransaction();

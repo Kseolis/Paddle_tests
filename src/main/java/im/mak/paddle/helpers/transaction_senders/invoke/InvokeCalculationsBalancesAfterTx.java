@@ -170,6 +170,23 @@ public class InvokeCalculationsBalancesAfterTx {
         }
     }
 
+    public void balancesAfterEthereumSponsorFeeInvoke(Address caller, Address dApp, List<Amount> amounts, AssetId id) {
+        prepareBalances(caller, dApp, id);
+        if (!amounts.isEmpty()) {
+            amounts.forEach(
+                    a -> {
+                        if (a.assetId().isWaves()) {
+                            callerBalanceWavesAfterTransaction -= a.value();
+                            dAppBalanceWavesAfterTransaction += a.value();
+                        } else if (a.assetId().equals(id)) {
+                            callerBalanceIssuedAssetsAfterTransaction -= a.value();
+                            dAppBalanceIssuedAssetsAfterTransaction += a.value();
+                        }
+                    }
+            );
+        }
+    }
+
     public void balancesAfterEthereumDAppToDApp(Address caller, Address dApp, Address acc, List<Amount> amounts, AssetId id) {
         prepareThreeAccBalances(caller, dApp, acc, id);
         invokeResultData = String.valueOf(testData.getIntArg() * 2);

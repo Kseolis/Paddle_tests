@@ -173,7 +173,7 @@ public class PrepareInvokeTestsData {
         assetDAppAccount.setScript(script);
 
         dAppCall = assetDAppAccount.setDataAssetId(Base58.decode(assetId.toString()));
-        amountAfterInvokeIssuedAsset = getIssueAssetVolume() - assetAmount.value();
+        amountAfterInvokeIssuedAsset = Long.parseLong(getIssueAssetData().get(VOLUME)) - assetAmount.value();
         amountAfterInvokeDAppIssuedAsset = Integer.parseInt(assetData.get(VOLUME)) - assetAmount.value();
 
         payments.clear();
@@ -231,7 +231,7 @@ public class PrepareInvokeTestsData {
         assetDAppAccount.setScript(script);
 
         dAppCall = assetDAppAccount.setDataAssetId(Base58.decode(assetId.toString()));
-        amountAfterInvokeIssuedAsset = getIssueAssetVolume() + assetAmount.value();
+        amountAfterInvokeIssuedAsset = Long.parseLong(getIssueAssetData().get(VOLUME)) + assetAmount.value();
         amountAfterInvokeDAppIssuedAsset = Integer.parseInt(assetData.get(VOLUME)) + assetAmount.value();
 
         payments.clear();
@@ -292,6 +292,8 @@ public class PrepareInvokeTestsData {
         dAppCall = assetDAppAccount.setDataAssetId(Base58.decode(assetId.toString()));
 
         payments.clear();
+        otherAmounts.clear();
+        otherAmounts.add(assetAmount);
 
         setFee(SUM_FEE);
         setExtraFee(ONE_WAVES);

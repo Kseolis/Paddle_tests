@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
@@ -25,7 +26,6 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.ethereum_in
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateAssets;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
-import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetVolume;
 import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
@@ -67,6 +67,8 @@ public class SubscribeEthereumInvokeScriptTransferGrpcTest extends BaseGrpcTest 
     private long assetPayment;
     private long wavesPayment;
     private long dAppAssetAmountAfter;
+    private Map<String, String> issueAssetData;
+    private long issueAssetVolume;
 
     @BeforeEach
     void before() {
@@ -108,6 +110,10 @@ public class SubscribeEthereumInvokeScriptTransferGrpcTest extends BaseGrpcTest 
                     assetPayment = testData.getAssetAmount().value();
                     wavesPayment = testData.getWavesAmount().value();
                     dAppAssetAmountAfter = Long.parseLong(getIssueAssetData().get(VOLUME)) - assetPayment;
+                },
+                () -> {
+                    issueAssetData = getIssueAssetData();
+                    issueAssetVolume = Long.parseLong(issueAssetData.get(VOLUME));
                 }
         );
         assetDAppAccount.transfer(senderAddress, Amount.of(assetPayment, testData.getAssetId()));
@@ -151,7 +157,7 @@ public class SubscribeEthereumInvokeScriptTransferGrpcTest extends BaseGrpcTest 
                 () -> checkArgumentsEthereumMetadata(txIndex, 0, BINARY_BASE58, assetIdStr),
                 () -> checkArgumentsEthereumMetadata(txIndex, 1, BINARY_BASE58, dAppAddressStr),
 
-                () -> checkEthereumInvokeIssueAssetMetadata(txIndex, 0, getIssueAssetData()),
+                () -> checkEthereumInvokeIssueAssetMetadata(txIndex, 0, issueAssetData),
 
                 () -> checkEthereumTransfersMetadata(txIndex, 0, dAppAddressStr, assetIdStr, assetPayment),
                 () -> checkEthereumTransfersMetadata(txIndex, 1, dAppAddressStr, null, assetPayment),
@@ -167,7 +173,7 @@ public class SubscribeEthereumInvokeScriptTransferGrpcTest extends BaseGrpcTest 
                 () -> checkStateUpdateBalance(txIndex, 5, dAppAddressStr, assetIdStr, dAppAssetBalanceBeforeTx, dAppAssetBalanceAfterTx),
                 () -> checkStateUpdateBalance(txIndex, 6, dAppAddressStr, null, 0, assetPayment),
 
-                () -> checkStateUpdateAssets(txIndex, 0, getIssueAssetData(), getIssueAssetVolume())
+                () -> checkStateUpdateAssets(txIndex, 0, issueAssetData, issueAssetVolume)
         );
     }
 }

@@ -5,8 +5,8 @@ import com.wavesplatform.transactions.common.Id;
 import im.mak.paddle.helpers.transaction_senders.EthereumTransferTransactionSender;
 
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumTransactionMetadata.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumTransferTransactionMetadataHandler.getEthereumTransferAmountMetadata;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumTransferTransactionMetadataHandler.getEthereumTransferRecipientAddressMetadata;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumTransferMetadata.getEthereumTransferMetadataAmount;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumTransferMetadata.getEthereumTransferRecipientMetadataAddress;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.TransactionMetadataHandler.getSenderAddressMetadata;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.Balances.getAmountAfter;
@@ -61,8 +61,8 @@ public class GrpcEthereumTransferCheckers {
                 () -> assertThat(getEthereumTransactionTimestampMetadata(txIndex)).isEqualTo(timestamp),
                 () -> assertThat(getEthereumTransactionFeeMetadata(txIndex)).isEqualTo(fee),
                 () -> assertThat(getEthereumTransactionSenderPublicKeyMetadata(txIndex)).isEqualTo(senderPublicKey),
-                () -> assertThat(getEthereumTransferRecipientAddressMetadata(txIndex)).isEqualTo(recipientAddress),
-                () -> assertThat(getEthereumTransferAmountMetadata(txIndex)).isEqualTo(amount.value())
+                () -> assertThat(getEthereumTransferRecipientMetadataAddress(txIndex)).isEqualTo(recipientAddress),
+                () -> assertThat(getEthereumTransferMetadataAmount(txIndex)).isEqualTo(amount.value())
         );
     }
 

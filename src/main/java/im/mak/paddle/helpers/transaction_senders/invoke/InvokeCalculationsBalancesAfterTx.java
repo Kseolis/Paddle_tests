@@ -173,7 +173,6 @@ public class InvokeCalculationsBalancesAfterTx {
     public void balancesAfterEthereumDAppToDApp(Address caller, Address dApp, Address acc, List<Amount> amounts, AssetId id) {
         prepareThreeAccBalances(caller, dApp, acc, id);
         invokeResultData = String.valueOf(testData.getIntArg() * 2);
-
         if (!amounts.isEmpty()) {
             amounts.forEach(
                     a -> {
@@ -192,7 +191,6 @@ public class InvokeCalculationsBalancesAfterTx {
 
     public void balancesAfterEthereumReissueAssetInvoke(Address caller, Address dApp, List<Amount> amounts, AssetId id, int transferCounts) {
         prepareBalances(caller, dApp, id);
-
         if (!amounts.isEmpty()) {
             amounts.forEach(
                     a -> {
@@ -202,6 +200,25 @@ public class InvokeCalculationsBalancesAfterTx {
                         } else if (a.assetId().equals(id)) {
                             callerBalanceIssuedAssetsAfterTransaction -= a.value();
                             dAppBalanceIssuedAssetsAfterTransaction += a.value() * transferCounts;
+                        }
+                    }
+            );
+        }
+    }
+
+    public void balancesAfterEthereumCallerScriptTransfer(Address caller, Address dApp, Address acc, List<Amount> amounts, AssetId id) {
+        prepareThreeAccBalances(caller, dApp, acc, id);
+
+        if (!amounts.isEmpty()) {
+            amounts.forEach(
+                    a -> {
+                        if (a.assetId().isWaves()) {
+                            dAppBalanceWavesAfterTransaction -= a.value();
+                            accBalanceWavesAfterTransaction += a.value();
+                        } else if (a.assetId().equals(id)) {
+                            callerBalanceIssuedAssetsAfterTransaction -= a.value();
+                            dAppBalanceIssuedAssetsAfterTransaction -= a.value();
+                            accBalanceIssuedAssetsAfterTransaction += a.value();
                         }
                     }
             );

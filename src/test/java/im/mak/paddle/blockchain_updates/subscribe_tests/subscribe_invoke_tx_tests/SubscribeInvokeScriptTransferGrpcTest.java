@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
@@ -22,7 +23,6 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.*;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
-import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetVolume;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
@@ -61,6 +61,8 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
     private long assetPayment;
     private long wavesPayment;
     private long dAppAssetAmountAfter;
+    private Map<String, String> issueAssetData;
+    private long issueAssetDataVolume;
 
     @BeforeEach
     void before() {
@@ -97,6 +99,10 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
                     assetPayment = testData.getAssetAmount().value();
                     wavesPayment = testData.getWavesAmount().value();
                     dAppAssetAmountAfter = Long.parseLong(getIssueAssetData().get(VOLUME)) - assetPayment;
+                },
+                () -> {
+                    issueAssetData = getIssueAssetData();
+                    issueAssetDataVolume = Long.parseLong(issueAssetData.get(VOLUME));
                 }
         );
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
@@ -137,7 +143,7 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
                 () -> checkMainMetadata(txIndex),
                 () -> checkArgumentsMetadata(txIndex, 0, BINARY_BASE58, assetIdStr),
                 () -> checkArgumentsMetadata(txIndex, 1, BINARY_BASE58, dAppAddressStr),
-                () -> checkIssueAssetMetadata(txIndex, 0, getIssueAssetData()),
+                () -> checkIssueAssetMetadata(txIndex, 0, issueAssetData),
 
                 () -> checkTransfersMetadata(txIndex, 0, dAppAddressStr, assetIdStr, assetPayment),
                 () -> checkTransfersMetadata(txIndex, 1, dAppAddressStr, null, assetPayment),
@@ -154,7 +160,7 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
                 () -> checkStateUpdateBalance(txIndex, 5, dAppAddressStr, assetIdStr, dAppAssetBalanceBeforeTx, dAppAssetBalanceAfterTx),
                 () -> checkStateUpdateBalance(txIndex, 6, dAppAddressStr, null, 0, assetPayment),
 
-                () -> checkStateUpdateAssets(txIndex, 0, getIssueAssetData(), getIssueAssetVolume())
+                () -> checkStateUpdateAssets(txIndex, 0, issueAssetData, issueAssetDataVolume)
         );
     }
 }

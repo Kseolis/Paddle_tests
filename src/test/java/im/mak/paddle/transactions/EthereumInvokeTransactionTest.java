@@ -34,7 +34,7 @@ public class EthereumInvokeTransactionTest {
     private static EthereumTestUser ethInstance;
     private static Address senderAddress;
     private static Account dAppAccount;
-    private static Address dAppAccountAddress;
+    private static Address dAppAddress;
     private static AssetId assetId;
     private static List<Amount> payments = new ArrayList<>();
     private DAppCall dAppCall;
@@ -55,7 +55,7 @@ public class EthereumInvokeTransactionTest {
                     testData = new PrepareInvokeTestsData();
                     assetId = testData.getAssetId();
                     dAppAccount = testData.getDAppAccount();
-                    dAppAccountAddress = dAppAccount.address();
+                    dAppAddress = dAppAccount.address();
                     dAppAccount.transfer(senderAddress, testData.getAssetAmount());
                 }
         );
@@ -70,9 +70,9 @@ public class EthereumInvokeTransactionTest {
         payments = testData.getPayments();
 
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        calcBalances.balancesAfterPaymentInvoke(senderAddress, dAppAccountAddress, payments, assetId);
+        calcBalances.balancesAfterPaymentInvoke(senderAddress, dAppAddress, payments, assetId);
 
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAccountAddress, payments, SUM_FEE);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, SUM_FEE);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         EthereumTransaction.Invocation payload = (EthereumTransaction.Invocation) txSender.getEthTx().payload();
         assertAll(
@@ -88,8 +88,8 @@ public class EthereumInvokeTransactionTest {
         dAppCall = testData.getDAppCall();
         payments = testData.getPayments();
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        calcBalances.balancesAfterPaymentInvoke(senderAddress, dAppAccountAddress, payments, assetId);
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAccountAddress, payments, SUM_FEE);
+        calcBalances.balancesAfterPaymentInvoke(senderAddress, dAppAddress, payments, assetId);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, SUM_FEE);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
 
         EthereumTransaction.Invocation payload = (EthereumTransaction.Invocation) txSender.getEthTx().payload();
@@ -153,8 +153,8 @@ public class EthereumInvokeTransactionTest {
         dAppCall = testData.getDAppCall();
         payments = testData.getPayments();
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        calcBalances.balancesAfterPaymentInvoke(senderAddress, dAppAccountAddress, payments, assetId);
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAccountAddress, payments, SUM_FEE);
+        calcBalances.balancesAfterPaymentInvoke(senderAddress, dAppAddress, payments, assetId);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, SUM_FEE);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
 
         EthereumTransaction.Invocation payload = (EthereumTransaction.Invocation) txSender.getEthTx().payload();
@@ -171,9 +171,9 @@ public class EthereumInvokeTransactionTest {
         dAppCall = testData.getDAppCall();
         payments = testData.getPayments();
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        calcBalances.balancesAfterPaymentInvoke(senderAddress, dAppAccountAddress, payments, assetId);
+        calcBalances.balancesAfterPaymentInvoke(senderAddress, dAppAddress, payments, assetId);
 
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAccountAddress, payments, SUM_FEE);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, SUM_FEE);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
 
         EthereumTransaction.Invocation payload = (EthereumTransaction.Invocation) txSender.getEthTx().payload();
@@ -212,22 +212,23 @@ public class EthereumInvokeTransactionTest {
     void ethereumInvokeScriptScriptTransferTest() throws NodeException, IOException {
         testData.prepareDataForScriptTransferTests();
         dAppCall = testData.getDAppCall();
-        payments.add(Amount.of(0));
-        long invokeBurnFee = testData.getInvokeFee();
+        payments = testData.getOtherAmounts();
+        long invokeFee = testData.getInvokeFee();
         AssetDAppAccount assetDAppAccount = testData.getAssetDAppAccount();
         Address assetDAppAddress = assetDAppAccount.address();
-        assetDAppAccount.transfer(senderAddress, Amount.of(10_000_000L, testData.getAssetId()));
+        assetDAppAccount.transfer(senderAddress, Amount.of(10_000_000L, assetId));
+       // System.out.println("dAppAddress: " + node().getAssetBalance(dAppAddress, assetId));
 
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        calcBalances.balancesAfterCallerScriptTransfer(senderAddress, assetDAppAddress, dAppAccountAddress, testData.getOtherAmounts(), assetId);
+        calcBalances.balancesAfterEthereumCallerScriptTransfer(senderAddress, assetDAppAddress, dAppAddress, payments, assetId);
 
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeBurnFee);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         EthereumTransaction.Invocation payload = (EthereumTransaction.Invocation) txSender.getEthTx().payload();
         assertAll(
                 () -> checkEthereumInvoke(txSender, payload),
-                () -> checkBalancesAfterTx(txSender, calcBalances, testData.getAssetId()),
-                () -> thirdAccountBalanceCheck(dAppAccountAddress, calcBalances)
+                () -> checkBalancesAfterTx(txSender, calcBalances, assetId),
+                () -> thirdAccountBalanceCheck(dAppAddress, calcBalances)
         );
     }
 
@@ -241,9 +242,9 @@ public class EthereumInvokeTransactionTest {
         Address assetDAppAddress = assetDAppAccount.address();
 
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        calcBalances.balancesAfterEthereumDAppToDApp(senderAddress, dAppAccountAddress, assetDAppAddress, payments, assetId);
+        calcBalances.balancesAfterEthereumDAppToDApp(senderAddress, dAppAddress, assetDAppAddress, payments, assetId);
 
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAccountAddress, payments, SUM_FEE);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, SUM_FEE);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         EthereumTransaction.Invocation payload = (EthereumTransaction.Invocation) txSender.getEthTx().payload();
         assertAll(
@@ -263,9 +264,9 @@ public class EthereumInvokeTransactionTest {
         Address assetDAppAddress = testData.getAssetDAppAccount().address();
 
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        calcBalances.balancesAfterDoubleNestedForCaller(senderAddress, dAppAccountAddress, otherDAppAddress, assetDAppAddress, testData.getOtherAmounts(), assetId);
+        calcBalances.balancesAfterDoubleNestedForCaller(senderAddress, dAppAddress, otherDAppAddress, assetDAppAddress, testData.getOtherAmounts(), assetId);
 
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAccountAddress, payments, SUM_FEE);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, SUM_FEE);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         EthereumTransaction.Invocation payload = (EthereumTransaction.Invocation) txSender.getEthTx().payload();
         assertAll(
@@ -286,9 +287,9 @@ public class EthereumInvokeTransactionTest {
         Address assetDAppAddress = testData.getAssetDAppAccount().address();
 
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        calcBalances.balancesAfterDoubleNestedForOriginCaller(senderAddress, dAppAccountAddress, otherDAppAddress, assetDAppAddress, testData.getOtherAmounts(), assetId);
+        calcBalances.balancesAfterDoubleNestedForOriginCaller(senderAddress, dAppAddress, otherDAppAddress, assetDAppAddress, testData.getOtherAmounts(), assetId);
 
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAccountAddress, payments, SUM_FEE);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, SUM_FEE);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         EthereumTransaction.Invocation payload = (EthereumTransaction.Invocation) txSender.getEthTx().payload();
         assertAll(

@@ -16,6 +16,8 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultLease.getEthereumInvokeMetadataLeasesRecipientPublicKey;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultReissue.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultTransfers.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataSponsorFee.getEthereumInvokeMetadataResultSponsorFeeAmount;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataSponsorFee.getEthereumInvokeMetadataResultSponsorFeeAssetId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeResultIssues.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeTransactionMetadata.getEthereumInvokeDAppAddress;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeTransactionMetadata.getEthereumInvokeFunctionName;
@@ -132,6 +134,13 @@ public class EthereumInvokeMetadataAssertions {
                 () -> assertThat(getEthereumInvokeMetadataResultTransfersAddress(metadataIndex, transferIndex)).isEqualTo(address),
                 () -> assertThat(getEthereumInvokeMetadataResultTransfersAmount(metadataIndex, transferIndex)).isEqualTo(amount)
         );
+    }
+
+    public static void checkEthereumSponsorFeeMetadata(int metadataIndex, int dataIndex, String assetId, long amount) {
+        if (assetId != null) {
+            assertThat(getEthereumInvokeMetadataResultSponsorFeeAssetId(metadataIndex, dataIndex)).isEqualTo(assetId);
+        }
+        assertThat(getEthereumInvokeMetadataResultSponsorFeeAmount(metadataIndex, dataIndex)).isEqualTo(amount);
     }
 
     public static void checkEthereumLeaseMetadata(int metadataIndex, int dataIndex, String publicKeyHash, long amount) {

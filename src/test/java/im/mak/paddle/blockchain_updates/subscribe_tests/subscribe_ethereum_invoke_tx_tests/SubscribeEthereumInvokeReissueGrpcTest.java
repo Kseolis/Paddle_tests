@@ -96,7 +96,7 @@ public class SubscribeEthereumInvokeReissueGrpcTest extends BaseGrpcTest {
                 () -> amountAfterInvokeDAppIssuedAsset = testData.getAmountAfterInvokeDAppIssuedAsset()
         );
 
-        assetDAppAccount.transfer(senderAddress, Amount.of(payment, testData.getAssetId()));
+        assetDAppAccount.transfer(senderAddress, Amount.of(payment, assetId));
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
         calcBalances.balancesAfterEthereumReissueAssetInvoke(senderAddress, assetDAppAddress, payments, assetId, 2);
 

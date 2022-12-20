@@ -26,43 +26,35 @@ public class PrepareInvokeTestsData {
     private String callerPublicKey;
     private String callerPublicKeyHash;
     private byte[] callerAddressBytes;
-
     private DataDApp dAppAccount;
     private String dAppAddress;
     private String dAppPublicKey;
     private String dAppPublicKeyHash;
     private byte[] dAppAddressBytes;
-
     private DataDApp otherDAppAccount;
     private String otherDAppAddress;
     private byte[] otherDAppAddressBytes;
-
     private AssetDAppAccount assetDAppAccount;
     private String assetDAppAddress;
     private String assetDAppPublicKey;
     private byte[] assetDAppAddressBytes;
     private AssetId assetId;
-
     private int intArg;
     private Base64String base64String;
     private boolean boolArg;
     private String stringArg;
     private byte[] leaseId;
-
     private long amountAfterInvokeIssuedAsset;
     private long amountAfterInvokeDAppIssuedAsset;
     private DAppCall dAppCall;
     private long invokeFee;
-
     private final Amount wavesAmount;
     private final Amount secondWavesAmount;
     private final Amount assetAmount;
-
     private final String args = "assetId:ByteVector";
     private final String keyForDAppEqualBar = "bar";
     private final String keyForDAppEqualBaz = "baz";
     private final String key2ForDAppEqualBalance = "balance";
-
     private final Map<String, String> assetData = new HashMap<>();
     private final Map<String, String> assetDataForIssue = new HashMap<>();
     private final List<Amount> payments = new ArrayList<>();
@@ -356,8 +348,7 @@ public class PrepareInvokeTestsData {
         dAppAccount.setScript(dApp1);
         assetDAppAccount.setScript(dApp2);
 
-        dAppCall = dAppAccount.setData
-                (assetDAppAddressBytes, intArg, keyForDAppEqualBar, key2ForDAppEqualBalance, assetId.bytes());
+        dAppCall = dAppAccount.setData(assetDAppAddressBytes, intArg, keyForDAppEqualBar, key2ForDAppEqualBalance, assetId.bytes());
 
         payments.clear();
         otherAmounts.clear();

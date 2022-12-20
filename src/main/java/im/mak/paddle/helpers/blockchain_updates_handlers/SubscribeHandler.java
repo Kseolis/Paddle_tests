@@ -18,11 +18,7 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 public class SubscribeHandler {
     private static int txIndex;
     public static void subscribeResponseHandler(Channel channel, int fromHeight, int toHeight, String txId) {
-        SubscribeRequest request = SubscribeRequest
-                .newBuilder()
-                .setFromHeight(fromHeight)
-                .setToHeight(toHeight)
-                .build();
+        SubscribeRequest request = SubscribeRequest.newBuilder().setFromHeight(fromHeight).setToHeight(toHeight).build();
 
         BlockchainUpdatesApiBlockingStub stub = newBlockingStub(channel);
         Iterator<SubscribeEvent> subscribe = stub.subscribe(request);

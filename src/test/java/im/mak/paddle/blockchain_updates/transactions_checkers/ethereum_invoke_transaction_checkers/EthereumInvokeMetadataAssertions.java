@@ -12,6 +12,7 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataPayment.getEthereumInvokeMetadataPaymentsAssetId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResult.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultData.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultInvokes.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultLease.getEthereumInvokeMetadataLeasesAmount;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultLease.getEthereumInvokeMetadataLeasesRecipientPublicKey;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumInvokeMetadataResultReissue.*;
@@ -24,6 +25,7 @@ import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handle
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumMetadataResultBurn.getEthereumInvokeBurnAmounts;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumMetadataResultBurn.getEthereumInvokeBurnAssetId;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.ethereum_metadata.EthereumTransactionMetadata.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataResultInvokes.*;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.NONCE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,6 +61,40 @@ public class EthereumInvokeMetadataAssertions {
         }
     }
 
+    public static void checkEthereumInvokesMetadataCallArgs(int metadataIndex, int dataIndex, int argIndex, String type, String argValue) {
+        switch (type) {
+            case BINARY_VALUE:
+                assertThat(getEthereumInvokeMetadataResultInvokesCallBinArgs(metadataIndex, dataIndex, argIndex)).isEqualTo(argValue);
+                break;
+            case INTEGER:
+                assertThat(getEthereumInvokeMetadataResultInvokesCallIntArgs(metadataIndex, dataIndex, argIndex)).isEqualTo(argValue);
+                break;
+            case STRING:
+                assertThat(getEthereumInvokeMetadataResultInvokesCallStringArgs(metadataIndex, dataIndex, argIndex)).isEqualTo(argValue);
+                break;
+            case BOOLEAN:
+                assertThat(getEthereumInvokeMetadataResultInvokesCallBoolArgs(metadataIndex, dataIndex, argIndex)).isEqualTo(argValue);
+                break;
+        }
+    }
+
+    public static void checkEthereumStateChangesNestedTransfers(int metadataIndex, int dataIndex, int transferIndex, String assetId, long amountValue, String address) {
+        if (assetId != null) {
+            assertThat(getEthereumNestedStateChangesTransferAssetId(metadataIndex, dataIndex, transferIndex)).isEqualTo(assetId);
+        }
+        assertAll(
+                () -> assertThat(getEthereumNestedStateChangesTransferAddress(metadataIndex, dataIndex, transferIndex)).isEqualTo(address),
+                () -> assertThat(getEthereumNestedStateChangesTransferAmount(metadataIndex, dataIndex, transferIndex)).isEqualTo(amountValue)
+        );
+    }
+
+    public static void checkEthereumResultNestedInvokes(int metadataIndex, int dataIndex, int nestedInvokesIndex, String dApp, String func) {
+        assertAll(
+                () -> assertThat(getEthereumNestedStateChangesInvokesDApp(metadataIndex, dataIndex, nestedInvokesIndex)).isEqualTo(dApp),
+                () -> assertThat(getEthereumNestedStateChangesTransferInvokesCallFunction(metadataIndex, dataIndex, nestedInvokesIndex)).isEqualTo(func)
+        );
+    }
+
     public static void checkArgumentsEthereumMetadata(int metadataIndex, int dataIndex, String argType, String argValue) {
         switch (argType) {
             case BINARY_BASE58:
@@ -81,6 +117,33 @@ public class EthereumInvokeMetadataAssertions {
         }
     }
 
+    public static void checkEthereumNestedInvokesMetadataCallArgs(int metadataIndex, int dataIndex, int nestedIndex, int args, String type, String argValue) {
+        switch (type) {
+            case BINARY_VALUE:
+                assertThat(getEthereumNestedStateChangesTransferInvokesCallBinArg(metadataIndex, dataIndex, nestedIndex, args)).isEqualTo(argValue);
+                break;
+            case INTEGER:
+                assertThat(getEthereumNestedStateChangesTransferInvokesCallIntArg(metadataIndex, dataIndex, nestedIndex, args)).isEqualTo(argValue);
+                break;
+            case STRING:
+                assertThat(getEthereumNestedStateChangesTransferInvokesCallStringArg(metadataIndex, dataIndex, nestedIndex, args)).isEqualTo(argValue);
+                break;
+            case BOOLEAN:
+                assertThat(getEthereumNestedStateChangesTransferInvokesCallBooleanArg(metadataIndex, dataIndex, nestedIndex, args)).isEqualTo(argValue);
+                break;
+        }
+    }
+
+    public static void checkEthereumStateChangesDoubleNestedTransfers
+            (int metadataIndex, int dataIndex, int transferIndex, int invokesIndex, String assetId, long amountValue, String address) {
+        if (assetId != null) {
+            assertThat(getEthereumDoubleNestedStateChangesTransferAssetId(metadataIndex, dataIndex, transferIndex, invokesIndex)).isEqualTo(assetId);
+        }
+        assertAll(
+                () -> assertThat(getEthereumDoubleNestedStateChangesTransferAddress(metadataIndex, dataIndex, transferIndex, invokesIndex)).isEqualTo(address),
+                () -> assertThat(getEthereumDoubleNestedStateChangesTransferAmount(metadataIndex, dataIndex, transferIndex, invokesIndex)).isEqualTo(amountValue)
+        );
+    }
 
     public static void checkEthereumDataMetadata(int metadataIndex, int dataIndex, String type, String key, String argValue) {
         switch (type) {

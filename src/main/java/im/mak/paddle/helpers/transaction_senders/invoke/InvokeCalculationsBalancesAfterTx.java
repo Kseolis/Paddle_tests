@@ -223,7 +223,7 @@ public class InvokeCalculationsBalancesAfterTx {
         }
     }
 
-    public void balancesAfterEthereumCallerScriptTransfer(Address caller, Address dApp, Address acc, List<Amount> amounts, AssetId id) {
+    public void balancesEthereumAfterCallerScriptTransfer(Address caller, Address dApp, Address acc, List<Amount> amounts, AssetId id) {
         prepareThreeAccBalances(caller, dApp, acc, id);
 
         if (!amounts.isEmpty()) {
@@ -238,6 +238,52 @@ public class InvokeCalculationsBalancesAfterTx {
                         }
                     }
             );
+        }
+    }
+
+    public void balancesEthereumAfterDoubleNestedForCaller(Address caller, Address dApp, Address otherDApp, Address acc, List<Amount> amounts, AssetId id) {
+        long maxFirstWavesAmountValue = 10000;
+        prepareFourAccBalances(caller, dApp, acc, otherDApp, id);
+        invokeResultData = String.valueOf(testData.getIntArg() * 2);
+
+        if (!amounts.isEmpty()) {
+            amounts.forEach(a -> {
+                if (a.assetId().isWaves() && a.value() <= maxFirstWavesAmountValue) {
+                    callerBalanceWavesAfterTransaction -= a.value();
+                    accBalanceWavesAfterTransaction -= a.value();
+                    dAppBalanceWavesAfterTransaction += a.value() * 2;
+                } else if (a.assetId().isWaves() && a.value() > maxFirstWavesAmountValue) {
+                    callerBalanceWavesAfterTransaction -= a.value();
+                    otherDAppBalanceWavesAfterTransaction -= a.value();
+                    accBalanceWavesAfterTransaction += a.value();
+                    dAppBalanceWavesAfterTransaction += a.value();
+                } else if (a.assetId().equals(id)) {
+                    callerBalanceIssuedAssetsAfterTransaction -= a.value();
+                    accBalanceIssuedAssetsAfterTransaction += a.value();
+                }
+            });
+        }
+    }
+
+    public void balancesEthereumAfterDoubleNestedForOriginCaller(Address caller, Address dApp, Address otherDApp, Address acc, List<Amount> amounts, AssetId id) {
+        long maxFirstWavesAmountValue = 10000;
+        prepareFourAccBalances(caller, dApp, acc, otherDApp, id);
+        invokeResultData = String.valueOf(testData.getIntArg() * 2);
+
+        if (!amounts.isEmpty()) {
+            amounts.forEach(a -> {
+                if (a.assetId().isWaves() && a.value() <= maxFirstWavesAmountValue) {
+                    accBalanceWavesAfterTransaction -= a.value();
+                    dAppBalanceWavesAfterTransaction += a.value();
+                } else if (a.assetId().isWaves() && a.value() > maxFirstWavesAmountValue) {
+                    otherDAppBalanceWavesAfterTransaction -= a.value();
+                    dAppBalanceWavesAfterTransaction += a.value();
+                }
+                if (a.assetId().equals(id)) {
+                    callerBalanceIssuedAssetsAfterTransaction -= a.value();
+                    accBalanceIssuedAssetsAfterTransaction += a.value();
+                }
+            });
         }
     }
 

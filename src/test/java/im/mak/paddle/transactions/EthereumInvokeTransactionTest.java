@@ -217,10 +217,9 @@ public class EthereumInvokeTransactionTest {
         AssetDAppAccount assetDAppAccount = testData.getAssetDAppAccount();
         Address assetDAppAddress = assetDAppAccount.address();
         assetDAppAccount.transfer(senderAddress, Amount.of(10_000_000L, assetId));
-       // System.out.println("dAppAddress: " + node().getAssetBalance(dAppAddress, assetId));
 
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        calcBalances.balancesAfterEthereumCallerScriptTransfer(senderAddress, assetDAppAddress, dAppAddress, payments, assetId);
+        calcBalances.balancesEthereumAfterCallerScriptTransfer(senderAddress, assetDAppAddress, dAppAddress, payments, assetId);
 
         EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());

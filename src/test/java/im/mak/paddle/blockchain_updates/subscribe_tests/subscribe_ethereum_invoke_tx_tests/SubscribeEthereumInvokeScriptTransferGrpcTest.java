@@ -118,7 +118,7 @@ public class SubscribeEthereumInvokeScriptTransferGrpcTest extends BaseGrpcTest 
         );
         assetDAppAccount.transfer(senderAddress, Amount.of(assetPayment, testData.getAssetId()));
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        calcBalances.balancesAfterEthereumCallerScriptTransfer(senderAddress, assetDAppAddress, dAppAddress, payments, assetId);
+        calcBalances.balancesEthereumAfterCallerScriptTransfer(senderAddress, assetDAppAddress, dAppAddress, payments, assetId);
         async(
                 () -> senderBalanceWavesBeforeTx = calcBalances.getCallerBalanceWavesBeforeTransaction(),
                 () -> senderBalanceWavesAfterTx = calcBalances.getCallerBalanceWavesAfterTransaction(),

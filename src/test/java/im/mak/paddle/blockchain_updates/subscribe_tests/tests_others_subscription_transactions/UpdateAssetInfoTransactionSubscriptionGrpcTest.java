@@ -1,0 +1,4 @@
+package im.mak.paddle.blockchain_updates.subscribe_tests.tests_others_subscription_transactions;
+
+public class UpdateAssetInfoTransactionSubscriptionGrpcTest {
+}

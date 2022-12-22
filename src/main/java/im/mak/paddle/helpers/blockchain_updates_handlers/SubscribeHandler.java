@@ -5,7 +5,6 @@ import com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdates.SubscribeEve
 import com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdates.SubscribeRequest;
 import com.wavesplatform.events.protobuf.Events.BlockchainUpdated;
 import com.wavesplatform.events.protobuf.Events.BlockchainUpdated.Append;
-import com.wavesplatform.protobuf.block.BlockOuterClass.MicroBlock;
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
 
@@ -14,15 +13,12 @@ import java.util.Iterator;
 import static com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdatesApiGrpc.newBlockingStub;
 import static com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdatesApiGrpc.BlockchainUpdatesApiBlockingStub;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.setAppend;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.setBlockInfo;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.BlockInfo.setBlockInfo;
 
 public class SubscribeHandler {
+    private static int txIndex;
     public static void subscribeResponseHandler(Channel channel, int fromHeight, int toHeight, String txId) {
-        SubscribeRequest request = SubscribeRequest
-                .newBuilder()
-                .setFromHeight(fromHeight)
-                .setToHeight(toHeight)
-                .build();
+        SubscribeRequest request = SubscribeRequest.newBuilder().setFromHeight(fromHeight).setToHeight(toHeight).build();
 
         BlockchainUpdatesApiBlockingStub stub = newBlockingStub(channel);
         Iterator<SubscribeEvent> subscribe = stub.subscribe(request);
@@ -37,17 +33,18 @@ public class SubscribeHandler {
 
     private static void subscribeEventHandler(BlockchainUpdated subscribeEventUpdate, String txId) {
         Append append = subscribeEventUpdate.getAppend();
-        MicroBlock microBlockInfo = append
-                .getMicroBlock()
-                .getMicroBlock()
-                .getMicroBlock();
+        int transactionIdsCount = append.getTransactionIdsCount();
 
-        if (microBlockInfo.getTransactionsCount() > 0) {
-            String transactionId = Base58.encode(append.getTransactionIds(0).toByteArray());
+        for (int i = 0; i < transactionIdsCount; i++) {
+            String transactionId = Base58.encode(append.getTransactionIds(i).toByteArray());
             if (transactionId.equals(txId)) {
+                txIndex = i;
                 setBlockInfo(append);
                 setAppend(append);
             }
         }
+    }
+    public static int getTxIndex() {
+        return txIndex;
     }
 }

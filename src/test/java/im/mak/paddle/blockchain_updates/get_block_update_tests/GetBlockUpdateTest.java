@@ -154,4 +154,14 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
         GrpcSetAssetScriptCheckers assetScriptCheckers = new GrpcSetAssetScriptCheckers(index, setAssetScriptTx, issueTx);
         assetScriptCheckers.checkSetAssetGrpc(0, 0);
     }
+
+    @Test
+    @DisplayName("Check getBlockUpdate response for Ethereum transaction")
+    void getBlockUpdateEthereumTransactionTest() {
+        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, ethTxId.toString());
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcEthereumTransferCheckers ethereumTransferCheckers = new GrpcEthereumTransferCheckers(index, ethTx, wavesAmount);
+        ethereumTransferCheckers.checkEthereumTransfer();
+    }
 }

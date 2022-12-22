@@ -98,6 +98,7 @@ public class Node extends com.wavesplatform.wavesj.Node {
                 ContainerConfig containerConfig = ContainerConfig.builder()
                         .hostConfig(hostConfig)
                         .image(conf.dockerImage)
+                        .env("WAVES_LOG_LEVEL=TRACE")
                         .exposedPorts("6863", String.valueOf(dockerGRPCPort))
                         .build();
 

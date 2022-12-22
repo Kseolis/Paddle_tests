@@ -169,4 +169,14 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
         GrpcSetAssetScriptCheckers assetScriptCheckers = new GrpcSetAssetScriptCheckers(index, setAssetScriptTx, issueTx);
         assetScriptCheckers.checkSetAssetGrpc(0, 0);
     }
+
+    @Test
+    @DisplayName("Check getBlockUpdateRange response for Ethereum transaction")
+    void getBlockUpdateEthereumTransactionTest() {
+        GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
+        handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, ethTxId.toString());
+        int index = handler.getTxIndex();
+        GrpcEthereumTransferCheckers ethereumTransferCheckers = new GrpcEthereumTransferCheckers(index, ethTx, wavesAmount);
+        ethereumTransferCheckers.checkEthereumTransfer();
+    }
 }

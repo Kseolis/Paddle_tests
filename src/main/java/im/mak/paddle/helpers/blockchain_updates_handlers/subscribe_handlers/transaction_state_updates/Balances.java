@@ -1,12 +1,12 @@
 package im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates;
 
 import com.wavesplatform.crypto.base.Base58;
-import com.wavesplatform.events.protobuf.Events;
+import com.wavesplatform.events.protobuf.Events.StateUpdate.BalanceUpdate;
 
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_state_updates.TransactionStateUpdates.getTransactionStateUpdate;
 
 public class Balances {
-    public static Events.StateUpdate.BalanceUpdate getBalanceUpdate(int txStateUpdIndex, int index) {
+    public static BalanceUpdate getBalanceUpdate(int txStateUpdIndex, int index) {
         return getTransactionStateUpdate(txStateUpdIndex).getBalances(index);
     }
 

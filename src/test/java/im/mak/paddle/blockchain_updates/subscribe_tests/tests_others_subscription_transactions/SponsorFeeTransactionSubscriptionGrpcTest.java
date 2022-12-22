@@ -21,15 +21,11 @@ import static im.mak.paddle.util.Constants.*;
 public class SponsorFeeTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private static int assetQuantity;
     private static int assetDecimals;
-
     private static Account account;
-
     private static AssetId assetId;
     private static String assetName;
     private static String assetDescription;
-
     private static DefaultDApp420Complexity dAppAccount;
-
     private static long sponsorFeeAmount;
 
     @BeforeAll

@@ -10,6 +10,7 @@ import com.wavesplatform.transactions.common.Base64String;
 import com.wavesplatform.transactions.common.Id;
 import com.wavesplatform.transactions.data.*;
 import com.wavesplatform.transactions.exchange.Order;
+import com.wavesplatform.wavesj.exceptions.NodeException;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
@@ -17,11 +18,13 @@ import im.mak.paddle.helpers.transaction_senders.*;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTx;
 import org.junit.jupiter.api.BeforeAll;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.wavesplatform.transactions.TransferTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
+import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
 import static im.mak.paddle.helpers.Randomizer.*;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
@@ -112,6 +115,10 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static SponsorFeeTransactionSender sponsorFeeTx;
     protected static Id sponsorFeeTxId;
 
+    protected static Address ethSenderAddress;
+    protected static EthereumTransferTransactionSender ethTx;
+    protected static Id ethTxId;
+
     protected static int height;
     protected static int fromHeight;
     protected static int toHeight;
@@ -128,7 +135,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     private static final StringEntry stringEntry = StringEntry.as("String", "string");
 
     @BeforeAll
-    static void setUp() {
+    static void setUp() throws NodeException, IOException {
         mainSetUp();
         // Issue transaction
         issueSetUp();
@@ -156,6 +163,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         sponsorFeeSetUp();
         // SetAssetScript transaction
         setAssetScriptSetUp();
+        ethereumSetUp();
     }
 
     private static void mainSetUp() {
@@ -167,6 +175,14 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                     senderPublicKey = sender.publicKey();
                     sponsorFeeIssueAsset = sender.issue(i -> i.name("sponsorFeeAsset")).tx();
                     assetIdForSponsorFee = sponsorFeeIssueAsset.assetId();
+                },
+                () -> {
+                    try {
+                        ethSenderAddress = getEthInstance().getSenderAddress();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    node().faucet().transfer(ethSenderAddress, 1_0000_0000L, AssetId.WAVES, i -> i.additionalFee(0));
                 },
                 () -> {
                     buyer = new Account(DEFAULT_FAUCET);
@@ -304,6 +320,13 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         sponsorFeeTx = new SponsorFeeTransactionSender(sender, wavesAmount.value(), assetIdForSponsorFee);
         sponsorFeeTx.sponsorFeeTransactionSender(SUM_FEE, SponsorFeeTransaction.LATEST_VERSION);
         sponsorFeeTxId = sponsorFeeTx.getSponsorTx().id();
+        checkHeight();
+    }
+
+    private static void ethereumSetUp() throws IOException, NodeException {
+        ethTx = new EthereumTransferTransactionSender(ethSenderAddress, recipient.address(), wavesAmount, MIN_FEE);
+        ethTx.sendingAnEthereumTransferTransaction();
+        ethTxId = ethTx.getEthTxId();
         checkHeight();
     }
 

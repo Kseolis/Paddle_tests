@@ -42,14 +42,14 @@ public class GetBlockUpdateInvokeTest extends BaseGrpcTest {
         caller = testData.getCallerAccount();
         dAppAccount = testData.getDAppAccount();
         assetDAppAccount = testData.getAssetDAppAccount();
-        amounts = testData.getAmounts();
+        amounts = testData.getPayments();
     }
 
     @Test
     @DisplayName("getBlockUpdate invoke dApp to dApp")
     void getBlockUpdateInvokeWithDAppToDApp() {
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        calcBalances.balancesAfterDAppToDApp(caller, dAppAccount, assetDAppAccount, amounts, assetId);
+        calcBalances.balancesAfterDAppToDApp(caller.address(), dAppAccount.address(), assetDAppAccount.address(), amounts, assetId);
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
         setVersion(LATEST_VERSION);

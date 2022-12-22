@@ -8,7 +8,6 @@ import static im.mak.paddle.util.Constants.*;
 
 public class ConstructorRideFunctions {
     private static final Map<String, String> issuedAssetData =  new HashMap<>();
-
     private static final int issueAssetDecimals = getRandomInt(0, 8);
     private static final String issuedAssetName = "issuedAsset" + getRandomInt(1, 99);
     private static final String issuedAssetDescription = "asset ride script " + getRandomInt(1, 9999999);
@@ -63,32 +62,7 @@ public class ConstructorRideFunctions {
         return sb.toString();
     }
 
-    public static String getIssuedAssetName() {
-        return issuedAssetName;
-    }
-
-    public static String getIssuedAssetDescription() {
-        return issuedAssetDescription;
-    }
-
-    public static long getIssueAssetVolume() {
-        return issueAssetVolume;
-    }
-
-    public static int getIssueAssetDecimals() {
-        return issueAssetDecimals;
-    }
-
-    public static boolean getIssueAssetReissuable() {
-        return issueAssetReissuable;
-    }
-
-    public static int getIssueAssetNonce() {
-        return issueAssetNonce;
-    }
-
     public static Map<String, String> getIssueAssetData() {
         return issuedAssetData;
     }
-
 }

@@ -7,22 +7,22 @@ import java.util.Map;
 
 import static im.mak.paddle.blockchain_updates.BaseGrpcTest.getDAppAccountAddress;
 import static im.mak.paddle.blockchain_updates.BaseGrpcTest.getDAppFunctionName;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.BaseInvokeMetadata.getInvokeMetadataDAppAddress;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.BaseInvokeMetadata.getInvokeMetadataFunctionName;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataArgs.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataPayment.getInvokeMetadataPaymentsAmount;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataPayment.getInvokeMetadataPaymentsAssetId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultBurn.getInvokeMetadataResultBurnAmount;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultBurn.getInvokeMetadataResultBurnAssetId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultData.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultInvokes.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultIssue.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultLease.getInvokeMetadataLeasesAmount;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultLease.getInvokeMetadataLeasesRecipientPublicKey;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultReissue.*;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultSponsorFee.getInvokeMetadataResultSponsorFeeAmount;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultSponsorFee.getInvokeMetadataResultSponsorFeeAssetId;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.invoke_transaction_metadata.InvokeMetadataResultTransfers.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.BaseInvokeMetadata.getInvokeMetadataDAppAddress;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.BaseInvokeMetadata.getInvokeMetadataFunctionName;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataArgs.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataPayment.getInvokeMetadataPaymentsAmount;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataPayment.getInvokeMetadataPaymentsAssetId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataResultBurn.getInvokeMetadataResultBurnAmount;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataResultBurn.getInvokeMetadataResultBurnAssetId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataResultData.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataResultInvokes.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataResultIssue.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataResultLease.getInvokeMetadataLeasesAmount;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataResultLease.getInvokeMetadataLeasesRecipientPublicKey;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataResultReissue.*;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataResultSponsorFee.getInvokeMetadataResultSponsorFeeAmount;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataResultSponsorFee.getInvokeMetadataResultSponsorFeeAssetId;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataResultTransfers.*;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -59,20 +59,14 @@ public class InvokeMetadataAssertions {
 
     public static void checkIssueAssetMetadata(int metadataIndex, int dataIndex, Map<String, String> assetData) {
         assertAll(
-                () -> assertThat(getInvokeMetadataResultIssueName(metadataIndex, dataIndex))
-                        .isEqualTo(assetData.get(NAME)),
-                () -> assertThat(getInvokeMetadataResultIssueDescription(metadataIndex, dataIndex))
-                        .isEqualTo(assetData.get(DESCRIPTION)),
-                () -> assertThat(getInvokeMetadataResultIssueAmount(metadataIndex, dataIndex))
-                        .isEqualTo(Long.valueOf(assetData.get(VOLUME))),
-                () -> assertThat(getInvokeMetadataResultIssueDecimals(metadataIndex, dataIndex))
-                        .isEqualTo(Long.parseLong(assetData.get(DECIMALS))),
-                () -> assertThat(getInvokeMetadataResultIssueReissuable(metadataIndex, dataIndex))
-                        .isEqualTo(Boolean.parseBoolean(assetData.get(REISSUE)))
+                () -> assertThat(getInvokeMetadataResultIssueName(metadataIndex, dataIndex)).isEqualTo(assetData.get(NAME)),
+                () -> assertThat(getInvokeMetadataResultIssueDescription(metadataIndex, dataIndex)).isEqualTo(assetData.get(DESCRIPTION)),
+                () -> assertThat(getInvokeMetadataResultIssueAmount(metadataIndex, dataIndex)).isEqualTo(Long.valueOf(assetData.get(VOLUME))),
+                () -> assertThat(getInvokeMetadataResultIssueDecimals(metadataIndex, dataIndex)).isEqualTo(Long.parseLong(assetData.get(DECIMALS))),
+                () -> assertThat(getInvokeMetadataResultIssueReissuable(metadataIndex, dataIndex)).isEqualTo(Boolean.parseBoolean(assetData.get(REISSUE)))
         );
         if (assetData.get(NONCE) != null) {
-            assertThat(getInvokeMetadataResultIssueNonce(metadataIndex, dataIndex))
-                    .isEqualTo(Long.parseLong(assetData.get(NONCE)));
+            assertThat(getInvokeMetadataResultIssueNonce(metadataIndex, dataIndex)).isEqualTo(Long.parseLong(assetData.get(NONCE)));
         }
     }
 
@@ -97,8 +91,7 @@ public class InvokeMetadataAssertions {
         assertThat(getInvokeMetadataResultSponsorFeeAmount(metadataIndex, dataIndex)).isEqualTo(amount);
     }
 
-    public static void checkReissueMetadata
-            (int metadataIndex, int dataIndex, String assetId, long amount, boolean reissue) {
+    public static void checkReissueMetadata(int metadataIndex, int dataIndex, String assetId, long amount, boolean reissue) {
         if (assetId != null) {
             assertThat(getInvokeMetadataResultReissueAssetId(metadataIndex, dataIndex)).isEqualTo(assetId);
         }
@@ -159,8 +152,7 @@ public class InvokeMetadataAssertions {
         );
     }
 
-    public static void checkInvokesMetadataCallArgs(int metadataIndex, int dataIndex, int argIndex,
-                                                    String type, String argValue) {
+    public static void checkInvokesMetadataCallArgs(int metadataIndex, int dataIndex, int argIndex, String type, String argValue) {
         switch (type) {
             case BINARY_VALUE:
                 assertThat(getInvokeMetadataResultInvokesCallBinArgs(metadataIndex, dataIndex, argIndex)).isEqualTo(argValue);
@@ -179,54 +171,36 @@ public class InvokeMetadataAssertions {
 
     public static void checkResultNestedInvokes(int metadataIndex, int dataIndex, int nestedInvokesIndex, String dApp, String func) {
         assertAll(
-                () -> assertThat(
-                        getNestedStateChangesInvokesDApp(metadataIndex, dataIndex, nestedInvokesIndex)
-                ).isEqualTo(dApp),
-                () -> assertThat(
-                        getNestedStateChangesTransferInvokesCallFunction
-                                (metadataIndex, dataIndex, nestedInvokesIndex)
-                ).isEqualTo(func)
+                () -> assertThat(getNestedStateChangesInvokesDApp(metadataIndex, dataIndex, nestedInvokesIndex)).isEqualTo(dApp),
+                () -> assertThat(getNestedStateChangesTransferInvokesCallFunction(metadataIndex, dataIndex, nestedInvokesIndex)).isEqualTo(func)
         );
     }
 
-    public static void checkNestedInvokesMetadataCallArgs(int metadataIndex, int dataIndex, int nestedInvokesIndex,
-                                                          int args, String type, String argValue) {
+    public static void checkNestedInvokesMetadataCallArgs(int metadataIndex, int dataIndex, int nestedIndex, int args, String type, String argValue) {
         switch (type) {
             case BINARY_VALUE:
-                assertThat(
-                        getNestedStateChangesTransferInvokesCallBinArg(
-                                metadataIndex, dataIndex, nestedInvokesIndex, args
-                        )).isEqualTo(argValue);
+                assertThat(getNestedStateChangesTransferInvokesCallBinArg(metadataIndex, dataIndex, nestedIndex, args)).isEqualTo(argValue);
                 break;
             case INTEGER:
-                assertThat(getNestedStateChangesTransferInvokesCallIntArg(
-                        metadataIndex, dataIndex, nestedInvokesIndex, args
-                )).isEqualTo(argValue);
+                assertThat(getNestedStateChangesTransferInvokesCallIntArg(metadataIndex, dataIndex, nestedIndex, args)).isEqualTo(argValue);
                 break;
             case STRING:
-                assertThat(getNestedStateChangesTransferInvokesCallStringArg(
-                        metadataIndex, dataIndex, nestedInvokesIndex, args
-                )).isEqualTo(argValue);
+                assertThat(getNestedStateChangesTransferInvokesCallStringArg(metadataIndex, dataIndex, nestedIndex, args)).isEqualTo(argValue);
                 break;
             case BOOLEAN:
-                assertThat(getNestedStateChangesTransferInvokesCallBooleanArg(
-                        metadataIndex, dataIndex, nestedInvokesIndex, args
-                )).isEqualTo(argValue);
+                assertThat(getNestedStateChangesTransferInvokesCallBooleanArg(metadataIndex, dataIndex, nestedIndex, args)).isEqualTo(argValue);
                 break;
         }
     }
 
-    public static void checkResultInvokesMetadataPayments(int metadataIndex, int dataIndex, int payIndex,
-                                                          String assetId, long amount) {
+    public static void checkResultInvokesMetadataPayments(int metadataIndex, int dataIndex, int payIndex, String assetId, long amount) {
         if (assetId != null) {
-            assertThat(getInvokeMetadataResultInvokesPaymentAssetId(metadataIndex, dataIndex, payIndex))
-                    .isEqualTo(assetId);
+            assertThat(getInvokeMetadataResultInvokesPaymentAssetId(metadataIndex, dataIndex, payIndex)).isEqualTo(assetId);
         }
         assertThat(getInvokeMetadataResultInvokesPaymentAmount(metadataIndex, dataIndex, payIndex)).isEqualTo(amount);
     }
 
-    public static void checkStateChangesTransfers(int metadataIndex, int dataIndex, int payIndex,
-                                                  String assetId, long amountValue, String address) {
+    public static void checkStateChangesTransfers(int metadataIndex, int dataIndex, int payIndex, String assetId, long amountValue, String address) {
         if (assetId != null) {
             assertThat(getStateChangesTransferAssetId(metadataIndex, dataIndex, payIndex)).isEqualTo(assetId);
         }
@@ -236,31 +210,24 @@ public class InvokeMetadataAssertions {
         );
     }
 
-    public static void checkStateChangesNestedTransfers(int metadataIndex, int dataIndex, int transferIndex,
-                                                        String assetId, long amountValue, String address) {
+    public static void checkStateChangesNestedTransfers(int metadataIndex, int dataIndex, int transferIndex, String assetId, long amountValue, String address) {
         if (assetId != null) {
-            assertThat(getNestedStateChangesTransferAssetId(metadataIndex, dataIndex, transferIndex))
-                    .isEqualTo(assetId);
+            assertThat(getNestedStateChangesTransferAssetId(metadataIndex, dataIndex, transferIndex)).isEqualTo(assetId);
         }
         assertAll(
-                () -> assertThat(getNestedStateChangesTransferAddress(metadataIndex, dataIndex, transferIndex))
-                        .isEqualTo(address),
-                () -> assertThat(getNestedStateChangesTransferAmount(metadataIndex, dataIndex, transferIndex))
-                        .isEqualTo(amountValue)
+                () -> assertThat(getNestedStateChangesTransferAddress(metadataIndex, dataIndex, transferIndex)).isEqualTo(address),
+                () -> assertThat(getNestedStateChangesTransferAmount(metadataIndex, dataIndex, transferIndex)).isEqualTo(amountValue)
         );
     }
 
     public static void checkStateChangesDoubleNestedTransfers
             (int metadataIndex, int dataIndex, int transferIndex, int invokesIndex, String assetId, long amountValue, String address) {
         if (assetId != null) {
-            assertThat(getDoubleNestedStateChangesTransferAssetId(metadataIndex, dataIndex, transferIndex, invokesIndex))
-                    .isEqualTo(assetId);
+            assertThat(getDoubleNestedStateChangesTransferAssetId(metadataIndex, dataIndex, transferIndex, invokesIndex)).isEqualTo(assetId);
         }
         assertAll(
-                () -> assertThat(getDoubleNestedStateChangesTransferAddress(metadataIndex, dataIndex, transferIndex, invokesIndex))
-                        .isEqualTo(address),
-                () -> assertThat(getDoubleNestedStateChangesTransferAmount(metadataIndex, dataIndex, transferIndex, invokesIndex))
-                        .isEqualTo(amountValue)
+                () -> assertThat(getDoubleNestedStateChangesTransferAddress(metadataIndex, dataIndex, transferIndex, invokesIndex)).isEqualTo(address),
+                () -> assertThat(getDoubleNestedStateChangesTransferAmount(metadataIndex, dataIndex, transferIndex, invokesIndex)).isEqualTo(amountValue)
         );
     }
 
@@ -296,19 +263,15 @@ public class InvokeMetadataAssertions {
 
     public static void checkStateChangesSponsorFee(int metadataIndex, int dataIndex, int payIndex, PrepareInvokeTestsData data) {
         assertAll(
-                () -> assertThat(getStateChangesSponsorFeeAssetId(metadataIndex, dataIndex, payIndex))
-                        .isEqualTo(data.getAssetAmount().assetId().toString()),
-                () -> assertThat(getStateChangesSponsorFeeAmount(metadataIndex, dataIndex, payIndex))
-                        .isEqualTo(data.getAssetAmount().value())
+                () -> assertThat(getStateChangesSponsorFeeAssetId(metadataIndex, dataIndex, payIndex)).isEqualTo(data.getAssetAmount().assetId().toString()),
+                () -> assertThat(getStateChangesSponsorFeeAmount(metadataIndex, dataIndex, payIndex)).isEqualTo(data.getAssetAmount().value())
         );
     }
 
     public static void checkStateChangesLease(int metadataIndex, int dataIndex, int payIndex, PrepareInvokeTestsData data) {
         assertAll(
-                () -> assertThat(getStateChangesLeasesRecipientPkHash(metadataIndex, dataIndex, payIndex))
-                        .isEqualTo(data.getDAppPublicKeyHash()),
-                () -> assertThat(getStateChangesLeasesAmount(metadataIndex, dataIndex, payIndex))
-                        .isEqualTo(data.getWavesAmount().value())
+                () -> assertThat(getStateChangesLeasesRecipientPkHash(metadataIndex, dataIndex, payIndex)).isEqualTo(data.getDAppPublicKeyHash()),
+                () -> assertThat(getStateChangesLeasesAmount(metadataIndex, dataIndex, payIndex)).isEqualTo(data.getWavesAmount().value())
         );
     }
 

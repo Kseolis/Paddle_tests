@@ -12,7 +12,7 @@ import java.util.List;
 
 import static com.wavesplatform.events.api.grpc.protobuf.BlockchainUpdatesApiGrpc.newBlockingStub;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.AppendHandler.setAppend;
-import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.TransactionsHandler.setBlockInfo;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.BlockInfo.setBlockInfo;
 
 public class GetBlockUpdatesRangeHandler {
     private int txIndex;

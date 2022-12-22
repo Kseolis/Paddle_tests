@@ -19,9 +19,9 @@ public class InvokeScriptTransactionSender extends BaseTransactionSender {
     private List<Amount> amounts = new ArrayList<>();
 
     public InvokeScriptTransactionSender(Account caller, Account dAppAccount, DAppCall call, List<Amount> amounts) {
-        this.dAppCall = call;
         this.caller = caller;
         this.dAppAccount = dAppAccount;
+        this.dAppCall = call;
         this.amounts = amounts;
     }
 

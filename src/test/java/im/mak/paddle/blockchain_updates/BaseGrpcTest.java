@@ -12,16 +12,19 @@ import static im.mak.paddle.Node.*;
 
 @Execution(ExecutionMode.SAME_THREAD)
 public class BaseGrpcTest {
+    private static final long devNetChainId = 68;
+    private static final long dockerChainId = 82;
+
     protected int height;
     protected int fromHeight;
     protected int toHeight;
-    public static final long CHAIN_ID = 68;
+    public static final long CHAIN_ID = dockerChainId;
     private static String dAppAccountPublicKeyHash;
     private static String dAppAccountAddress;
     private static String dAppFunctionName;
 
     protected final Channel CHANNEL = ManagedChannelBuilder
-            .forAddress(devNetGRPCAddress, devNetGRPCPort)
+            .forAddress(dockerGRPCAddress, dockerGRPCPort)
             .usePlaintext()
             .build();
 

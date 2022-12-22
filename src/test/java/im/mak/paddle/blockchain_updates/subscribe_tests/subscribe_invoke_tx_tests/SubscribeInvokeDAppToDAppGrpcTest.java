@@ -20,6 +20,7 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateDataEntries;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Constants.*;
@@ -27,37 +28,42 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
     private static PrepareInvokeTestsData testData;
+    private static AssetId assetId;
+    private static DAppCall dAppCall;
+    private static Account caller;
+    private static Account dAppAccount;
+    private static Account assetDAppAccount;
+    private static List<Amount> amounts;
+    private static InvokeCalculationsBalancesAfterTx calcBalances;
 
     @BeforeAll
     static void before() {
         testData = new PrepareInvokeTestsData();
+        testData.prepareDataForDAppToDAppTests(SUM_FEE);
+        assetId = testData.getAssetId();
+        dAppCall = testData.getDAppCall();
+        caller = testData.getCallerAccount();
+        dAppAccount = testData.getDAppAccount();
+        assetDAppAccount = testData.getAssetDAppAccount();
+        amounts = testData.getOtherAmounts();
+        calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+        setVersion(LATEST_VERSION);
     }
 
     @Test
     @DisplayName("subscribe invoke dApp to dApp")
     void subscribeInvokeWithDAppToDApp() {
         fromHeight = node().getHeight();
-        testData.prepareDataForDAppToDAppTests(SUM_FEE);
-        InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+        calcBalances.balancesAfterDAppToDApp(caller.address(), dAppAccount.address(), assetDAppAccount.address(), amounts, assetId);
 
-        final AssetId assetId = testData.getAssetId();
-        final DAppCall dAppCall = testData.getDAppCall();
-        final Account caller = testData.getCallerAccount();
-        final Account dAppAccount = testData.getDAppAccount();
-        final Account assetDAppAccount = testData.getAssetDAppAccount();
-        final List<Amount> amounts = testData.getAmounts();
-
-        final InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
-        setVersion(LATEST_VERSION);
-        calcBalances.balancesAfterDAppToDApp(caller, dAppAccount, assetDAppAccount, amounts, assetId);
+        InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
         txSender.invokeSender();
-
-        final String txId = txSender.getInvokeScriptId();
+        String txId = txSender.getInvokeScriptId();
 
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
         prepareInvoke(dAppAccount, testData);
-        assertionsCheckDAppToDAppInvoke(testData, calcBalances, txId, 0);
+        assertionsCheckDAppToDAppInvoke(testData, calcBalances, txId, getTxIndex());
     }
 
     public static void assertionsCheckDAppToDAppInvoke

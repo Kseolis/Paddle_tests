@@ -1,5 +1,6 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests;
 
+import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.transactions.account.Address;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
@@ -26,19 +27,23 @@ import static im.mak.paddle.helpers.ConstructorRideFunctions.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
+import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeIssueGrpcTest extends BaseGrpcTest {
     private PrepareInvokeTestsData testData;
     private DAppCall dAppCall;
+    private String dAppFunctionName;
     private Account caller;
     private String callerPK;
+    private Address callerAddress;
     private String callerAddressString;
     private long callerWavesBalanceBeforeTx;
     private long callerWavesBalanceAfterTx;
     private Account assetDAppAccount;
     private String assetDAppAddress;
+    private String assetDAppPKHash;
     private Map<String, String> issueAssetData;
     private long issueAssetDataVolume;
     private Map<String, String> assetDataForIssue;
@@ -49,25 +54,40 @@ public class SubscribeInvokeIssueGrpcTest extends BaseGrpcTest {
     void before() {
         testData = new PrepareInvokeTestsData();
         testData.prepareDataForIssueTests();
+        setVersion(LATEST_VERSION);
+        async(
+                () -> {
+                    caller = testData.getCallerAccount();
+                    callerPK = testData.getCallerPublicKey();
+                    callerAddress = caller.address();
+                    callerAddressString = testData.getCallerAddress();
+                },
+                () -> {
+                    assetDAppAccount = testData.getAssetDAppAccount();
+                    assetDAppAddress = testData.getAssetDAppAddress();
+                    assetDAppPKHash = Base58.encode(assetDAppAccount.address().publicKeyHash());
+                },
+                () -> {
+                    issueAssetData = getIssueAssetData();
+                    issueAssetDataVolume = Long.parseLong(issueAssetData.get(VOLUME));
+                },
+                () -> {
+                    assetDataForIssue = testData.getAssetDataForIssue();
+                    assetDataForIssueVolume = Long.parseLong(assetDataForIssue.get(VOLUME));
+                },
+
+                () -> invokeFee = testData.getInvokeFee(),
+                () -> {
+                    dAppCall = testData.getDAppCall();
+                    dAppFunctionName = dAppCall.getFunction().name();
+                }
+        );
         AssetId assetId = testData.getAssetId();
-        dAppCall = testData.getDAppCall();
-        caller = testData.getCallerAccount();
-        Address callerAddress = caller.address();
-        callerAddressString = testData.getCallerAddress();
-        callerPK = testData.getCallerPublicKey();
-        assetDAppAccount = testData.getAssetDAppAccount();
-        assetDAppAddress = testData.getAssetDAppAddress();
         List<Amount> amounts = testData.getPayments();
-        issueAssetData = getIssueAssetData();
-        issueAssetDataVolume = Long.parseLong(issueAssetData.get(VOLUME));
-        assetDataForIssue = testData.getAssetDataForIssue();
-        assetDataForIssueVolume = Long.parseLong(assetDataForIssue.get(VOLUME));
-        invokeFee = testData.getInvokeFee();
         InvokeCalculationsBalancesAfterTx calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
         calcBalances.balancesAfterReissueAssetInvoke(callerAddress, assetDAppAccount.address(), amounts, assetId);
         callerWavesBalanceBeforeTx = calcBalances.getCallerBalanceWavesBeforeTransaction();
         callerWavesBalanceAfterTx = calcBalances.getCallerBalanceWavesAfterTransaction();
-        setVersion(LATEST_VERSION);
     }
 
     @Test
@@ -78,14 +98,13 @@ public class SubscribeInvokeIssueGrpcTest extends BaseGrpcTest {
         String txId = txSender.getInvokeScriptId();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        prepareInvoke(assetDAppAccount, testData);
         assertionsCheck(txId, getTxIndex());
     }
 
     private void assertionsCheck(String txId, int txIndex) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(invokeFee, callerPK, txId, txIndex),
-                () -> checkMainMetadata(txIndex),
+                () -> checkInvokeSubscribeTransaction(invokeFee, callerPK, txId, txIndex, assetDAppPKHash),
+                () -> checkMainMetadata(txIndex, assetDAppAddress, dAppFunctionName),
                 () -> checkIssueAssetMetadata(txIndex, 0, issueAssetData),
                 () -> checkIssueAssetMetadata(txIndex, 1, assetDataForIssue),
                 () -> checkStateUpdateBalance(txIndex, 0, callerAddressString, WAVES_STRING_ID, callerWavesBalanceBeforeTx, callerWavesBalanceAfterTx),

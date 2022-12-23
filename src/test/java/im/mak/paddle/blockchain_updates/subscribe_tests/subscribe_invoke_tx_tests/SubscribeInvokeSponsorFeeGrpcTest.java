@@ -1,5 +1,6 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests;
 
+import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.transactions.account.Address;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
@@ -33,6 +34,7 @@ public class SubscribeInvokeSponsorFeeGrpcTest extends BaseGrpcTest {
     private PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
     private DAppCall dAppCall;
+    private String dAppFunctionName;
     private Account caller;
     private Address callerAddress;
     private String callerAddressStr;
@@ -42,6 +44,7 @@ public class SubscribeInvokeSponsorFeeGrpcTest extends BaseGrpcTest {
     private Account assetDAppAccount;
     private Address assetDAppAddress;
     private String assetDAppAddressStr;
+    private String assetDAppPKHash;
     private AssetId assetId;
     private String assetIdStr;
     private long invokeFee;
@@ -60,6 +63,7 @@ public class SubscribeInvokeSponsorFeeGrpcTest extends BaseGrpcTest {
         async(
                 () -> {
                     dAppCall = testData.getDAppCall();
+                    dAppFunctionName = dAppCall.getFunction().name();
                     invokeFee = testData.getInvokeFee();
                 },
                 () -> {
@@ -72,6 +76,7 @@ public class SubscribeInvokeSponsorFeeGrpcTest extends BaseGrpcTest {
                     assetDAppAccount = testData.getAssetDAppAccount();
                     assetDAppAddress = assetDAppAccount.address();
                     assetDAppAddressStr = testData.getAssetDAppAddress();
+                    assetDAppPKHash = Base58.encode(assetDAppAddress.publicKeyHash());
                 },
                 () -> {
                     assetId = testData.getAssetId();
@@ -105,14 +110,13 @@ public class SubscribeInvokeSponsorFeeGrpcTest extends BaseGrpcTest {
         String txId = txSender.getInvokeScriptId();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        prepareInvoke(assetDAppAccount, testData);
         assertionsCheck(txId, getTxIndex());
     }
 
     private void assertionsCheck(String txId, int txIndex) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(invokeFee, callerPK, txId, txIndex),
-                () -> checkMainMetadata(txIndex),
+                () -> checkInvokeSubscribeTransaction(invokeFee, callerPK, txId, txIndex, assetDAppPKHash),
+                () -> checkMainMetadata(txIndex, assetDAppAddressStr, dAppFunctionName),
                 () -> checkArgumentsMetadata(txIndex, 0, BINARY_BASE58, assetIdStr),
                 () -> checkIssueAssetMetadata(txIndex, 0, issueAssetData),
                 () -> checkSponsorFeeMetadata(txIndex, 0, assetIdStr, payment),

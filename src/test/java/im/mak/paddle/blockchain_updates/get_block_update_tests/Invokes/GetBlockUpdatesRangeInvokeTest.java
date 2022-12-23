@@ -58,7 +58,6 @@ public class GetBlockUpdatesRangeInvokeTest extends BaseGrpcTest {
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
         handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
         int txIndex = handler.getTxIndex();
-        prepareInvoke(dAppAccount, testData);
         assertionsCheckDAppToDAppInvoke(testData, calcBalances, txId, txIndex);
     }
 }

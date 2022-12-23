@@ -144,7 +144,6 @@ public class SubscribeEthereumInvokeScriptTransferGrpcTest extends BaseGrpcTest 
         String txId = txSender.getEthTxId().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        prepareInvoke(assetDAppAccount, testData);
         assertionsCheck(txSender, getTxIndex());
     }
 

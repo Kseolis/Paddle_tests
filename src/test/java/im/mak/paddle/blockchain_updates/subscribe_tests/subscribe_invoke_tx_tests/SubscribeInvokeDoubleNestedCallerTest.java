@@ -1,5 +1,6 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests;
 
+import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import im.mak.paddle.Account;
@@ -35,6 +36,8 @@ public class SubscribeInvokeDoubleNestedCallerTest extends BaseGrpcTest {
     private String callerAddress;
     private String callerPK;
     private Account dAppAccount;
+    private String dAppPKHash;
+    private String dAppFunctionName;
     private String dAppAddress;
     private Account otherDAppAccount;
     private String otherDAppAddress;
@@ -62,7 +65,6 @@ public class SubscribeInvokeDoubleNestedCallerTest extends BaseGrpcTest {
         String txId = txSender.getInvokeScriptId();
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
-        prepareInvoke(dAppAccount, testData);
         assertionsCheckDoubleNestedInvoke(txId, getTxIndex(), callerForScript);
     }
 
@@ -74,14 +76,13 @@ public class SubscribeInvokeDoubleNestedCallerTest extends BaseGrpcTest {
         String txId = txSender.getInvokeScriptId();
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
-        prepareInvoke(dAppAccount, testData);
         assertionsCheckDoubleNestedInvoke(txId, getTxIndex(), originCallerForScript);
     }
 
     public void assertionsCheckDoubleNestedInvoke(String txId, int txIndex, String callerType) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(invokeFee, callerPK, txId, txIndex),
-                () -> checkMainMetadata(txIndex),
+                () -> checkInvokeSubscribeTransaction(invokeFee, callerPK, txId, txIndex, dAppPKHash),
+                () -> checkMainMetadata(txIndex, dAppAddress, dAppFunctionName),
                 () -> checkArgumentsMetadata(txIndex, 0, BINARY_BASE58, otherDAppAddress),
                 () -> checkArgumentsMetadata(txIndex, 1, BINARY_BASE58, assetDAppAddress),
                 () -> checkArgumentsMetadata(txIndex, 2, INTEGER, intArg),
@@ -238,6 +239,7 @@ public class SubscribeInvokeDoubleNestedCallerTest extends BaseGrpcTest {
                 },
                 () -> {
                     dAppAccount = testData.getDAppAccount();
+                    dAppPKHash = Base58.encode(dAppAccount.address().publicKeyHash());
                     dAppAddress = testData.getDAppAddress();
                 },
                 () -> {
@@ -261,6 +263,7 @@ public class SubscribeInvokeDoubleNestedCallerTest extends BaseGrpcTest {
                 () -> assetAmountValue = testData.getAssetAmount().value(),
                 () -> wavesAmountValue = testData.getWavesAmount().value(),
                 () -> secondWavesAmountValue = testData.getSecondWavesAmount().value(),
+                () -> dAppFunctionName = testData.getDAppCall().getFunction().name(),
                 () -> {
                     intArg = String.valueOf(testData.getIntArg());
                     doubleIntArg = String.valueOf(testData.getIntArg() * 2);

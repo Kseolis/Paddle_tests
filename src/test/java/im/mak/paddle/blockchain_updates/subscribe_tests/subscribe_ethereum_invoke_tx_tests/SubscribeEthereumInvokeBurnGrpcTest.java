@@ -45,8 +45,10 @@ public class SubscribeEthereumInvokeBurnGrpcTest extends BaseGrpcTest {
         async(
                 () -> dAppCallFunction = testData.getDAppCall().getFunction(),
                 () -> assetId = testData.getAssetId(),
-                () -> assetDAppAccount = testData.getAssetDAppAccount(),
-                () -> assetDAppAddress = assetDAppAccount.address(),
+                () -> {
+                    assetDAppAccount = testData.getAssetDAppAccount();
+                    assetDAppAddress = assetDAppAccount.address();
+                },
                 () -> payments = testData.getOtherAmounts(),
                 () -> {
                     try {
@@ -70,7 +72,6 @@ public class SubscribeEthereumInvokeBurnGrpcTest extends BaseGrpcTest {
         String txId = txSender.getEthTxId().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        prepareInvoke(assetDAppAccount, testData);
         AssertionsCheckEthereumInvokeBurn checks = new AssertionsCheckEthereumInvokeBurn(testData, txSender, getTxIndex());
         checks.assertionsCheckEthereumInvokeBurn(calcBalances);
     }

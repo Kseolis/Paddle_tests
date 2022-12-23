@@ -102,7 +102,6 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
         String txId = txSender.getEthTxId().toString();
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
-        prepareInvoke(dAppAccount, testData);
         assertionsCheckDAppToDAppInvoke(txSender, getTxIndex());
     }
 

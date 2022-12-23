@@ -10,13 +10,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class InvokeTransactionAssertions extends BaseGrpcTest {
-    public static void checkInvokeSubscribeTransaction(long fee, String senderPublicKey, String txId, int txIndex) {
+    public static void checkInvokeSubscribeTransaction(long fee, String senderPublicKey, String txId, int txIndex, String dAppPKHash) {
         assertAll(
                 () -> assertThat(getChainId(txIndex)).isEqualTo(CHAIN_ID),
                 () -> assertThat(getTransactionFeeAmount(txIndex)).isEqualTo(fee),
                 () -> assertThat(getSenderPublicKeyFromTransaction(txIndex)).isEqualTo(senderPublicKey),
                 () -> assertThat(getTransactionVersion(txIndex)).isEqualTo(LATEST_VERSION),
-                () -> assertThat(getInvokeTransactionPublicKeyHash(txIndex)).isEqualTo(getDAppAccountPublicKeyHash()),
+                () -> assertThat(getInvokeTransactionPublicKeyHash(txIndex)).isEqualTo(dAppPKHash),
                 () -> assertThat(getTxId(txIndex)).isEqualTo(txId)
         );
     }

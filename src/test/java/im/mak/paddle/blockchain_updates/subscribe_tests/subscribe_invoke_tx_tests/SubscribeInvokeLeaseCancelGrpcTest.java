@@ -32,6 +32,7 @@ public class SubscribeInvokeLeaseCancelGrpcTest extends BaseGrpcTest {
     private PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
     private DAppCall dAppCall;
+    private String dAppFunctionName;
     private Account caller;
     private String callerAddress;
     private String callerPK;
@@ -40,6 +41,7 @@ public class SubscribeInvokeLeaseCancelGrpcTest extends BaseGrpcTest {
     private Account dAppAccount;
     private String dAppAddress;
     private String dAppPK;
+    private String dAppPKHash;
     private long dAppBalanceWavesBeforeTx;
     private long dAppBalanceWavesAfterTx;
     private long invokeFee;
@@ -56,6 +58,7 @@ public class SubscribeInvokeLeaseCancelGrpcTest extends BaseGrpcTest {
         async(
                 () -> {
                     dAppCall = testData.getDAppCall();
+                    dAppFunctionName = dAppCall.getFunction().name();
                     invokeFee = testData.getInvokeFee();
                 },
                 () -> {
@@ -67,6 +70,7 @@ public class SubscribeInvokeLeaseCancelGrpcTest extends BaseGrpcTest {
                     dAppAccount = testData.getDAppAccount();
                     dAppAddress = testData.getDAppAddress();
                     dAppPK = testData.getDAppPublicKey();
+                    dAppPKHash = Base58.encode(dAppAccount.address().publicKeyHash());
                 },
                 () -> amounts = testData.getPayments(),
                 () -> amountValue = testData.getWavesAmount().value(),
@@ -96,14 +100,13 @@ public class SubscribeInvokeLeaseCancelGrpcTest extends BaseGrpcTest {
         String txId = txSender.getInvokeScriptId();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        prepareInvoke(dAppAccount, testData);
         assertionsCheck(getTxIndex(), txId);
     }
 
     private void assertionsCheck(int txIndex, String txId) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(invokeFee, callerPK, txId, txIndex),
-                () -> checkMainMetadata(txIndex),
+                () -> checkInvokeSubscribeTransaction(invokeFee, callerPK, txId, txIndex, dAppPKHash),
+                () -> checkMainMetadata(txIndex, dAppAddress, dAppFunctionName),
                 () -> checkPaymentsSubscribe(txIndex, 0, amountValue, WAVES_STRING_ID),
                 () -> checkPaymentMetadata(txIndex, 0, null, amountValue),
                 () -> checkArgumentsMetadata(txIndex, 0, BINARY_BASE58, encodeLeaseId),

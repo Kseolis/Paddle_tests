@@ -114,7 +114,6 @@ public class SubscribeEthereumInvokeLeaseCancelGrpcTest extends BaseGrpcTest {
         String txId = txSender.getEthTxId().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        prepareInvoke(dAppAccount, testData);
         assertionsCheck(txSender, getTxIndex());
     }
 

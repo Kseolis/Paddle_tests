@@ -23,16 +23,17 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
+import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
     private static PrepareInvokeTestsData testData;
     private static AssetId assetId;
-    private static DAppCall dAppCall;
     private static Account caller;
     private static Account dAppAccount;
     private static Account assetDAppAccount;
+    private static DAppCall dAppCall;
     private static List<Amount> amounts;
     private static InvokeCalculationsBalancesAfterTx calcBalances;
 
@@ -40,15 +41,18 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
     static void before() {
         testData = new PrepareInvokeTestsData();
         testData.prepareDataForDAppToDAppTests(SUM_FEE);
-        assetId = testData.getAssetId();
-        dAppCall = testData.getDAppCall();
-        caller = testData.getCallerAccount();
-        dAppAccount = testData.getDAppAccount();
-        assetDAppAccount = testData.getAssetDAppAccount();
-        amounts = testData.getOtherAmounts();
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
         setVersion(LATEST_VERSION);
+        async(
+                () -> assetId = testData.getAssetId(),
+                () -> caller = testData.getCallerAccount(),
+                () -> dAppAccount = testData.getDAppAccount(),
+                () -> assetDAppAccount = testData.getAssetDAppAccount(),
+                () -> amounts = testData.getOtherAmounts(),
+                () -> dAppCall = testData.getDAppCall()
+        );
     }
+
 
     @Test
     @DisplayName("subscribe invoke dApp to dApp")
@@ -62,23 +66,20 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
 
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
-        prepareInvoke(dAppAccount, testData);
         assertionsCheckDAppToDAppInvoke(testData, calcBalances, txId, getTxIndex());
     }
 
-    public static void assertionsCheckDAppToDAppInvoke
-            (PrepareInvokeTestsData data, InvokeCalculationsBalancesAfterTx calcBalances, String txId, int txIndex) {
+    public static void assertionsCheckDAppToDAppInvoke(PrepareInvokeTestsData data, InvokeCalculationsBalancesAfterTx calcBalances, String txId, int txIndex) {
         String key1 = data.getKeyForDAppEqualBar();
         String key2 = data.getKey2ForDAppEqualBalance();
-        String assetId = data.getAssetId().toString();
         assertAll(
-                () -> checkInvokeSubscribeTransaction(data.getInvokeFee(), data.getCallerPublicKey(), txId, txIndex),
-                () -> checkMainMetadata(txIndex),
+                () -> checkInvokeSubscribeTransaction(data.getInvokeFee(), data.getCallerPublicKey(), txId, txIndex, data.getDAppPublicKeyHash()),
+                () -> checkMainMetadata(txIndex, data.getDAppAddress(), data.getDAppCall().getFunction().name()),
                 () -> checkArgumentsMetadata(txIndex, 0, BINARY_BASE58, data.getAssetDAppAddress()),
                 () -> checkArgumentsMetadata(txIndex, 1, INTEGER, String.valueOf(data.getIntArg())),
                 () -> checkArgumentsMetadata(txIndex, 2, STRING, key1),
                 () -> checkArgumentsMetadata(txIndex, 3, STRING, key2),
-                () -> checkArgumentsMetadata(txIndex, 4, BINARY_BASE58, assetId),
+                () -> checkArgumentsMetadata(txIndex, 4, BINARY_BASE58, data.getAssetId().toString()),
 
                 () -> checkDataMetadata(txIndex, 1,
                         INTEGER,
@@ -88,7 +89,7 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
                 () -> checkResultInvokesMetadata(txIndex, 0,
                         data.getAssetDAppAddress(),
                         key1),
-                () -> checkResultInvokesMetadataPayments(txIndex, 0, 0, assetId, data.getAssetAmount().value()),
+                () -> checkResultInvokesMetadataPayments(txIndex, 0, 0, data.getAssetId().toString(), data.getAssetAmount().value()),
 
                 () -> checkStateChangesTransfers(txIndex, 0, 0,
                         WAVES_STRING_ID,
@@ -116,7 +117,7 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
                 () -> checkStateUpdateBalance(txIndex,
                         1,
                         data.getDAppAddress(),
-                        assetId,
+                        data.getAssetId().toString(),
                         calcBalances.getDAppBalanceIssuedAssetsBeforeTransaction(),
                         calcBalances.getDAppBalanceIssuedAssetsAfterTransaction()),
 
@@ -129,7 +130,7 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
                 () -> checkStateUpdateBalance(txIndex,
                         3,
                         data.getAssetDAppAddress(),
-                        assetId,
+                        data.getAssetId().toString(),
                         calcBalances.getAccBalanceIssuedAssetsBeforeTransaction(),
                         calcBalances.getAccBalanceIssuedAssetsAfterTransaction()),
 

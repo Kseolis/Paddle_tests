@@ -105,7 +105,6 @@ public class SubscribeEthereumInvokeDeleteEntryGrpcTest extends BaseGrpcTest {
         String txId = txSender.getEthTxId().toString();
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
-        prepareInvoke(dAppAccount, testData);
         assertionsCheck(txSender, getTxIndex());
     }
 
@@ -122,9 +121,9 @@ public class SubscribeEthereumInvokeDeleteEntryGrpcTest extends BaseGrpcTest {
                 () -> checkEthereumDataMetadata(txIndex, 1, INTEGER, DATA_ENTRY_INT, valAfter),
 
                 () -> checkStateUpdateBalance(txIndex, 0, senderAddressString, WAVES_STRING_ID, senderWavesBalanceBeforeTx, senderWavesBalanceAfterTx),
-                () -> checkStateUpdateBalance(txIndex, 1, getDAppAccountAddress(), WAVES_STRING_ID, dAppAccountWavesBalanceBeforeTx, dAppAccountWavesBalanceAfterTx),
+                () -> checkStateUpdateBalance(txIndex, 1, dAppAddressString, WAVES_STRING_ID, dAppAccountWavesBalanceBeforeTx, dAppAccountWavesBalanceAfterTx),
 
-                () -> checkStateUpdateDataEntries(txIndex, 0, getDAppAccountAddress(), DATA_ENTRY_INT, valAfter)
+                () -> checkStateUpdateDataEntries(txIndex, 0, dAppAddressString, DATA_ENTRY_INT, valAfter)
         );
     }
 }

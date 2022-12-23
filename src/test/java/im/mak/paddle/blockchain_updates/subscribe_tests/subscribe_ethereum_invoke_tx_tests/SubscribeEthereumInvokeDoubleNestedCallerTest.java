@@ -72,7 +72,6 @@ public class SubscribeEthereumInvokeDoubleNestedCallerTest extends BaseGrpcTest 
         String txId = txSender.getEthTxId().toString();
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
-        prepareInvoke(dAppAccount, testData);
         assertionsCheckDoubleNestedInvoke(callerForScript, getTxIndex());
     }
 
@@ -84,7 +83,6 @@ public class SubscribeEthereumInvokeDoubleNestedCallerTest extends BaseGrpcTest 
         String txId = txSender.getEthTxId().toString();
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
-        prepareInvoke(dAppAccount, testData);
         assertionsCheckDoubleNestedInvoke(originCallerForScript, getTxIndex());
     }
 

@@ -102,7 +102,6 @@ public class SubscribeEthereumInvokeIssueGrpcTest extends BaseGrpcTest {
         String txId = txSender.getEthTxId().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        prepareInvoke(assetDAppAccount, testData);
         assertionsCheck(txSender, getTxIndex());
     }
 
@@ -111,14 +110,11 @@ public class SubscribeEthereumInvokeIssueGrpcTest extends BaseGrpcTest {
                 () -> assertThat(getTxId(txIndex)).isEqualTo(txSender.getEthTx().id().toString()),
                 () -> checkEthereumMainMetadata(txSender, txIndex, senderAddressString),
                 () -> checkEthereumInvokeMainInfo(txIndex, assetDAppAddressString, dAppCallFunction),
-
                 () -> checkEthereumInvokeIssueAssetMetadata(txIndex, 0, issueAssetData),
                 () -> checkEthereumInvokeIssueAssetMetadata(txIndex, 1, assetDataForIssue),
-
                 () -> checkStateUpdateBalance(txIndex, 0, senderAddressString, WAVES_STRING_ID, senderWavesBalanceBeforeTx, senderWavesBalanceAfterTx),
                 () -> checkStateUpdateBalance(txIndex, 1, assetDAppAddressString, null, 0, issueAssetDataVolume),
                 () -> checkStateUpdateBalance(txIndex, 2, assetDAppAddressString, null, 0, assetDataForIssueVolume),
-
                 () -> checkStateUpdateAssets(txIndex, 0, issueAssetData, issueAssetDataVolume),
                 () -> checkStateUpdateAssets(txIndex, 1, assetDataForIssue, assetDataForIssueVolume)
         );

@@ -99,7 +99,6 @@ public class SubscribeEthereumInvokeDataGrpcTest extends BaseGrpcTest {
         String txId = txSender.getEthTxId().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        prepareInvoke(dAppAccount, testData);
         checkersAssertionsDataInvoke(txSender, getTxIndex());
     }
 
@@ -129,15 +128,15 @@ public class SubscribeEthereumInvokeDataGrpcTest extends BaseGrpcTest {
                         calcBalances.getCallerBalanceWavesAfterTransaction()),
                 () -> checkStateUpdateBalance(txIndex,
                         1,
-                        getDAppAccountAddress(),
+                        dAppAddressString,
                         WAVES_STRING_ID,
                         calcBalances.getDAppBalanceWavesBeforeTransaction(),
                         calcBalances.getDAppBalanceWavesAfterTransaction()),
 
-                () -> checkStateUpdateDataEntries(txIndex, 0, getDAppAccountAddress(), DATA_ENTRY_INT, intVal),
-                () -> checkStateUpdateDataEntries(txIndex, 1, getDAppAccountAddress(), DATA_ENTRY_BYTE, binVal),
-                () -> checkStateUpdateDataEntries(txIndex, 2, getDAppAccountAddress(), DATA_ENTRY_BOOL, boolArg),
-                () -> checkStateUpdateDataEntries(txIndex, 3, getDAppAccountAddress(), DATA_ENTRY_STR, strVal)
+                () -> checkStateUpdateDataEntries(txIndex, 0, dAppAddressString, DATA_ENTRY_INT, intVal),
+                () -> checkStateUpdateDataEntries(txIndex, 1, dAppAddressString, DATA_ENTRY_BYTE, binVal),
+                () -> checkStateUpdateDataEntries(txIndex, 2, dAppAddressString, DATA_ENTRY_BOOL, boolArg),
+                () -> checkStateUpdateDataEntries(txIndex, 3, dAppAddressString, DATA_ENTRY_STR, strVal)
         );
     }
 }

@@ -165,7 +165,7 @@ public class SubscribeEthereumInvokeDoubleNestedCallerTest extends BaseGrpcTest 
         }
     }
 
-    public void assertionsCheckDoubleNestedInvoke(String callerType, int txIndex) {
+    private void assertionsCheckDoubleNestedInvoke(String callerType, int txIndex) {
         assertAll(
                 () -> assertThat(getTxId(txIndex)).isEqualTo(txSender.getEthTx().id().toString()),
                 () -> checkEthereumMainMetadata(txSender, txIndex, senderAddressString),

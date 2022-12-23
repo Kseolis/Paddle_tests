@@ -106,7 +106,7 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
         assertionsCheckDAppToDAppInvoke(txSender, getTxIndex());
     }
 
-    public void assertionsCheckDAppToDAppInvoke(EthereumInvokeTransactionSender txSender, int txIndex) {
+    private void assertionsCheckDAppToDAppInvoke(EthereumInvokeTransactionSender txSender, int txIndex) {
         assertAll(
                 () -> assertThat(getTxId(txIndex)).isEqualTo(txSender.getEthTx().id().toString()),
                 () -> checkEthereumMainMetadata(txSender, txIndex, senderAddressString),

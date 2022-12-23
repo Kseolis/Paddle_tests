@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.BurnTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
@@ -54,8 +55,7 @@ public class BurnTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         final AssetId assetId = issueTx.assetId();
         final Amount amount = Amount.of(getRandomInt(100, 10000), assetId);
 
-        BurnTransactionSender txSender =
-                new BurnTransactionSender(account, amount, SUM_FEE, LATEST_VERSION);
+        BurnTransactionSender txSender = new BurnTransactionSender(account, amount, SUM_FEE, LATEST_VERSION);
         txSender.burnTransactionSender();
         assetAmountBefore = issueTx.quantity();
         assetAmountAfter = issueTx.quantity() - txSender.getAmount().value();
@@ -64,7 +64,7 @@ public class BurnTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         height = node().getHeight();
 
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        GrpcBurnCheckers grpcBurnCheckers = new GrpcBurnCheckers(0, account, txSender, issueTx);
+        GrpcBurnCheckers grpcBurnCheckers = new GrpcBurnCheckers(getTxIndex(), account, txSender, issueTx);
         grpcBurnCheckers.checkBurnSubscribe(assetAmountBefore, assetAmountAfter, assetAmountAfter);
     }
 
@@ -80,8 +80,7 @@ public class BurnTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         final AssetId assetId = issueTx.assetId();
         final Amount amount = Amount.of(getRandomInt(100, 10000000), assetId);
 
-        BurnTransactionSender txSender =
-                new BurnTransactionSender(account, amount, MIN_FEE, LATEST_VERSION);
+        BurnTransactionSender txSender = new BurnTransactionSender(account, amount, MIN_FEE, LATEST_VERSION);
         txSender.burnTransactionSender();
         assetAmountBefore = issueTx.quantity();
         assetAmountAfter = issueTx.quantity() - txSender.getAmount().value();
@@ -90,7 +89,7 @@ public class BurnTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         height = node().getHeight();
 
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        GrpcBurnCheckers grpcBurnCheckers = new GrpcBurnCheckers(0, account, txSender, issueTx);
+        GrpcBurnCheckers grpcBurnCheckers = new GrpcBurnCheckers(getTxIndex(), account, txSender, issueTx);
         grpcBurnCheckers.checkBurnSubscribe(assetAmountBefore, assetAmountAfter, assetAmountAfter);
     }
 }

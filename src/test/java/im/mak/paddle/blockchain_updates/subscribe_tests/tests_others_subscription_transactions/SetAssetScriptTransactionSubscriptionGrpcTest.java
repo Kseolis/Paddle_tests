@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.SetAssetScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
@@ -26,8 +27,7 @@ public class SetAssetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest 
     private Account account;
     private String assetName;
     private String assetDescription;
-    private final Base64String newScript = node()
-            .compileScript(fromFile("ride_scripts/permissionOnUpdatingKeyValues.ride")).script();
+    private final Base64String newScript = node().compileScript(fromFile("ride_scripts/permissionOnUpdatingKeyValues.ride")).script();
 
     @BeforeEach
     void setUp() {
@@ -63,7 +63,7 @@ public class SetAssetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest 
 
         subscribeResponseHandler(CHANNEL, height, height, txId);
 
-        GrpcSetAssetScriptCheckers grpcSetAssetScriptCheckers = new GrpcSetAssetScriptCheckers(0, senderTx, issueTx);
+        GrpcSetAssetScriptCheckers grpcSetAssetScriptCheckers = new GrpcSetAssetScriptCheckers(getTxIndex(), senderTx, issueTx);
         grpcSetAssetScriptCheckers.checkSetAssetGrpc(0, 15);
     }
 }

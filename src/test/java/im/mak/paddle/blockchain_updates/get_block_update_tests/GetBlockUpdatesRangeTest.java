@@ -58,12 +58,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
         handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, reissueTxId.toString());
         int index = handler.getTxIndex();
         GrpcReissueCheckers grpcReissueCheckers = new GrpcReissueCheckers(index, sender, reissueTxSender, issueTx);
-        grpcReissueCheckers.checkReissueSubscribe(
-                assetAmountBeforeReissueTx,
-                assetAmountAfterReissueTx,
-                assetAmountAfterReissueTx,
-                issueTx.quantity()
-        );
+        grpcReissueCheckers.checkReissueSubscribe(assetAmountBeforeReissueTx, assetAmountAfterReissueTx, assetAmountAfterReissueTx, issueTx.quantity());
     }
 
     @Test
@@ -131,7 +126,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     void getBlockUpdateRangeDataTransactionTest() {
         setHeights(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
-        handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, dataTxId.toString());
+        handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, dataTxId);
         int index = handler.getTxIndex();
         GrpcDataCheckers dataCheckers = new GrpcDataCheckers(index, sender, dataTxSender);
         dataCheckers.checkDataTransactionGrpc();
@@ -142,7 +137,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     void getBlockUpdateRangeSetScriptTransactionTest() {
         setHeights(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
-        handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, setScriptTxId.toString());
+        handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, setScriptTxId);
         int index = handler.getTxIndex();
         GrpcSetScriptCheckers setScriptCheckers = new GrpcSetScriptCheckers(index, setScriptTx);
         setScriptCheckers.checkSetScriptGrpc();
@@ -153,7 +148,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     void getBlockUpdateRangeSponsorFeeTransactionTest() {
         setHeights(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
-        handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, sponsorFeeTxId.toString());
+        handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, sponsorFeeTxId);
         int index = handler.getTxIndex();
         GrpcSponsorFeeCheckers sponsorFeeCheckers = new GrpcSponsorFeeCheckers(index, sponsorFeeTx, sponsorFeeIssueAsset);
         sponsorFeeCheckers.checkSponsorFeeGrpc();
@@ -164,17 +159,28 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     void getBlockUpdateRangeSetAssetScriptTransactionTest() {
         setHeights(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
-        handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, setAssetScriptTxId.toString());
+        handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, setAssetScriptTxId);
         int index = handler.getTxIndex();
         GrpcSetAssetScriptCheckers assetScriptCheckers = new GrpcSetAssetScriptCheckers(index, setAssetScriptTx, issueTx);
         assetScriptCheckers.checkSetAssetGrpc(0, 0);
     }
 
     @Test
+    @DisplayName("Checking for an getBlockUpdateRange response for an update asset info transaction")
+    void getBlockUpdateRangeForUpdateAssetInfoTransactionTest() {
+        setHeights(heightsList);
+        GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
+        handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, updateAssetInfoTxId);
+        int index = handler.getTxIndex();
+        GrpcUpdateAssetInfoCheckers updateAssetInfoCheckers = new GrpcUpdateAssetInfoCheckers(updateAssetInfoTx, issueTx);
+        updateAssetInfoCheckers.checkUpdateAssetInfo(index, wavesBalanceBeforeUpdateAssetInfoTx, wavesBalanceAfterUpdateAssetInfoTx);
+    }
+
+    @Test
     @DisplayName("Check getBlockUpdateRange response for Ethereum transaction")
     void getBlockUpdateEthereumTransactionTest() {
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
-        handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, ethTxId.toString());
+        handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, ethTxId);
         int index = handler.getTxIndex();
         GrpcEthereumTransferCheckers ethereumTransferCheckers = new GrpcEthereumTransferCheckers(index, ethTx, wavesAmount);
         ethereumTransferCheckers.checkEthereumTransfer();

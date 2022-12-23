@@ -1,4 +1,4 @@
-package im.mak.paddle.blockchain_updates.get_block_update_tests;
+package im.mak.paddle.blockchain_updates.get_block_update_tests.Invokes;
 
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
@@ -39,7 +39,7 @@ public class GetBlockUpdatesRangeInvokeTest extends BaseGrpcTest {
         caller = testData.getCallerAccount();
         dAppAccount = testData.getDAppAccount();
         assetDAppAccount = testData.getAssetDAppAccount();
-        amounts = testData.getPayments();
+        amounts = testData.getOtherAmounts();
     }
 
     @Test

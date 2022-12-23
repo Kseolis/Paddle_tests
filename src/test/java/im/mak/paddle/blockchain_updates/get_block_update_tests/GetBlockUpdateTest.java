@@ -9,7 +9,7 @@ import static im.mak.paddle.util.Constants.*;
 
 public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     @Test
-    @DisplayName("Check getBlockUpdate response for Issue transaction")
+    @DisplayName("Checking getBlockUpdate response for Issue transaction")
     void getBlockUpdateIssueTransactionTest() {
         String address = senderAddress.toString();
         String pk = senderPublicKey.toString();
@@ -21,7 +21,7 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     }
 
     @Test
-    @DisplayName("Check getBlockUpdate response for Transfer transaction")
+    @DisplayName("Checking getBlockUpdate response for Transfer transaction")
     void getBlockUpdateTransferTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, transferTxId.toString());
@@ -36,7 +36,7 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     }
 
     @Test
-    @DisplayName("Check getBlockUpdate response for Burn transaction")
+    @DisplayName("Checking getBlockUpdate response for Burn transaction")
     void getBlockUpdateBurnTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, burnTxId.toString());
@@ -46,7 +46,7 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     }
 
     @Test
-    @DisplayName("Check getBlockUpdate response for Reissue transaction")
+    @DisplayName("Checking getBlockUpdate response for Reissue transaction")
     void getBlockUpdateReissueTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, reissueTxId.toString());
@@ -61,7 +61,7 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     }
 
     @Test
-    @DisplayName("Check getBlockUpdate response for Exchange transaction")
+    @DisplayName("Checking getBlockUpdate response for Exchange transaction")
     void getBlockUpdateExchangeTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, exchangeTxId.toString());
@@ -72,7 +72,7 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     }
 
     @Test
-    @DisplayName("Check getBlockUpdate response for Lease transaction")
+    @DisplayName("Checking getBlockUpdate response for Lease transaction")
     void getBlockUpdateLeaseTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, leaseTxId.toString());
@@ -82,7 +82,7 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     }
 
     @Test
-    @DisplayName("Check getBlockUpdate response for LeaseCancel transaction")
+    @DisplayName("Checking getBlockUpdate response for LeaseCancel transaction")
     void getBlockUpdateLeaseCancelTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, leaseCancelTxId.toString());
@@ -92,7 +92,7 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     }
 
     @Test
-    @DisplayName("Check getBlockUpdate response for Alias transaction")
+    @DisplayName("Checking getBlockUpdate response for Alias transaction")
     void getBlockUpdateAliasTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, aliasTxId.toString());
@@ -106,7 +106,7 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     }
 
     @Test
-    @DisplayName("Check getBlockUpdate response for MassTransfer transaction")
+    @DisplayName("Checking getBlockUpdate response for MassTransfer transaction")
     void getBlockUpdateMassTransferTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
         getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, massTransferTxId.toString());
@@ -116,50 +116,60 @@ public class GetBlockUpdateTest extends BaseGetBlockUpdateTest {
     }
 
     @Test
-    @DisplayName("Check getBlockUpdate response for Data transaction")
+    @DisplayName("Checking getBlockUpdate response for Data transaction")
     void getBlockUpdateDataTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
-        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, dataTxId.toString());
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, dataTxId);
         int index = getBlockUpdateHandler.getTxIndex();
         GrpcDataCheckers dataCheckers = new GrpcDataCheckers(index, sender, dataTxSender);
         dataCheckers.checkDataTransactionGrpc();
     }
 
     @Test
-    @DisplayName("Check getBlockUpdate response for SetScript transaction")
+    @DisplayName("Checking getBlockUpdate response for SetScript transaction")
     void getBlockUpdateSetScriptTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
-        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, setScriptTxId.toString());
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, setScriptTxId);
         int index = getBlockUpdateHandler.getTxIndex();
         GrpcSetScriptCheckers setScriptCheckers = new GrpcSetScriptCheckers(index, setScriptTx);
         setScriptCheckers.checkSetScriptGrpc();
     }
 
     @Test
-    @DisplayName("Check getBlockUpdate response for SponsorFee transaction")
+    @DisplayName("Checking getBlockUpdate response for SponsorFee transaction")
     void getBlockUpdateSponsorFeeTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
-        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, sponsorFeeTxId.toString());
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, sponsorFeeTxId);
         int index = getBlockUpdateHandler.getTxIndex();
         GrpcSponsorFeeCheckers sponsorFeeCheckers = new GrpcSponsorFeeCheckers(index, sponsorFeeTx, sponsorFeeIssueAsset);
         sponsorFeeCheckers.checkSponsorFeeGrpc();
     }
 
     @Test
-    @DisplayName("Check getBlockUpdate response for SetAssetScript transaction")
+    @DisplayName("Checking getBlockUpdate response for SetAssetScript transaction")
     void getBlockUpdateSetAssetScriptTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
-        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, setAssetScriptTxId.toString());
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, setAssetScriptTxId);
         int index = getBlockUpdateHandler.getTxIndex();
         GrpcSetAssetScriptCheckers assetScriptCheckers = new GrpcSetAssetScriptCheckers(index, setAssetScriptTx, issueTx);
         assetScriptCheckers.checkSetAssetGrpc(0, 0);
     }
 
     @Test
-    @DisplayName("Check getBlockUpdate response for Ethereum transaction")
+    @DisplayName("Checking for an getBlockUpdate response for an update asset info transaction")
+    void getBlockUpdateForUpdateAssetInfoTransactionTest() {
+        GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, updateAssetInfoTxId);
+        int index = getBlockUpdateHandler.getTxIndex();
+        GrpcUpdateAssetInfoCheckers updateAssetInfoCheckers = new GrpcUpdateAssetInfoCheckers(updateAssetInfoTx, issueTx);
+        updateAssetInfoCheckers.checkUpdateAssetInfo(index, wavesBalanceBeforeUpdateAssetInfoTx, wavesBalanceAfterUpdateAssetInfoTx);
+    }
+
+    @Test
+    @DisplayName("Checking getBlockUpdate response for Ethereum transaction")
     void getBlockUpdateEthereumTransactionTest() {
         GetBlockUpdateHandler getBlockUpdateHandler = new GetBlockUpdateHandler();
-        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, ethTxId.toString());
+        getBlockUpdateHandler.getBlockUpdateResponseHandler(CHANNEL, heightsList, ethTxId);
         int index = getBlockUpdateHandler.getTxIndex();
         GrpcEthereumTransferCheckers ethereumTransferCheckers = new GrpcEthereumTransferCheckers(index, ethTx, wavesAmount);
         ethereumTransferCheckers.checkEthereumTransfer();

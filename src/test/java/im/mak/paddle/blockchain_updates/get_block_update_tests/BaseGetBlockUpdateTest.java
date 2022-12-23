@@ -29,101 +29,85 @@ import static im.mak.paddle.helpers.Randomizer.*;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.ScriptUtil.fromFile;
+import static org.testcontainers.utility.Base58.randomString;
 
 public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static Account sender;
     protected static Address senderAddress;
     protected static PrivateKey senderPrivateKey;
     protected static PublicKey senderPublicKey;
-
     protected static Account buyer;
     protected static Address buyerAddress;
     protected static PrivateKey buyerPrivateKey;
     protected static PublicKey buyerPublicKey;
     protected static AssetId assetIdExchange;
-
     protected static Account recipient;
     protected static PrivateKey recipientPrivateKey;
     protected static PublicKey recipientPublicKey;
-
     protected static Amount wavesAmount;
-
     protected static Order orderBuy;
     protected static Order orderSell;
-
     protected static String newAlias;
-
     protected static String assetName;
     protected static String assetDescription;
     protected static int assetDecimals;
-
     protected static IssueTransaction issueTx;
     protected static Id issueTxId;
     protected static long amountBeforeIssueTx;
     protected static long amountAfterIssueTx;
     protected static AssetId assetId;
     protected static Amount assetAmount;
-
     protected static TransferTransactionSender transferSender;
     protected static Id transferTxId;
     protected static long assetBalanceBeforeTransfer;
     protected static long wavesBalanceBeforeTransfer;
-
     protected static ReissueTransactionSender reissueTxSender;
     protected static Id reissueTxId;
     protected static long assetAmountBeforeReissueTx;
     protected static long assetAmountAfterReissueTx;
-
     protected static BurnTransactionSender burnTxSender;
     protected static Id burnTxId;
     protected static long assetAmountBeforeBurnTx;
     protected static long assetAmountAfterBurnTx;
-
     protected static CreateAliasTransactionSender aliasTx;
     protected static Id aliasTxId;
     protected static long amountBeforeAliasTx;
     protected static long amountAfterAliasTx;
-
     protected static SetAssetScriptTransactionSender setAssetScriptTx;
-    protected static Id setAssetScriptTxId;
-
+    protected static String setAssetScriptTxId;
     protected static LeaseTransactionSender leaseTx;
     protected static Id leaseTxId;
     protected static LeaseCancelTransactionSender leaseCancelTx;
     protected static Id leaseCancelTxId;
-
     protected static ExchangeTransactionSender exchangeTx;
     protected static Id exchangeTxId;
     protected static long amountBeforeExchangeTx;
-
     protected static MassTransferTransactionSender massTransferTx;
     protected static Id massTransferTxId;
     protected static long balanceBeforeMassTx;
     protected static List<Account> accountList;
-
     protected static DataTransactionsSender dataTxSender;
-    protected static Id dataTxId;
-
+    protected static String dataTxId;
     protected static SetScriptTransactionSender setScriptTx;
-    protected static Id setScriptTxId;
-
+    protected static String setScriptTxId;
     protected static PrepareInvokeTestsData testData;
     protected static InvokeCalculationsBalancesAfterTx calcBalances;
-
     protected static IssueTransaction sponsorFeeIssueAsset;
     protected static AssetId assetIdForSponsorFee;
     protected static SponsorFeeTransactionSender sponsorFeeTx;
-    protected static Id sponsorFeeTxId;
-
+    protected static String sponsorFeeTxId;
     protected static Address ethSenderAddress;
     protected static EthereumTransferTransactionSender ethTx;
-    protected static Id ethTxId;
-
+    protected static String ethTxId;
+    protected static UpdateAssetInfoSender updateAssetInfoTx;
+    protected static String updateAssetInfoTxId;
+    protected static Amount feeAmountUpdateAssetInfoTx;
+    protected static long wavesBalanceBeforeUpdateAssetInfoTx;
+    protected static long wavesBalanceAfterUpdateAssetInfoTx;
     protected static int height;
     protected static int fromHeight;
     protected static int toHeight;
     protected static List<Integer> heightsList = new ArrayList<>();
-
     protected static final long assetIdExchangeQuantity = 950_000;
     protected static final String scriptFromFile = fromFile("ride_scripts/defaultAssetExpression.ride");
     protected static final Base64String script = node().compileScript(scriptFromFile).script();
@@ -133,6 +117,8 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     private static final BooleanEntry booleanEntry = BooleanEntry.as("Boolean", true);
     private static final IntegerEntry integerEntry = IntegerEntry.as("Integer", getRandomInt(100, 100000));
     private static final StringEntry stringEntry = StringEntry.as("String", "string");
+    private static String newAssetName;
+    private static String newAssetDescription;
 
     @BeforeAll
     static void setUp() throws NodeException, IOException {
@@ -163,6 +149,9 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         sponsorFeeSetUp();
         // SetAssetScript transaction
         setAssetScriptSetUp();
+        // UpdateAssetInfo transaction
+        updateAssetInfoSetUp();
+        // Ethereum transaction
         ethereumSetUp();
     }
 
@@ -203,6 +192,8 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                     assetDescription = assetName + "test";
                     assetDecimals = getRandomInt(0, 8);
                 },
+                () -> newAssetName = randomString(8),
+                () -> newAssetDescription = randomString(500),
                 () -> wavesAmount = Amount.of(10)
         );
         height = node().getHeight();
@@ -297,7 +288,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     private static void setAssetScriptSetUp() {
         setAssetScriptTx = new SetAssetScriptTransactionSender(sender, script, assetId);
         setAssetScriptTx.setAssetScriptSender(SetAssetScriptTransaction.LATEST_VERSION);
-        setAssetScriptTxId = setAssetScriptTx.getSetAssetScriptTx().id();
+        setAssetScriptTxId = setAssetScriptTx.getSetAssetScriptTx().id().toString();
         checkHeight();
     }
 
@@ -305,28 +296,37 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         DataEntry[] dataEntries = new DataEntry[]{integerEntry, binaryEntry, booleanEntry, stringEntry};
         dataTxSender = new DataTransactionsSender(sender, dataEntries);
         dataTxSender.dataEntryTransactionSender(sender, DataTransaction.LATEST_VERSION);
-        dataTxId = dataTxSender.getTxInfo().tx().id();
+        dataTxId = dataTxSender.getTxInfo().tx().id().toString();
         checkHeight();
     }
 
     private static void setScriptSetUp() {
         setScriptTx = new SetScriptTransactionSender(sender, script);
         setScriptTx.setScriptTransactionSender(MIN_FEE, SetScriptTransaction.LATEST_VERSION);
-        setScriptTxId = setScriptTx.getSetScriptTx().id();
+        setScriptTxId = setScriptTx.getSetScriptTx().id().toString();
         checkHeight();
     }
 
     private static void sponsorFeeSetUp() {
         sponsorFeeTx = new SponsorFeeTransactionSender(sender, wavesAmount.value(), assetIdForSponsorFee);
         sponsorFeeTx.sponsorFeeTransactionSender(SUM_FEE, SponsorFeeTransaction.LATEST_VERSION);
-        sponsorFeeTxId = sponsorFeeTx.getSponsorTx().id();
+        sponsorFeeTxId = sponsorFeeTx.getSponsorTx().id().toString();
         checkHeight();
+    }
+
+    private static void updateAssetInfoSetUp() {
+        feeAmountUpdateAssetInfoTx = Amount.of(MIN_FEE);
+        wavesBalanceBeforeUpdateAssetInfoTx = sender.getWavesBalance();
+        wavesBalanceAfterUpdateAssetInfoTx = wavesBalanceBeforeUpdateAssetInfoTx - SUM_FEE;
+        updateAssetInfoTx = new UpdateAssetInfoSender(assetId, newAssetName, newAssetDescription, feeAmountUpdateAssetInfoTx, senderPrivateKey);
+        updateAssetInfoTx.updateAssetInfoSending(UpdateAssetInfoTransaction.LATEST_VERSION, EXTRA_FEE);
+        updateAssetInfoTxId = updateAssetInfoTx.getUpdAssetInfoTxId().toString();
     }
 
     private static void ethereumSetUp() throws IOException, NodeException {
         ethTx = new EthereumTransferTransactionSender(ethSenderAddress, recipient.address(), wavesAmount, MIN_FEE);
         ethTx.sendingAnEthereumTransferTransaction();
-        ethTxId = ethTx.getEthTxId();
+        ethTxId = ethTx.getEthTxId().toString();
         checkHeight();
     }
 

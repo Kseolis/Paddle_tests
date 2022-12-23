@@ -100,10 +100,10 @@ public class SubscribeEthereumInvokeDataGrpcTest extends BaseGrpcTest {
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
         prepareInvoke(dAppAccount, testData);
-        assertionsCheck(txSender, getTxIndex());
+        checkersAssertionsDataInvoke(txSender, getTxIndex());
     }
 
-    private void assertionsCheck(EthereumInvokeTransactionSender txSender, int txIndex) {
+    private void checkersAssertionsDataInvoke(EthereumInvokeTransactionSender txSender, int txIndex) {
         assertAll(
                 () -> assertThat(getTxId(txIndex)).isEqualTo(txSender.getEthTx().id().toString()),
                 () -> checkEthereumMainMetadata(txSender, txIndex, senderAddressString),

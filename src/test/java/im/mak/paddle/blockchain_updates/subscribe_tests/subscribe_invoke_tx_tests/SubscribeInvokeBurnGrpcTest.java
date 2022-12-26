@@ -24,7 +24,6 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.BINARY_BASE58;
 import static im.mak.paddle.util.Constants.WAVES_STRING_ID;
@@ -69,14 +68,13 @@ public class SubscribeInvokeBurnGrpcTest extends BaseGrpcTest {
         );
         List<Amount> amounts = testData.getOtherAmounts();
         calcBalances.balancesAfterBurnAssetInvoke(caller.address(), assetDAppAccount.address(), amounts, assetId);
-        setVersion(LATEST_VERSION);
     }
 
     @Test
     @DisplayName("subscribe invoke with Burn")
     void subscribeInvokeWithBurn() {
         final InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, assetDAppAccount, dAppCall);
-        txSender.invokeSender();
+        txSender.invokeSender(LATEST_VERSION);
         final String txId = txSender.getInvokeScriptId();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);

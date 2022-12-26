@@ -22,10 +22,6 @@ public abstract class BaseTransactionSender {
         return txInfo;
     }
 
-    public static void setVersion(int version) {
-        BaseTransactionSender.version = version;
-    }
-
     public static void setFee(long fee) {
         BaseTransactionSender.fee = fee;
     }

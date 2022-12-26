@@ -24,7 +24,6 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeTransactionAssertions.checkPaymentsSubscribe;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -83,14 +82,13 @@ public class SubscribeInvokeDataGrpcTest extends BaseGrpcTest {
 
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
         calcBalances.balancesAfterPaymentInvoke(callerAddress, dAppAddress, payments, assetId);
-        setVersion(LATEST_VERSION);
     }
 
     @Test
     @DisplayName("subscribe invoke with DataDApp")
     void subscribeInvokeWithDataDApp() {
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, payments);
-        txSender.invokeSenderWithPayment();
+        txSender.invokeSenderWithPayment(LATEST_VERSION);
         String txId = txSender.getInvokeScriptId();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);

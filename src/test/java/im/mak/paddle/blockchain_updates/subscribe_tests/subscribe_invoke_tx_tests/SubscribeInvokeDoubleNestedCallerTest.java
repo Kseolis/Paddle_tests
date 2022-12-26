@@ -22,7 +22,6 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.WAVES_STRING_ID;
@@ -61,7 +60,7 @@ public class SubscribeInvokeDoubleNestedCallerTest extends BaseGrpcTest {
     @DisplayName("subscribe invoke double nested: " + callerForScript)
     void subscribeInvokeWithDoubleNestedCaller() {
         prepareDoubleNestedTest(callerForScript);
-        txSender.invokeSender();
+        txSender.invokeSender(LATEST_VERSION);
         String txId = txSender.getInvokeScriptId();
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
@@ -72,7 +71,7 @@ public class SubscribeInvokeDoubleNestedCallerTest extends BaseGrpcTest {
     @DisplayName("subscribe invoke double nested: " + originCallerForScript)
     void subscribeInvokeWithDoubleNestedOriginCaller() {
         prepareDoubleNestedTest(originCallerForScript);
-        txSender.invokeSender();
+        txSender.invokeSender(LATEST_VERSION);
         String txId = txSender.getInvokeScriptId();
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
@@ -259,7 +258,6 @@ public class SubscribeInvokeDoubleNestedCallerTest extends BaseGrpcTest {
                 () -> key1 = testData.getKeyForDAppEqualBar(),
                 () -> key2 = testData.getKey2ForDAppEqualBalance(),
                 () -> invokeFee = testData.getInvokeFee(),
-                () -> setVersion(LATEST_VERSION),
                 () -> assetAmountValue = testData.getAssetAmount().value(),
                 () -> wavesAmountValue = testData.getWavesAmount().value(),
                 () -> secondWavesAmountValue = testData.getSecondWavesAmount().value(),

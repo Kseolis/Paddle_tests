@@ -21,7 +21,6 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeTransactionAssertions.*;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -51,8 +50,6 @@ public class SubscribeInvokeLeaseGrpcTest extends BaseGrpcTest {
     void before() {
         testData = new PrepareInvokeTestsData();
         testData.prepareDataForLeaseTests(SUM_FEE, ONE_WAVES);
-        setVersion(LATEST_VERSION);
-
         async(
                 () -> {
                     dAppCall = testData.getDAppCall();
@@ -94,7 +91,7 @@ public class SubscribeInvokeLeaseGrpcTest extends BaseGrpcTest {
     @DisplayName("subscribe invoke with Lease and WAVES payment")
     void subscribeInvokeWithLease() {
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, payments);
-        txSender.invokeSenderWithPayment();
+        txSender.invokeSenderWithPayment(LATEST_VERSION);
         String txId = txSender.getInvokeScriptId();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);

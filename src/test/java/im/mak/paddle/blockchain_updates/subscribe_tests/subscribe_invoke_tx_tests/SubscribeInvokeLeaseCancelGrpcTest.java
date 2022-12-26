@@ -22,7 +22,6 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataResultLease.getInvokeMetadataCancelLeaseId;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,7 +52,6 @@ public class SubscribeInvokeLeaseCancelGrpcTest extends BaseGrpcTest {
     void before() {
         testData = new PrepareInvokeTestsData();
         testData.prepareDataForLeaseCancelTests(SUM_FEE, ONE_WAVES);
-        setVersion(LATEST_VERSION);
 
         async(
                 () -> {
@@ -96,7 +94,7 @@ public class SubscribeInvokeLeaseCancelGrpcTest extends BaseGrpcTest {
     @DisplayName("subscribe invoke with LeaseCancel and WAVES payment")
     void subscribeInvokeWithLeaseCancel() {
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, amounts);
-        txSender.invokeSenderWithPayment();
+        txSender.invokeSenderWithPayment(LATEST_VERSION);
         String txId = txSender.getInvokeScriptId();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);

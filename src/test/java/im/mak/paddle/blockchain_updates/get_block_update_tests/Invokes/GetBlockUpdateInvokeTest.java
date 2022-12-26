@@ -20,7 +20,6 @@ import java.util.List;
 import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests.SubscribeInvokeDAppToDAppGrpcTest.assertionsCheckDAppToDAppInvoke;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Constants.*;
 
 public class GetBlockUpdateInvokeTest extends BaseGrpcTest {
@@ -52,8 +51,7 @@ public class GetBlockUpdateInvokeTest extends BaseGrpcTest {
         calcBalances.balancesAfterDAppToDApp(caller.address(), dAppAccount.address(), assetDAppAccount.address(), amounts, assetId);
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
-        setVersion(LATEST_VERSION);
-        txSender.invokeSender();
+        txSender.invokeSender(LATEST_VERSION);
         String txId = txSender.getInvokeScriptId();
 
         heightsList.add(node().getHeight());

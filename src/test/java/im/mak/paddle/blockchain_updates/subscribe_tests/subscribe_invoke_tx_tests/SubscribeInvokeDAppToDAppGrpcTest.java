@@ -22,7 +22,6 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeTransactionAssertions.checkInvokeSubscribeTransaction;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -42,7 +41,6 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
         testData = new PrepareInvokeTestsData();
         testData.prepareDataForDAppToDAppTests(SUM_FEE);
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        setVersion(LATEST_VERSION);
         async(
                 () -> assetId = testData.getAssetId(),
                 () -> caller = testData.getCallerAccount(),
@@ -61,7 +59,7 @@ public class SubscribeInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
         calcBalances.balancesAfterDAppToDApp(caller.address(), dAppAccount.address(), assetDAppAccount.address(), amounts, assetId);
 
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
-        txSender.invokeSender();
+        txSender.invokeSender(LATEST_VERSION);
         String txId = txSender.getInvokeScriptId();
 
         toHeight = node().getHeight();

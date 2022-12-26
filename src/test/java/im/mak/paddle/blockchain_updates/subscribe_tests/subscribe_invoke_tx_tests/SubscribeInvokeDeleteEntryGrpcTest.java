@@ -26,7 +26,6 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeTransactionAssertions.checkPaymentsSubscribe;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.WAVES_STRING_ID;
@@ -70,8 +69,7 @@ public class SubscribeInvokeDeleteEntryGrpcTest extends BaseGrpcTest {
                     intVal = String.valueOf(testData.getIntArg());
                 },
                 () -> intValueAfter = String.valueOf(0),
-                () -> fromHeight = node().getHeight(),
-                () -> setVersion(LATEST_VERSION)
+                () -> fromHeight = node().getHeight()
         );
     }
 
@@ -80,7 +78,7 @@ public class SubscribeInvokeDeleteEntryGrpcTest extends BaseGrpcTest {
     void subscribeInvokeWithDeleteEntry() {
         calcBalances.balancesAfterPaymentInvoke(callerAddress, dAppAddress, payments, assetId);
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, payments);
-        txSender.invokeSenderWithPayment();
+        txSender.invokeSenderWithPayment(LATEST_VERSION);
         String txId = txSender.getInvokeScriptId();
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);

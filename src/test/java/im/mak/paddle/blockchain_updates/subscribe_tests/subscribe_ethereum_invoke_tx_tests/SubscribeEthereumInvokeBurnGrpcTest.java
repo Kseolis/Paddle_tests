@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 
 import static im.mak.paddle.Node.node;
-import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.util.Async.async;
@@ -28,7 +27,7 @@ import static im.mak.paddle.util.Constants.*;
 
 public class SubscribeEthereumInvokeBurnGrpcTest extends BaseGrpcTest {
     private PrepareInvokeTestsData testData;
-    private EthereumTestUser ethInstance;
+    private EthereumTestUser ethereumTestUser;
     private Address senderAddress;
     private InvokeCalculationsBalancesAfterTx calcBalances;
     private AssetId assetId;
@@ -52,11 +51,11 @@ public class SubscribeEthereumInvokeBurnGrpcTest extends BaseGrpcTest {
                 () -> payments = testData.getOtherAmounts(),
                 () -> {
                     try {
-                        ethInstance = getEthInstance();
+                        ethereumTestUser = new EthereumTestUser();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    senderAddress = ethInstance.getSenderAddress();
+                    senderAddress = ethereumTestUser.getSenderAddress();
                     node().faucet().transfer(senderAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
                 }
         );
@@ -67,7 +66,7 @@ public class SubscribeEthereumInvokeBurnGrpcTest extends BaseGrpcTest {
     @DisplayName("Subscribe Ethereum invoke with Burn")
     void subscribeInvokeWithBurn() throws NodeException, IOException {
         calcBalances.balancesAfterBurnAssetInvoke(senderAddress, assetDAppAddress, payments, assetId);
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, testData.getInvokeFee());
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, testData.getInvokeFee(), ethereumTestUser);
         txSender.sendingAnEthereumInvokeTransaction(dAppCallFunction);
         String txId = txSender.getEthTxId().toString();
         height = node().getHeight();

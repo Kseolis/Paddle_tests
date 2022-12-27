@@ -22,13 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static im.mak.paddle.Node.node;
-import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.DEFAULT_FAUCET;
 
 public class GetBlockUpdateEthereumInvokeTest extends BaseGrpcTest {
     private PrepareInvokeTestsData testData;
-    private EthereumTestUser ethInstance;
+    private EthereumTestUser ethereumTestUser;
     private Address senderAddress;
     private InvokeCalculationsBalancesAfterTx calcBalances;
     private AssetId assetId;
@@ -56,11 +55,11 @@ public class GetBlockUpdateEthereumInvokeTest extends BaseGrpcTest {
                 () -> invokeFee = testData.getInvokeFee(),
                 () -> {
                     try {
-                        ethInstance = getEthInstance();
+                        ethereumTestUser = new EthereumTestUser();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    senderAddress = ethInstance.getSenderAddress();
+                    senderAddress = ethereumTestUser.getSenderAddress();
                     node().faucet().transfer(senderAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
                 }
         );
@@ -71,7 +70,7 @@ public class GetBlockUpdateEthereumInvokeTest extends BaseGrpcTest {
     @DisplayName("GetBlockUpdate Ethereum invoke with Burn")
     void subscribeInvokeWithBurn() throws NodeException, IOException {
         calcBalances.balancesAfterBurnAssetInvoke(senderAddress, assetDAppAddress, payments, assetId);
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestUser);
         txSender.sendingAnEthereumInvokeTransaction(dAppCallFunction);
         String txId = txSender.getEthTxId().toString();
         heightsList.add(node().getHeight());

@@ -24,7 +24,6 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.ethereum_in
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateAssets;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
-import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.waves_transactions_handlers.WavesTransactionsHandler.getTxId;
@@ -36,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class SubscribeEthereumInvokeReissueGrpcTest extends BaseGrpcTest {
     private PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
-    private EthereumTestUser ethInstance;
+    private EthereumTestUser ethereumTestUser;
     private Address senderAddress;
     private String senderAddressString;
     private long senderWavesBalanceBeforeTx;
@@ -68,11 +67,11 @@ public class SubscribeEthereumInvokeReissueGrpcTest extends BaseGrpcTest {
                 },
                 () -> {
                     try {
-                        ethInstance = getEthInstance();
+                        ethereumTestUser = new EthereumTestUser();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    senderAddress = ethInstance.getSenderAddress();
+                    senderAddress = ethereumTestUser.getSenderAddress();
                     senderAddressString = senderAddress.toString();
                     node().faucet().transfer(senderAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
                 },
@@ -112,7 +111,7 @@ public class SubscribeEthereumInvokeReissueGrpcTest extends BaseGrpcTest {
     @Test
     @DisplayName("subscribe ethereum invoke with Reissue")
     void subscribeInvokeWithReissue() throws NodeException, IOException {
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestUser);
         txSender.sendingAnEthereumInvokeTransaction(dAppCallFunction);
         String txId = txSender.getEthTxId().toString();
         height = node().getHeight();

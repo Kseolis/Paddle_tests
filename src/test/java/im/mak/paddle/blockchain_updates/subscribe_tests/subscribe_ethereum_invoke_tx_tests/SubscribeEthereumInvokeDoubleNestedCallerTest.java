@@ -24,7 +24,7 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.ethereum_in
 import static im.mak.paddle.blockchain_updates.transactions_checkers.ethereum_invoke_transaction_checkers.EthereumInvokeStateUpdateAssertions.checkEthereumStateChangesTransfers;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateDataEntries;
-import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
+
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.waves_transactions_handlers.WavesTransactionsHandler.getTxId;
@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeEthereumInvokeDoubleNestedCallerTest extends BaseGrpcTest {
     private static PrepareInvokeTestsData testData;
-    private EthereumTestUser ethInstance;
+    private EthereumTestUser ethereumTestUser;
     private Function dAppCallFunction;
     private Address senderAddress;
     private String senderAddressString;
@@ -84,17 +84,17 @@ public class SubscribeEthereumInvokeDoubleNestedCallerTest extends BaseGrpcTest 
         assertionsCheckDoubleNestedInvoke(originCallerForScript, getTxIndex());
     }
 
-    private void prepareDoubleNestedTest(String callerType) {
+    private void prepareDoubleNestedTest(String callerType) throws IOException {
         testData = new PrepareInvokeTestsData();
         testData.prepareDataForDoubleNestedTest(SUM_FEE, callerType, callerType);
         async(
                 () -> {
                     try {
-                        ethInstance = getEthInstance();
+                        ethereumTestUser = new EthereumTestUser();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    senderAddress = ethInstance.getSenderAddress();
+                    senderAddress = ethereumTestUser.getSenderAddress();
                     senderAddressString = senderAddress.toString();
                     node().faucet().transfer(senderAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
                 },
@@ -133,7 +133,7 @@ public class SubscribeEthereumInvokeDoubleNestedCallerTest extends BaseGrpcTest 
                 }
         );
         assetDAppAccount.transfer(senderAddress, Amount.of(300_000_000L, assetId));
-        txSender = new EthereumInvokeTransactionSender(dAppAddress, amounts, invokeFee);
+        txSender = new EthereumInvokeTransactionSender(dAppAddress, amounts, invokeFee, ethereumTestUser);
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
         calculateBalancesForTest(callerType);
     }

@@ -225,15 +225,15 @@ public class InvokeCalculationsBalancesAfterTx {
 
     public void balancesEthereumAfterCallerScriptTransfer(Address caller, Address dApp, Address acc, List<Amount> amounts, AssetId id) {
         prepareThreeAccBalances(caller, dApp, acc, id);
-
         if (!amounts.isEmpty()) {
             amounts.forEach(
                     a -> {
                         if (a.assetId().isWaves()) {
-                            dAppBalanceWavesAfterTransaction -= a.value();
+                            dAppBalanceWavesAfterTransaction -= a.value() * 2;
+                            callerBalanceWavesAfterTransaction += a.value();
                             accBalanceWavesAfterTransaction += a.value();
                         } else if (a.assetId().equals(id)) {
-                            callerBalanceIssuedAssetsAfterTransaction -= a.value();
+                            dAppBalanceIssuedAssetsAfterTransaction -= a.value();
                             accBalanceIssuedAssetsAfterTransaction += a.value();
                         }
                     }

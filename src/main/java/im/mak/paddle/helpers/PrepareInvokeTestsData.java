@@ -26,6 +26,8 @@ public class PrepareInvokeTestsData {
     private String callerPublicKey;
     private String callerPublicKeyHash;
     private byte[] callerAddressBytes;
+    private Account secondCallerAccount;
+    private Account thirdCallerAccount;
     private DataDApp dAppAccount;
     private String dAppAddress;
     private String dAppPublicKey;
@@ -71,12 +73,14 @@ public class PrepareInvokeTestsData {
 
         async(
                 () -> {
-                    callerAccount = new Account(DEFAULT_FAUCET * 2);
+                    callerAccount = new Account(DEFAULT_FAUCET);
                     callerAddress = callerAccount.address().toString();
                     callerPublicKey = callerAccount.publicKey().toString();
                     callerPublicKeyHash = Base58.encode(callerAccount.address().publicKeyHash());
                     callerAddressBytes = Base58.decode(callerAddress);
                 },
+                () -> secondCallerAccount = new Account(FIVE_WAVES),
+                () -> thirdCallerAccount = new Account(ONE_WAVES),
                 () -> base64String = new Base64String(randomNumAndLetterString(6)),
                 () -> stringArg = randomNumAndLetterString(10),
                 () -> {
@@ -84,7 +88,7 @@ public class PrepareInvokeTestsData {
                     boolArg = intArg % 2 == 0;
                 },
                 () -> {
-                    assetDAppAccount = new AssetDAppAccount(DEFAULT_FAUCET, "true");
+                    assetDAppAccount = new AssetDAppAccount(FIVE_WAVES, "true");
                     assetDAppAddress = assetDAppAccount.address().toString();
                     assetDAppPublicKey = assetDAppAccount.publicKey().toString();
                     assetDAppAddressBytes = Base58.decode(assetDAppAddress);
@@ -100,20 +104,20 @@ public class PrepareInvokeTestsData {
                     assetData.put(ASSET_ID, assetId.toString());
                 },
                 () -> {
-                    dAppAccount = new DataDApp(DEFAULT_FAUCET, "true");
+                    dAppAccount = new DataDApp(FIVE_WAVES, "true");
                     dAppAddress = dAppAccount.address().toString();
                     dAppPublicKey = dAppAccount.publicKey().toString();
                     dAppPublicKeyHash = Base58.encode(dAppAccount.address().publicKeyHash());
                     dAppAddressBytes = Base58.decode(dAppAddress);
                 },
                 () -> {
-                    otherDAppAccount = new DataDApp(DEFAULT_FAUCET, "true");
+                    otherDAppAccount = new DataDApp(FIVE_WAVES, "true");
                     otherDAppAddress = otherDAppAccount.address().toString();
                     otherDAppAddressBytes = Base58.decode(otherDAppAddress);
                 }
         );
-        assetDAppAccount.transfer(callerAccount, Amount.of(300_000_000L, assetId));
-        assetDAppAccount.transfer(dAppAccount, Amount.of(300_000_000L, assetId));
+        assetDAppAccount.transfer(callerAccount, Amount.of(200_000_000L, assetId));
+        assetDAppAccount.transfer(dAppAccount, Amount.of(200_000_000L, assetId));
         wavesAmount = Amount.of(getRandomInt(10, 10000));
         secondWavesAmount = Amount.of(getRandomInt(10001, 20000));
         assetAmount = Amount.of(getRandomInt(10, 10000), assetId);
@@ -541,6 +545,14 @@ public class PrepareInvokeTestsData {
 
     public String getOtherDAppAddress() {
         return otherDAppAddress;
+    }
+
+    public Account getSecondCallerAccount() {
+        return secondCallerAccount;
+    }
+
+    public Account getThirdCallerAccount() {
+        return thirdCallerAccount;
     }
 
     public String getKeyForDAppEqualBaz() {

@@ -26,8 +26,6 @@ public class PrepareInvokeTestsData {
     private String callerPublicKey;
     private String callerPublicKeyHash;
     private byte[] callerAddressBytes;
-    private Account secondCallerAccount;
-    private Account thirdCallerAccount;
     private DataDApp dAppAccount;
     private String dAppAddress;
     private String dAppPublicKey;
@@ -79,8 +77,6 @@ public class PrepareInvokeTestsData {
                     callerPublicKeyHash = Base58.encode(callerAccount.address().publicKeyHash());
                     callerAddressBytes = Base58.decode(callerAddress);
                 },
-                () -> secondCallerAccount = new Account(FIVE_WAVES),
-                () -> thirdCallerAccount = new Account(ONE_WAVES),
                 () -> base64String = new Base64String(randomNumAndLetterString(6)),
                 () -> stringArg = randomNumAndLetterString(10),
                 () -> {
@@ -545,14 +541,6 @@ public class PrepareInvokeTestsData {
 
     public String getOtherDAppAddress() {
         return otherDAppAddress;
-    }
-
-    public Account getSecondCallerAccount() {
-        return secondCallerAccount;
-    }
-
-    public Account getThirdCallerAccount() {
-        return thirdCallerAccount;
     }
 
     public String getKeyForDAppEqualBaz() {

@@ -6,7 +6,7 @@ import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.transactions.common.Id;
 import com.wavesplatform.wavesj.exceptions.NodeException;
-import im.mak.paddle.helpers.EthereumTestUser;
+import im.mak.paddle.helpers.EthereumTestAccounts;
 import org.web3j.crypto.ECKeyPair;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ import static im.mak.paddle.Node.node;
 import static com.wavesplatform.transactions.EthereumTransaction.DEFAULT_GAS_PRICE;
 
 public class EthereumTransferTransactionSender extends BaseTransactionSender {
-    private final EthereumTestUser testUser;
+    private final EthereumTestAccounts testUser;
     private final Address senderAddress;
     private final Address recipientAddress;
     private final Amount amountTransfer;
@@ -33,17 +33,17 @@ public class EthereumTransferTransactionSender extends BaseTransactionSender {
     private long recipientAssetBalanceBeforeTransaction;
     private long recipientAssetBalanceAfterTransaction;
 
-    public EthereumTransferTransactionSender(EthereumTestUser testUser, Address recipientAddress, Amount amountTransfer, long fee) {
+    public EthereumTransferTransactionSender(EthereumTestAccounts testUser, Address recipientAddress, Amount amountTransfer, long fee) {
         this.testUser = testUser;
         this.recipientAddress = recipientAddress;
         this.amountTransfer = amountTransfer;
         this.fee = fee;
-        this.senderAddress = testUser.getSenderAddress();
+        this.senderAddress = testUser.getTransferSenderAddress();
     }
 
     public void sendingAnEthereumTransferTransaction() throws NodeException, IOException {
         byte chainId = node().chainId();
-        ECKeyPair keyPair = testUser.getEcKeyPair();
+        ECKeyPair keyPair = testUser.getTransferEcKeyPair();
         timestamp = System.currentTimeMillis();
         calculateBalancesForAmount();
 

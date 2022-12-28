@@ -8,7 +8,7 @@ import com.wavesplatform.wavesj.exceptions.NodeException;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.dapp.DAppCall;
-import im.mak.paddle.helpers.EthereumTestUser;
+import im.mak.paddle.helpers.EthereumTestAccounts;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.EthereumInvokeTransactionSender;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTx;
@@ -37,7 +37,7 @@ public class SubscribeEthereumInvokeIssueGrpcTest extends BaseGrpcTest {
     private PrepareInvokeTestsData testData;
     private DAppCall dAppCall;
     private Function dAppCallFunction;
-    private EthereumTestUser ethereumTestUser;
+    private EthereumTestAccounts ethereumTestUsers;
     private Address senderAddress;
     private String senderAddressString;
     private long senderWavesBalanceBeforeTx;
@@ -75,11 +75,11 @@ public class SubscribeEthereumInvokeIssueGrpcTest extends BaseGrpcTest {
                 },
                 () -> {
                     try {
-                        ethereumTestUser = new EthereumTestUser();
+                        ethereumTestUsers = new EthereumTestAccounts();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    senderAddress = ethereumTestUser.getSenderAddress();
+                    senderAddress = ethereumTestUsers.getSenderAddress();
                     senderAddressString = senderAddress.toString();
                     node().faucet().transfer(senderAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
                 }
@@ -93,7 +93,7 @@ public class SubscribeEthereumInvokeIssueGrpcTest extends BaseGrpcTest {
     @Test
     @DisplayName("subscribe ethereum invoke with Issue")
     void prepareDataForIssueTests() throws NodeException, IOException {
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestUser);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestUsers);
         txSender.sendingAnEthereumInvokeTransaction(dAppCallFunction);
         String txId = txSender.getEthTxId().toString();
         height = node().getHeight();

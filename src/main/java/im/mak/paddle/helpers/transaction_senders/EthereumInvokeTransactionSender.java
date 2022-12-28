@@ -6,7 +6,7 @@ import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.Id;
 import com.wavesplatform.transactions.invocation.Function;
 import com.wavesplatform.wavesj.exceptions.NodeException;
-import im.mak.paddle.helpers.EthereumTestUser;
+import im.mak.paddle.helpers.EthereumTestAccounts;
 import org.web3j.crypto.ECKeyPair;
 
 import java.io.IOException;
@@ -18,13 +18,13 @@ import static com.wavesplatform.transactions.EthereumTransaction.DEFAULT_GAS_PRI
 public class EthereumInvokeTransactionSender extends BaseTransactionSender {
     private final Address recipientAddress;
     private final List<Amount> payments;
-    private final EthereumTestUser sender;
+    private final EthereumTestAccounts sender;
     private EthereumTransaction ethTx;
     private Id ethTxId;
     private long timestamp;
     private final long ethInvokeFee;
 
-    public EthereumInvokeTransactionSender(Address recipientAddress, List<Amount> payments, long ethInvokeFee, EthereumTestUser sender) throws IOException {
+    public EthereumInvokeTransactionSender(Address recipientAddress, List<Amount> payments, long ethInvokeFee, EthereumTestAccounts sender) throws IOException {
         this.recipientAddress = recipientAddress;
         this.payments = payments;
         this.ethInvokeFee = ethInvokeFee;

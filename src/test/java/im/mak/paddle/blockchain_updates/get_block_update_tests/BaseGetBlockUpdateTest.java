@@ -13,7 +13,7 @@ import com.wavesplatform.transactions.exchange.Order;
 import com.wavesplatform.wavesj.exceptions.NodeException;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
-import im.mak.paddle.helpers.EthereumTestUser;
+import im.mak.paddle.helpers.EthereumTestAccounts;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.*;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTx;
@@ -96,7 +96,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static AssetId assetIdForSponsorFee;
     protected static SponsorFeeTransactionSender sponsorFeeTx;
     protected static String sponsorFeeTxId;
-    protected static EthereumTestUser ethereumTestUser;
+    protected static EthereumTestAccounts ethereumTestUsers;
     protected static Address ethSenderAddress;
     protected static EthereumTransferTransactionSender ethTx;
     protected static String ethTxId;
@@ -168,8 +168,8 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                 },
                 () -> {
                     try {
-                        ethereumTestUser = new EthereumTestUser();
-                        ethSenderAddress = ethereumTestUser.getSenderAddress();
+                        ethereumTestUsers = new EthereumTestAccounts();
+                        ethSenderAddress = ethereumTestUsers.getSenderAddress();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -326,7 +326,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void ethereumSetUp() throws IOException, NodeException {
-        ethTx = new EthereumTransferTransactionSender(ethereumTestUser, recipient.address(), wavesAmount, MIN_FEE);
+        ethTx = new EthereumTransferTransactionSender(ethereumTestUsers, recipient.address(), wavesAmount, MIN_FEE);
         ethTx.sendingAnEthereumTransferTransaction();
         ethTxId = ethTx.getEthTxId().toString();
         checkHeight();

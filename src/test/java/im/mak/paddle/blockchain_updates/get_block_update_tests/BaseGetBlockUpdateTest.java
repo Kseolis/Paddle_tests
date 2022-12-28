@@ -169,7 +169,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                 () -> {
                     try {
                         ethereumTestAccounts = new EthereumTestAccounts();
-                        ethSenderAddress = ethereumTestAccounts.getSenderAddress();
+                        ethSenderAddress = ethereumTestAccounts.getTransferSenderAddress();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -360,7 +360,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         }
     }
 
-    protected void setHeights(List<Integer> heightsList) {
+    protected void heightCalculation(List<Integer> heightsList) {
         if (heightsList.size() == 1) {
             fromHeight = heightsList.get(0);
             toHeight = heightsList.get(0);

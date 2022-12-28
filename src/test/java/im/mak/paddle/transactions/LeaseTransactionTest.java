@@ -21,6 +21,9 @@ public class LeaseTransactionTest {
     private Account bob;
     private Account karl;
     private Account sara;
+    private Account eduard;
+    private Account marry;
+    private Account johny;
     private DefaultDApp420Complexity smartAcc;
     private LeaseTransactionSender txSender;
 
@@ -28,9 +31,12 @@ public class LeaseTransactionTest {
     void before() {
         async(
                 () -> alice = new Account(ONE_WAVES),
-                () -> bob = new Account(ONE_WAVES),
+                () -> bob = new Account(),
                 () -> karl = new Account(ONE_WAVES),
                 () -> sara = new Account(ONE_WAVES),
+                () -> eduard = new Account(ONE_WAVES),
+                () -> marry = new Account(ONE_WAVES),
+                () -> johny = new Account(),
                 () -> smartAcc = new DefaultDApp420Complexity(ONE_WAVES)
         );
     }
@@ -46,7 +52,7 @@ public class LeaseTransactionTest {
     }
 
     @Test
-    @DisplayName("lease asset transaction random WAVES")
+    @DisplayName("lease transaction random WAVES")
     void leaseOneWavesAssets() {
         long amount = getRandomInt(1000, 1_000_000);
         for (int v = 1; v <= LATEST_VERSION; v++) {
@@ -60,11 +66,12 @@ public class LeaseTransactionTest {
     @DisplayName("Maximum lease sum transaction")
     void leaseMaximumAssets() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            long amount = karl.getWavesBalance() - MIN_FEE;
-            txSender = new LeaseTransactionSender(karl, bob, MIN_FEE);
+            bob = new Account(ONE_WAVES);
+            long amount = bob.getWavesBalance() - MIN_FEE;
+            txSender = new LeaseTransactionSender(bob, marry, MIN_FEE);
             txSender.leaseTransactionSender(amount, LATEST_VERSION);
             leaseTransactionCheck(amount, MIN_FEE);
-            karl.cancelLease(txSender.getLeaseTx().id());
+            bob.cancelLease(txSender.getLeaseTx().id());
         }
     }
 
@@ -72,7 +79,7 @@ public class LeaseTransactionTest {
     @DisplayName("Maximum lease sum transaction from DApp account")
     void leaseFromDAppAccount() {
         long amount = smartAcc.getWavesBalance() - SUM_FEE;
-        txSender = new LeaseTransactionSender(smartAcc, bob, SUM_FEE);
+        txSender = new LeaseTransactionSender(smartAcc, johny, SUM_FEE);
         txSender.leaseTransactionSender(amount, LATEST_VERSION);
         leaseTransactionCheck(amount, SUM_FEE);
     }

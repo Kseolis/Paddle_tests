@@ -64,7 +64,6 @@ public class LeaseTransactionTest {
     @DisplayName("Maximum lease sum transaction")
     void leaseMaximumAssets() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
-            bob = new Account(ONE_WAVES);
             long amount = bob.getWavesBalance() - MIN_FEE;
             txSender = new LeaseTransactionSender(bob, marry, MIN_FEE);
             txSender.leaseTransactionSender(amount, LATEST_VERSION);

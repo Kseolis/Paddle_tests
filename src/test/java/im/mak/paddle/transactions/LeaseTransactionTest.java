@@ -21,7 +21,6 @@ public class LeaseTransactionTest {
     private Account bob;
     private Account karl;
     private Account sara;
-    private Account eduard;
     private Account marry;
     private Account johny;
     private DefaultDApp420Complexity smartAcc;
@@ -31,10 +30,9 @@ public class LeaseTransactionTest {
     void before() {
         async(
                 () -> alice = new Account(ONE_WAVES),
-                () -> bob = new Account(),
+                () -> bob = new Account(ONE_WAVES),
                 () -> karl = new Account(ONE_WAVES),
                 () -> sara = new Account(ONE_WAVES),
-                () -> eduard = new Account(ONE_WAVES),
                 () -> marry = new Account(ONE_WAVES),
                 () -> johny = new Account(),
                 () -> smartAcc = new DefaultDApp420Complexity(ONE_WAVES)

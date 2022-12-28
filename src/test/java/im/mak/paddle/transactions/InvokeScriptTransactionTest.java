@@ -22,8 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class InvokeScriptTransactionTest {
     private PrepareInvokeTestsData testData;
     private Account caller;
-    private Account secondCaller;
-    private Account thirdCaller;
     private Account dAppAccount;
     private Account otherDAppAccount;
     private Account assetDAppAccount;
@@ -38,8 +36,6 @@ public class InvokeScriptTransactionTest {
         testData = new PrepareInvokeTestsData();
         async(
                 () -> caller = testData.getCallerAccount(),
-                () -> secondCaller = testData.getSecondCallerAccount(),
-                () -> thirdCaller = testData.getThirdCallerAccount(),
                 () -> dAppAccount = testData.getDAppAccount(),
                 () -> otherDAppAccount = testData.getOtherDAppAccount(),
                 () -> assetDAppAccount = testData.getAssetDAppAccount(),
@@ -52,15 +48,16 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke with DataDApp and issue asset payment")
     void invokeScriptWithDataDAppTest() {
+        caller = new Account(FIVE_WAVES);
         for (int v = 1; v <= LATEST_VERSION; v++) {
             testData.prepareDataForDataDAppTests(SUM_FEE, 0);
             dAppCall = testData.getDAppCall();
             calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-            InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(thirdCaller, dAppAccount, dAppCall, payments);
-            calcBalances.balancesAfterPaymentInvoke(thirdCaller.address(), dAppAccount.address(), payments, assetId);
+            InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, payments);
+            calcBalances.balancesAfterPaymentInvoke(caller.address(), dAppAccount.address(), payments, assetId);
             txSender.invokeSenderWithPayment(v);
-            checkInvokeTransaction(thirdCaller, SUM_FEE, txSender, payments);
-            checkBalancesAfterInvoke(thirdCaller, dAppAccount);
+            checkInvokeTransaction(caller, SUM_FEE, txSender, payments);
+            checkBalancesAfterInvoke(caller, dAppAccount);
         }
     }
 
@@ -82,6 +79,7 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke with Burn transaction")
     void invokeScriptWithBurn() {
+        caller = new Account(FIVE_WAVES);
         for (int v = 1; v <= LATEST_VERSION; v++) {
             testData.prepareDataForBurnTests();
             dAppCall = testData.getDAppCall();
@@ -112,6 +110,7 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke with Lease and WAVES payment")
     void invokeScriptWithLease() {
+        caller = new Account(FIVE_WAVES);
         for (int v = 1; v <= LATEST_VERSION; v++) {
             testData.prepareDataForLeaseTests(SUM_FEE, ONE_WAVES);
             dAppCall = testData.getDAppCall();
@@ -142,6 +141,7 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke with SponsorFee")
     void invokeScriptWithSponsorFee() {
+        caller = new Account(FIVE_WAVES);
         for (int v = 1; v <= LATEST_VERSION; v++) {
             testData.prepareDataForSponsorFeeTests();
             dAppCall = testData.getDAppCall();
@@ -173,6 +173,7 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke dApp to dApp")
     void invokeDAppToDApp() {
+        caller = new Account(FIVE_WAVES);
         for (int v = 1; v <= LATEST_VERSION; v++) {
             testData.prepareDataForDAppToDAppTests(SUM_FEE);
             dAppCall = testData.getDAppCall();
@@ -193,22 +194,23 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke double nested for i.caller")
     void invokeDoubleNestedForCaller() {
+        caller = new Account(FIVE_WAVES);
         for (int v = 1; v <= LATEST_VERSION; v++) {
             testData.prepareDataForDoubleNestedTest(SUM_FEE, "i.caller", "i.caller");
             dAppCall = testData.getDAppCall();
             calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-            InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(secondCaller, dAppAccount, dAppCall);
+            InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall);
 
             calcBalances.balancesAfterDoubleNestedForCaller(
-                    secondCaller.address(),
+                    caller.address(),
                     dAppAccount.address(),
                     otherDAppAccount.address(),
                     assetDAppAccount.address(),
                     otherAmounts,
                     assetId);
             txSender.invokeSender(v);
-            checkInvokeTransaction(secondCaller, SUM_FEE, txSender, payments);
-            checkBalancesAfterInvoke(secondCaller, dAppAccount);
+            checkInvokeTransaction(caller, SUM_FEE, txSender, payments);
+            checkBalancesAfterInvoke(caller, dAppAccount);
             thirdAccountBalanceCheck(assetDAppAccount);
             fourthAccountBalanceCheck(otherDAppAccount);
         }
@@ -217,6 +219,7 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke double nested for i.originCaller")
     void invokeDoubleNestedForOriginCaller() {
+        caller = new Account(FIVE_WAVES);
         for (int v = 1; v <= LATEST_VERSION; v++) {
             testData.prepareDataForDoubleNestedTest(SUM_FEE, "i.originCaller", "i.originCaller");
             dAppCall = testData.getDAppCall();

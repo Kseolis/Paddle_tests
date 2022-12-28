@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeEthereumInvokeDoubleNestedCallerTest extends BaseGrpcTest {
     private static PrepareInvokeTestsData testData;
-    private EthereumTestAccounts ethereumTestUsers;
+    private EthereumTestAccounts ethereumTestAccounts;
     private Function dAppCallFunction;
     private Address senderAddress;
     private String senderAddressString;
@@ -90,11 +90,11 @@ public class SubscribeEthereumInvokeDoubleNestedCallerTest extends BaseGrpcTest 
         async(
                 () -> {
                     try {
-                        ethereumTestUsers = new EthereumTestAccounts();
+                        ethereumTestAccounts = new EthereumTestAccounts();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    senderAddress = ethereumTestUsers.getSenderAddress();
+                    senderAddress = ethereumTestAccounts.getSenderAddress();
                     senderAddressString = senderAddress.toString();
                     node().faucet().transfer(senderAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
                 },
@@ -133,7 +133,7 @@ public class SubscribeEthereumInvokeDoubleNestedCallerTest extends BaseGrpcTest 
                 }
         );
         assetDAppAccount.transfer(senderAddress, Amount.of(300_000_000L, assetId));
-        txSender = new EthereumInvokeTransactionSender(dAppAddress, amounts, invokeFee, ethereumTestUsers);
+        txSender = new EthereumInvokeTransactionSender(dAppAddress, amounts, invokeFee, ethereumTestAccounts);
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
         calculateBalancesForTest(callerType);
     }

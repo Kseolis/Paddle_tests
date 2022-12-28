@@ -23,7 +23,7 @@ import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 
 public class EthereumTransferTransactionSubscriptionGrpcTest extends BaseGrpcTest {
-    private EthereumTestAccounts ethereumTestUsers;
+    private EthereumTestAccounts ethereumTestAccounts;
     private Address senderAddress;
     private Account recipient;
     private Address recipientAddress;
@@ -36,11 +36,11 @@ public class EthereumTransferTransactionSubscriptionGrpcTest extends BaseGrpcTes
         async(
                 () -> {
                     try {
-                        ethereumTestUsers = new EthereumTestAccounts();
+                        ethereumTestAccounts = new EthereumTestAccounts();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    senderAddress = ethereumTestUsers.getSenderAddress();
+                    senderAddress = ethereumTestAccounts.getSenderAddress();
                     node().faucet().transfer(senderAddress, 1_0000_0000L, AssetId.WAVES, i -> i.additionalFee(0));
                 },
                 () -> {
@@ -59,7 +59,7 @@ public class EthereumTransferTransactionSubscriptionGrpcTest extends BaseGrpcTes
     @Test
     @DisplayName("Check subscription on Ethereum transfer transaction")
     void subscribeTestForWavesTransferTransaction() throws NodeException, IOException {
-        EthereumTransferTransactionSender txSender = new EthereumTransferTransactionSender(ethereumTestUsers, recipientAddress, amountTransfer, MIN_FEE);
+        EthereumTransferTransactionSender txSender = new EthereumTransferTransactionSender(ethereumTestAccounts, recipientAddress, amountTransfer, MIN_FEE);
         txSender.sendingAnEthereumTransferTransaction();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txSender.getEthTxId().toString());
@@ -71,7 +71,7 @@ public class EthereumTransferTransactionSubscriptionGrpcTest extends BaseGrpcTes
     @Test
     @DisplayName("Check subscription on Ethereum transfer smart asset transaction")
     void subscribeTestForSmartAssetTransferTransaction() throws NodeException, IOException {
-        EthereumTransferTransactionSender txSender = new EthereumTransferTransactionSender(ethereumTestUsers, recipientAddress, transferAmountSmartIssuedAsset, SUM_FEE);
+        EthereumTransferTransactionSender txSender = new EthereumTransferTransactionSender(ethereumTestAccounts, recipientAddress, transferAmountSmartIssuedAsset, SUM_FEE);
         txSender.sendingAnEthereumTransferTransaction();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txSender.getEthTxId().toString());

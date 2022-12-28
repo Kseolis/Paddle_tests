@@ -27,7 +27,7 @@ import static im.mak.paddle.util.Constants.*;
 
 public class SubscribeEthereumInvokeBurnGrpcTest extends BaseGrpcTest {
     private PrepareInvokeTestsData testData;
-    private EthereumTestAccounts ethereumTestUsers;
+    private EthereumTestAccounts ethereumTestAccounts;
     private Address senderAddress;
     private InvokeCalculationsBalancesAfterTx calcBalances;
     private AssetId assetId;
@@ -51,11 +51,11 @@ public class SubscribeEthereumInvokeBurnGrpcTest extends BaseGrpcTest {
                 () -> payments = testData.getOtherAmounts(),
                 () -> {
                     try {
-                        ethereumTestUsers = new EthereumTestAccounts();
+                        ethereumTestAccounts = new EthereumTestAccounts();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    senderAddress = ethereumTestUsers.getSenderAddress();
+                    senderAddress = ethereumTestAccounts.getSenderAddress();
                     node().faucet().transfer(senderAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
                 }
         );
@@ -66,7 +66,7 @@ public class SubscribeEthereumInvokeBurnGrpcTest extends BaseGrpcTest {
     @DisplayName("Subscribe Ethereum invoke with Burn")
     void subscribeInvokeWithBurn() throws NodeException, IOException {
         calcBalances.balancesAfterBurnAssetInvoke(senderAddress, assetDAppAddress, payments, assetId);
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, testData.getInvokeFee(), ethereumTestUsers);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, testData.getInvokeFee(), ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCallFunction);
         String txId = txSender.getEthTxId().toString();
         height = node().getHeight();

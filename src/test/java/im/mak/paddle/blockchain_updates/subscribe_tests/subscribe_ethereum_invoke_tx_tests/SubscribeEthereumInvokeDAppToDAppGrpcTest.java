@@ -36,7 +36,7 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
     private PrepareInvokeTestsData testData;
     private String key1;
     private String key2;
-    private EthereumTestAccounts ethereumTestUsers;
+    private EthereumTestAccounts ethereumTestAccounts;
     private Address senderAddress;
     private String senderAddressString;
     private AssetId assetId;
@@ -75,11 +75,11 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
                 },
                 () -> {
                     try {
-                        ethereumTestUsers = new EthereumTestAccounts();
+                        ethereumTestAccounts = new EthereumTestAccounts();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    senderAddress = ethereumTestUsers.getSenderAddress();
+                    senderAddress = ethereumTestAccounts.getSenderAddress();
                     senderAddressString = senderAddress.toString();
                     node().faucet().transfer(senderAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
                 }
@@ -93,7 +93,7 @@ public class SubscribeEthereumInvokeDAppToDAppGrpcTest extends BaseGrpcTest {
     @DisplayName("subscribe ethereum invoke dApp to dApp")
     void subscribeInvokeWithDAppToDApp() throws NodeException, IOException {
         calcBalances.balancesAfterEthereumDAppToDApp(senderAddress, dAppAddress, assetDAppAddress, payments, assetId);
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, testData.getInvokeFee(), ethereumTestUsers);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, testData.getInvokeFee(), ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCallFunction);
         String txId = txSender.getEthTxId().toString();
         toHeight = node().getHeight();

@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class SubscribeEthereumInvokeSponsorFeeGrpcTest extends BaseGrpcTest {
     private PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
-    private EthereumTestAccounts ethereumTestUsers;
+    private EthereumTestAccounts ethereumTestAccounts;
     private Address senderAddress;
     private String senderAddressStr;
     private long senderBalanceWavesBeforeTx;
@@ -71,11 +71,11 @@ public class SubscribeEthereumInvokeSponsorFeeGrpcTest extends BaseGrpcTest {
                 },
                 () -> {
                     try {
-                        ethereumTestUsers = new EthereumTestAccounts();
+                        ethereumTestAccounts = new EthereumTestAccounts();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    senderAddress = ethereumTestUsers.getSenderAddress();
+                    senderAddress = ethereumTestAccounts.getSenderAddress();
                     senderAddressStr = senderAddress.toString();
                     node().faucet().transfer(senderAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
                 },
@@ -116,7 +116,7 @@ public class SubscribeEthereumInvokeSponsorFeeGrpcTest extends BaseGrpcTest {
     @Test
     @DisplayName("subscribe ethereum invoke with SponsorFee")
     void subscribeInvokeWithSponsorFee() throws NodeException, IOException {
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestUsers);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCallFunction);
         String txId = txSender.getEthTxId().toString();
         height = node().getHeight();

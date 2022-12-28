@@ -194,8 +194,8 @@ public class InvokeScriptTransactionTest {
     @Test
     @DisplayName("invoke double nested for i.caller")
     void invokeDoubleNestedForCaller() {
-        caller = new Account(FIVE_WAVES);
         for (int v = 1; v <= LATEST_VERSION; v++) {
+            caller = new Account(FIVE_WAVES);
             testData.prepareDataForDoubleNestedTest(SUM_FEE, "i.caller", "i.caller");
             dAppCall = testData.getDAppCall();
             calcBalances = new InvokeCalculationsBalancesAfterTx(testData);

@@ -40,7 +40,7 @@ public class EthereumTransferTransactionSubscriptionGrpcTest extends BaseGrpcTes
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    senderAddress = ethereumTestAccounts.getSenderAddress();
+                    senderAddress = ethereumTestAccounts.getTransferSenderAddress();
                     node().faucet().transfer(senderAddress, 1_0000_0000L, AssetId.WAVES, i -> i.additionalFee(0));
                 },
                 () -> {

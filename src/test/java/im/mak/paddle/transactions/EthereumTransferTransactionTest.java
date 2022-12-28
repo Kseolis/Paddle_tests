@@ -7,7 +7,7 @@ import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
 import com.wavesplatform.wavesj.exceptions.NodeException;
 import im.mak.paddle.Account;
-import im.mak.paddle.helpers.EthereumTestUser;
+import im.mak.paddle.helpers.EthereumTestAccounts;
 import im.mak.paddle.helpers.transaction_senders.EthereumTransferTransactionSender;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -25,8 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class EthereumTransferTransactionTest {
-    private static EthereumTestUser ethereumTestUser;
-    private static Address senderAddress;
+    private static EthereumTestAccounts ethereumTestAccounts;
+    private static Address transferSenderAddress;
     private static Account recipient;
     private static Address recipientAddress;
     private static EthereumTransferTransactionSender txSender;
@@ -37,15 +37,15 @@ public class EthereumTransferTransactionTest {
         async(
                 () -> {
                     try {
-                        ethereumTestUser = new EthereumTestUser();
+                        ethereumTestAccounts = new EthereumTestAccounts();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    senderAddress = ethereumTestUser.getSenderAddress();
-                    node().faucet().transfer(senderAddress, 1_0000_0000L, AssetId.WAVES, i -> i.additionalFee(0));
+                    transferSenderAddress = ethereumTestAccounts.getTransferSenderAddress();
+                    node().faucet().transfer(transferSenderAddress, FIVE_WAVES, AssetId.WAVES, i -> i.additionalFee(0));
                 },
                 () -> {
-                    recipient = new Account(3_0000_0000L);
+                    recipient = new Account(FIVE_WAVES);
                     recipientAddress = recipient.address();
                 }
         );
@@ -55,7 +55,7 @@ public class EthereumTransferTransactionTest {
     @DisplayName("Test of transferring a minimum amount using an Ethereum transaction")
     void ethereumTransferTransactionMinimumAmountForWaves() throws NodeException, IOException {
         final Amount minAmountTransfer = Amount.of(1);
-        txSender = new EthereumTransferTransactionSender(ethereumTestUser, recipientAddress, minAmountTransfer, MIN_FEE);
+        txSender = new EthereumTransferTransactionSender(ethereumTestAccounts, recipientAddress, minAmountTransfer, MIN_FEE);
         txSender.sendingAnEthereumTransferTransaction();
         payload = (Transfer) txSender.getEthTx().payload();
         checkEthereumTransfer(minAmountTransfer);
@@ -66,7 +66,7 @@ public class EthereumTransferTransactionTest {
     @DisplayName("Test of transferring a random amount using an Ethereum transaction")
     void ethereumTransferTransactionForWaves() throws NodeException, IOException {
         final Amount amountTransfer = Amount.of(getRandomInt(100, 1_000_000));
-        txSender = new EthereumTransferTransactionSender(ethereumTestUser, recipientAddress, amountTransfer, MIN_FEE);
+        txSender = new EthereumTransferTransactionSender(ethereumTestAccounts, recipientAddress, amountTransfer, MIN_FEE);
         txSender.sendingAnEthereumTransferTransaction();
         payload = (Transfer) txSender.getEthTx().payload();
         checkEthereumTransfer(amountTransfer);
@@ -77,9 +77,9 @@ public class EthereumTransferTransactionTest {
     @DisplayName("Test of transferring issued asset a random amount using an Ethereum transaction")
     void ethereumTransferTransactionAmountForIssuedAsset() throws NodeException, IOException {
         final AssetId issuedAssetId = recipient.issue(i -> i.name("Test_Asset").quantity(1000).decimals(8)).tx().assetId();
-        recipient.transfer(senderAddress, Amount.of(recipient.getBalance(issuedAssetId), issuedAssetId), i -> i.additionalFee(0));
+        recipient.transfer(transferSenderAddress, Amount.of(recipient.getBalance(issuedAssetId), issuedAssetId), i -> i.additionalFee(0));
         final Amount transferAmountSimpleIssuedAsset = Amount.of(getRandomInt(1, 100), issuedAssetId);
-        txSender = new EthereumTransferTransactionSender(ethereumTestUser, recipientAddress, transferAmountSimpleIssuedAsset, MIN_FEE);
+        txSender = new EthereumTransferTransactionSender(ethereumTestAccounts, recipientAddress, transferAmountSimpleIssuedAsset, MIN_FEE);
 
         txSender.sendingAnEthereumTransferTransaction();
         payload = (Transfer) txSender.getEthTx().payload();
@@ -91,10 +91,10 @@ public class EthereumTransferTransactionTest {
     @DisplayName("Test of transferring issued smart asset a random amount using an Ethereum transaction")
     void ethereumTransferTransactionAmountForIssuedSmartAsset() throws NodeException, IOException {
         final AssetId issuedSmartAssetId = recipient.issue(i -> i.name("T_smart").quantity(1000).decimals(8).script(SCRIPT_PERMITTING_OPERATIONS)).tx().assetId();
-        recipient.transfer(senderAddress, Amount.of(recipient.getBalance(issuedSmartAssetId), issuedSmartAssetId), i -> i.additionalFee(0));
+        recipient.transfer(transferSenderAddress, Amount.of(recipient.getBalance(issuedSmartAssetId), issuedSmartAssetId), i -> i.additionalFee(0));
         final Amount transferAmountSmartIssuedAsset = Amount.of(getRandomInt(1, 100), issuedSmartAssetId);
 
-        txSender = new EthereumTransferTransactionSender(ethereumTestUser, recipientAddress, transferAmountSmartIssuedAsset, SUM_FEE);
+        txSender = new EthereumTransferTransactionSender(ethereumTestAccounts, recipientAddress, transferAmountSmartIssuedAsset, SUM_FEE);
         txSender.sendingAnEthereumTransferTransaction();
         payload = (Transfer) txSender.getEthTx().payload();
         checkEthereumTransfer(transferAmountSmartIssuedAsset);
@@ -112,7 +112,7 @@ public class EthereumTransferTransactionTest {
                 () -> assertThat(txSender.getEthTx().fee().assetId()).isEqualTo(WAVES),
                 () -> assertThat(txSender.getEthTx().fee().value()).isEqualTo(txSender.getEthFee()),
                 () -> assertThat(txSender.getEthTx().id()).isEqualTo(txSender.getEthTxId()),
-                () -> assertThat(txSender.getEthTx().sender().address()).isEqualTo(senderAddress),
+                () -> assertThat(txSender.getEthTx().sender().address()).isEqualTo(transferSenderAddress),
                 () -> assertThat(payload.amount()).isEqualTo(amount),
                 () -> assertThat(payload.recipient()).isEqualTo(recipientAddress)
 
@@ -121,12 +121,12 @@ public class EthereumTransferTransactionTest {
 
     private void checkBalancesAfterTx(AssetId assetId) {
         assertAll(
-              //  () -> assertThat(node().getBalance(senderAddress)).isEqualTo(txSender.getSenderBalanceAfterEthTransaction()),
+                () -> assertThat(node().getBalance(transferSenderAddress)).isEqualTo(txSender.getSenderBalanceAfterEthTransaction()),
                 () -> assertThat(node().getBalance(recipientAddress)).isEqualTo(txSender.getRecipientBalanceAfterEthTransaction())
         );
         if (!assetId.isWaves()) {
             assertAll(
-                    () -> assertThat(node().getAssetBalance(senderAddress, assetId)).isEqualTo(txSender.getSenderAssetBalanceAfterTransaction()),
+                    () -> assertThat(node().getAssetBalance(transferSenderAddress, assetId)).isEqualTo(txSender.getSenderAssetBalanceAfterTransaction()),
                     () -> assertThat(node().getAssetBalance(recipientAddress, assetId)).isEqualTo(txSender.getRecipientAssetBalanceAfterTransaction())
             );
         }

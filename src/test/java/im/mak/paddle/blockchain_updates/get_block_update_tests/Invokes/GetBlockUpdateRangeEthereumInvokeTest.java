@@ -26,7 +26,7 @@ import static im.mak.paddle.util.Constants.DEFAULT_FAUCET;
 
 public class GetBlockUpdateRangeEthereumInvokeTest extends BaseGrpcTest {
     private PrepareInvokeTestsData testData;
-    private EthereumTestAccounts ethereumTestUsers;
+    private EthereumTestAccounts ethereumTestAccounts;
     private Address senderAddress;
     private InvokeCalculationsBalancesAfterTx calcBalances;
     private AssetId assetId;
@@ -52,11 +52,11 @@ public class GetBlockUpdateRangeEthereumInvokeTest extends BaseGrpcTest {
                 () -> invokeFee = testData.getInvokeFee(),
                 () -> {
                     try {
-                        ethereumTestUsers = new EthereumTestAccounts();
+                        ethereumTestAccounts = new EthereumTestAccounts();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    senderAddress = ethereumTestUsers.getSenderAddress();
+                    senderAddress = ethereumTestAccounts.getSenderAddress();
                     node().faucet().transfer(senderAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
                 }
         );
@@ -68,7 +68,7 @@ public class GetBlockUpdateRangeEthereumInvokeTest extends BaseGrpcTest {
     void subscribeInvokeWithBurn() throws NodeException, IOException {
         fromHeight = node().getHeight();
         calcBalances.balancesAfterBurnAssetInvoke(senderAddress, assetDAppAddress, payments, assetId);
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestUsers);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCallFunction);
         String txId = txSender.getEthTxId().toString();
         toHeight = node().getHeight();

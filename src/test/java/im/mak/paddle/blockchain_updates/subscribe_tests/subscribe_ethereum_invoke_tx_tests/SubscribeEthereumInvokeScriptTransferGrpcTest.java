@@ -37,6 +37,7 @@ public class SubscribeEthereumInvokeScriptTransferGrpcTest extends BaseGrpcTest 
     private PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
     private EthereumTestAccounts ethereumTestAccounts;
+    private EthereumInvokeTransactionSender txSender;
     private Address senderAddress;
     private String senderAddressStr;
     private long senderBalanceWavesBeforeTx;
@@ -128,22 +129,21 @@ public class SubscribeEthereumInvokeScriptTransferGrpcTest extends BaseGrpcTest 
                 () -> wavesDAppBalanceAfterTx = calcBalances.getAccBalanceWavesAfterTransaction(),
                 () -> dAppAssetBalanceBeforeTx = calcBalances.getAccBalanceIssuedAssetsBeforeTransaction(),
                 () -> dAppAssetBalanceAfterTx = calcBalances.getAccBalanceIssuedAssetsAfterTransaction()
-
         );
     }
 
     @Test
     @DisplayName("subscribe ethereum invoke with ScriptTransfer")
     void subscribeInvokeWithScriptTransfer() throws NodeException, IOException {
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestAccounts);
+        txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCallFunction);
         String txId = txSender.getEthTxId().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        assertionsCheck(txSender, getTxIndex());
+        assertionsCheck(getTxIndex());
     }
 
-    private void assertionsCheck(EthereumInvokeTransactionSender txSender, int txIndex) {
+    private void assertionsCheck(int txIndex) {
         assertAll(
                 () -> assertThat(getTxId(txIndex)).isEqualTo(txSender.getEthTx().id().toString()),
                 () -> checkEthereumMainMetadata(txSender, txIndex, senderAddressStr),

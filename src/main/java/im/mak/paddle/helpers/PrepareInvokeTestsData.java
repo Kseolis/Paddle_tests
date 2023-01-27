@@ -296,7 +296,8 @@ public class PrepareInvokeTestsData {
         final int libVersion = getRandomInt(4, MAX_LIB_VERSION);
 
         final String currentArgs = args + ", " + "address:ByteVector";
-        final String functions = "ScriptTransfer(Address(address), " + assetAmount.value() + ", assetId),\n" +
+        final String functions =
+                "ScriptTransfer(Address(address), " + assetAmount.value() + ", assetId),\n" +
                 "\tScriptTransfer(Address(address), " + assetAmount.value() + ", issueAssetId),\n" +
                 "\tScriptTransfer(Address(address), " + wavesAmount.value() + ", unit),\n" +
                 "\tScriptTransfer(i.caller, " + wavesAmount.value() + ", unit)";

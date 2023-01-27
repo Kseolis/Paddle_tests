@@ -50,24 +50,26 @@ public class SubscribeInvokeDeleteEntryGrpcTest extends BaseGrpcTest {
 
     @BeforeEach
     void before() {
+        testData = new PrepareInvokeTestsData();
+        testData.prepareDataForDeleteEntryTests();
         async(
+                () -> calcBalances = new InvokeCalculationsBalancesAfterTx(testData),
                 () -> {
-                    testData = new PrepareInvokeTestsData();
-                    testData.prepareDataForDeleteEntryTests();
-                    calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-                    assetId = testData.getAssetId();
-                    dAppCall = testData.getDAppCall();
-                    dAppFunctionName =  testData.getDAppCall().getFunction().name();
-                    caller = testData.getCallerAccount();
-                    callerAddress = caller.address();
                     dAppAccount = testData.getDAppAccount();
+                    dAppPKHash = Base58.encode(dAppAccount.address().publicKeyHash());
                     dAppAddress = dAppAccount.address();
                     dAppAddressStr = dAppAddress.toString();
-                    dAppPKHash = Base58.encode(dAppAccount.address().publicKeyHash());
-                    payments = testData.getPayments();
-                    payment = testData.getWavesAmount().value();
-                    intVal = String.valueOf(testData.getIntArg());
                 },
+                () -> {
+                    caller = testData.getCallerAccount();
+                    callerAddress = caller.address();
+                },
+                () -> payments = testData.getPayments(),
+                () -> payment = testData.getWavesAmount().value(),
+                () -> dAppCall = testData.getDAppCall(),
+                () -> dAppFunctionName = testData.getDAppCall().getFunction().name(),
+                () -> assetId = testData.getAssetId(),
+                () -> intVal = String.valueOf(testData.getIntArg()),
                 () -> intValueAfter = String.valueOf(0),
                 () -> fromHeight = node().getHeight()
         );
@@ -87,7 +89,7 @@ public class SubscribeInvokeDeleteEntryGrpcTest extends BaseGrpcTest {
 
     private void assertionsCheck(int txIndex, String txId) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId, 0, dAppPKHash),
+                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId, txIndex, dAppPKHash),
                 () -> checkPaymentsSubscribe(txIndex, 0, payment, ""),
 
                 () -> checkMainMetadata(txIndex, dAppAddressStr, dAppFunctionName),

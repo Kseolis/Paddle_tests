@@ -60,7 +60,6 @@ public class EthereumInvokeTransactionTest {
                     node().faucet().transfer(senderAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
                 },
                 () -> {
-                    assetId = testData.getAssetId();
                     dAppAccount = testData.getDAppAccount();
                     dAppAddress = dAppAccount.address();
                 },
@@ -68,9 +67,30 @@ public class EthereumInvokeTransactionTest {
                     assetDAppAccount = testData.getAssetDAppAccount();
                     assetDAppAddress = assetDAppAccount.address();
                 },
+                () -> assetId = testData.getAssetId(),
                 () -> otherDAppAddress = testData.getOtherDAppAccount().address()
         );
         dAppAccount.transfer(senderAddress, testData.getAssetAmount());
+    }
+
+    @Test
+    @DisplayName("Ethereum invoke with ScriptTransfer transaction")
+    void ethereumInvokeScriptScriptTransferTest() throws NodeException, IOException {
+        testData.prepareDataForScriptTransferTests();
+        invokeFee = testData.getInvokeFee();
+        dAppCall = testData.getDAppCall();
+        payments = testData.getOtherAmounts();
+
+        assetDAppAccount.transfer(senderAddress, Amount.of(9_000_000L, assetId));
+
+
+        calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
+        calcBalances.balancesEthereumAfterCallerScriptTransfer(senderAddress, assetDAppAddress, dAppAddress, testData.getOtherAmounts(), assetId);
+
+        txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestAccounts);
+        txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
+        payload = (Invocation) txSender.getEthTx().payload();
+        assertAll(this::checkEthereumInvoke, this::checkBalancesAfterTx, () -> thirdAccountBalanceCheck(dAppAddress));
     }
 
     @Test
@@ -186,27 +206,6 @@ public class EthereumInvokeTransactionTest {
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         payload = (Invocation) txSender.getEthTx().payload();
         assertAll(this::checkEthereumInvoke, this::checkBalancesAfterTx);
-    }
-
-    @Test
-    @DisplayName("Ethereum invoke with ScriptTransfer transaction")
-    void ethereumInvokeScriptScriptTransferTest() throws NodeException, IOException {
-        testData.prepareDataForScriptTransferTests();
-        invokeFee = testData.getInvokeFee();
-        dAppCall = testData.getDAppCall();
-        payments.add(Amount.of(0));
-        assetDAppAccount.transfer(senderAddress, Amount.of(9_000_000L, assetId));
-        calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        calcBalances.balancesEthereumAfterCallerScriptTransfer(senderAddress, assetDAppAddress, dAppAddress, testData.getOtherAmounts(), assetId);
-
-        txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestAccounts);
-        txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
-        payload = (Invocation) txSender.getEthTx().payload();
-        assertAll(
-                this::checkEthereumInvoke,
-                this::checkBalancesAfterTx,
-                () -> thirdAccountBalanceCheck(dAppAddress)
-        );
     }
 
     @Test

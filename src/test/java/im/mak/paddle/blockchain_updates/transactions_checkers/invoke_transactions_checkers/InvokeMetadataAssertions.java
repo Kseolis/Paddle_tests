@@ -5,8 +5,6 @@ import im.mak.paddle.helpers.PrepareInvokeTestsData;
 
 import java.util.Map;
 
-import static im.mak.paddle.blockchain_updates.BaseGrpcTest.getDAppAccountAddress;
-import static im.mak.paddle.blockchain_updates.BaseGrpcTest.getDAppFunctionName;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.BaseInvokeMetadata.getInvokeMetadataDAppAddress;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.BaseInvokeMetadata.getInvokeMetadataFunctionName;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transaction_metadata.invoke_transaction_metadata.InvokeMetadataArgs.*;
@@ -28,10 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class InvokeMetadataAssertions {
-    public static void checkMainMetadata(int index) {
+    public static void checkMainMetadata(int index, String dAppAddress, String dAppFunctionName) {
         assertAll(
-                () -> assertThat(getInvokeMetadataDAppAddress(index)).isEqualTo(getDAppAccountAddress()),
-                () -> assertThat(getInvokeMetadataFunctionName(index)).isEqualTo(getDAppFunctionName())
+                () -> assertThat(getInvokeMetadataDAppAddress(index)).isEqualTo(dAppAddress),
+                () -> assertThat(getInvokeMetadataFunctionName(index)).isEqualTo(dAppFunctionName)
         );
     }
 

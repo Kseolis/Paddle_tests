@@ -1,5 +1,6 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests;
 
+import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.transactions.account.Address;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
@@ -24,7 +25,6 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -33,6 +33,7 @@ public class SubscribeInvokeReissueGrpcTest extends BaseGrpcTest {
     private PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
     private DAppCall dAppCall;
+    private String dAppFunctionName;
     private Account caller;
     private Address callerAddress;
     private String callerAddressStr;
@@ -41,6 +42,7 @@ public class SubscribeInvokeReissueGrpcTest extends BaseGrpcTest {
     private long callerBalanceWavesAfterTx;
     private Account assetDAppAccount;
     private String assetDAppAddress;
+    private String assetDAppPKHash;
     private long assetDAppBalanceBeforeTx;
     private long assetDAppBalanceAfterTx;
     private AssetId assetId;
@@ -55,10 +57,10 @@ public class SubscribeInvokeReissueGrpcTest extends BaseGrpcTest {
     void before() {
         testData = new PrepareInvokeTestsData();
         testData.prepareDataForReissueTests();
-        setVersion(LATEST_VERSION);
         async(
                 () -> {
                     dAppCall = testData.getDAppCall();
+                    dAppFunctionName = dAppCall.getFunction().name();
                     invokeFee = testData.getInvokeFee();
                 },
                 () -> {
@@ -70,6 +72,7 @@ public class SubscribeInvokeReissueGrpcTest extends BaseGrpcTest {
                 () -> {
                     assetDAppAccount = testData.getAssetDAppAccount();
                     assetDAppAddress = testData.getAssetDAppAddress();
+                    assetDAppPKHash = Base58.encode(assetDAppAccount.address().publicKeyHash());
                 },
                 () -> {
                     assetId = testData.getAssetId();
@@ -100,18 +103,17 @@ public class SubscribeInvokeReissueGrpcTest extends BaseGrpcTest {
     @DisplayName("subscribe invoke with Reissue")
     void subscribeInvokeWithReissue() {
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, assetDAppAccount, dAppCall);
-        txSender.invokeSender();
+        txSender.invokeSender(LATEST_VERSION);
         String txId = txSender.getInvokeScriptId();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        prepareInvoke(assetDAppAccount, testData);
         assertionsCheck(txId, getTxIndex());
     }
 
     private void assertionsCheck(String txId, int txIndex) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(invokeFee, callerPK, txId, txIndex),
-                () -> checkMainMetadata(txIndex),
+                () -> checkInvokeSubscribeTransaction(invokeFee, callerPK, txId, txIndex, assetDAppPKHash),
+                () -> checkMainMetadata(txIndex, assetDAppAddress, dAppFunctionName),
                 () -> checkArgumentsMetadata(txIndex, 0, BINARY_BASE58, assetIdStr),
                 () -> checkIssueAssetMetadata(txIndex, 0, getIssueAssetData()),
                 () -> checkReissueMetadata(txIndex, 0, assetIdStr, payment, true),

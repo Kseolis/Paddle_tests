@@ -13,24 +13,25 @@ public class LeaseTransactionSender extends BaseTransactionSender {
     private final Account to;
     private final long amountBefore;
     private final long amountAfter;
+    private final long leaseFee;
 
     public LeaseTransactionSender(Account from, Account to, long fee) {
         this.from = from;
         this.to = to;
-        BaseTransactionSender.fee = fee;
+        this.leaseFee = fee;
 
         amountBefore = from.getWavesBalance();
         amountAfter = amountBefore - fee;
     }
 
     public void leaseTransactionSender(long amount, int version) {
-        effectiveBalanceAfterSendTransaction = from.getWavesBalanceDetails().effective() - fee - amount;
+        effectiveBalanceAfterSendTransaction = from.getWavesBalanceDetails().effective() - leaseFee - amount;
         balanceAfterReceiving = to.getWavesBalanceDetails().effective() + amount;
 
         leaseTx = LeaseTransaction
                 .builder(to.address(), amount)
                 .version(version)
-                .fee(fee)
+                .fee(leaseFee)
                 .getSignedWith(from.privateKey());
 
         node().waitForTransaction(node().broadcast(leaseTx).id());

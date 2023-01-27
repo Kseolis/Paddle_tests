@@ -31,7 +31,7 @@ public class InvokeScriptTransactionSender extends BaseTransactionSender {
         this.dAppCall = call;
     }
 
-    public void invokeSenderWithPayment() {
+    public void invokeSenderWithPayment(int version) {
         invokeScriptTx = InvokeScriptTransaction
                 .builder(dAppAccount.address(), dAppCall.getFunction())
                 .payments(amounts)
@@ -44,7 +44,7 @@ public class InvokeScriptTransactionSender extends BaseTransactionSender {
         txInfo = node().getTransactionInfo(invokeScriptTx.id());
     }
 
-    public void invokeSender() {
+    public void invokeSender(int version) {
         invokeScriptTx = InvokeScriptTransaction
                 .builder(dAppAccount.address(), dAppCall.getFunction())
                 .version(version)

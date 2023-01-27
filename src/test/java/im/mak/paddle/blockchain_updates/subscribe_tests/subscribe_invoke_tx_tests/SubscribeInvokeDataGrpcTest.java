@@ -1,5 +1,6 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests;
 
+import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.transactions.account.Address;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
@@ -23,7 +24,7 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeTransactionAssertions.checkPaymentsSubscribe;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
+import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -31,11 +32,15 @@ public class SubscribeInvokeDataGrpcTest extends BaseGrpcTest {
     private PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
     private DAppCall dAppCall;
+    private String dAppFunctionName;
     private Account caller;
+    private Address callerAddress;
     private String callerAddressString;
     private String callerPublicKey;
     private Account dAppAccount;
+    private Address dAppAddress;
     private String dAppAddressString;
+    private String dAppPKHash;
     private List<Amount> payments;
     private long payment;
     private String intVal;
@@ -49,46 +54,52 @@ public class SubscribeInvokeDataGrpcTest extends BaseGrpcTest {
         testData = new PrepareInvokeTestsData();
         testData.prepareDataForDataDAppTests(SUM_FEE, ONE_WAVES);
         AssetId assetId = testData.getAssetId();
-        dAppCall = testData.getDAppCall();
+        async(
+                () -> {
+                    dAppCall = testData.getDAppCall();
+                    dAppFunctionName = dAppCall.getFunction().name();
+                },
+                () -> {
+                    caller = testData.getCallerAccount();
+                    callerAddress = caller.address();
+                    callerAddressString = testData.getCallerAddress();
+                    callerPublicKey = testData.getCallerPublicKey();
+                },
+                () -> {
+                    dAppAccount = testData.getDAppAccount();
+                    dAppAddress = dAppAccount.address();
+                    dAppAddressString = testData.getDAppAddress();
+                    dAppPKHash = Base58.encode(dAppAccount.address().publicKeyHash());
+                },
+                () -> intVal = String.valueOf(testData.getIntArg()),
+                () -> binVal = String.valueOf(testData.getBase64String()),
+                () -> boolArg = String.valueOf(testData.getBoolArg()),
+                () -> strVal = testData.getStringArg(),
+                () -> invokeFee = testData.getInvokeFee(),
+                () -> payments = testData.getPayments(),
+                () -> payment = testData.getWavesAmount().value()
+        );
 
-        caller = testData.getCallerAccount();
-        Address callerAddress = caller.address();
-        callerAddressString = callerAddress.toString();
-        callerPublicKey = testData.getCallerPublicKey();
-
-        dAppAccount = testData.getDAppAccount();
-        Address dAppAddress = dAppAccount.address();
-        dAppAddressString = dAppAddress.toString();
-        payments = testData.getPayments();
-
-        intVal = String.valueOf(testData.getIntArg());
-        binVal = String.valueOf(testData.getBase64String());
-        boolArg = String.valueOf(testData.getBoolArg());
-        strVal = testData.getStringArg();
-        invokeFee = testData.getInvokeFee();
-        payment = testData.getWavesAmount().value();
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
         calcBalances.balancesAfterPaymentInvoke(callerAddress, dAppAddress, payments, assetId);
-        setVersion(LATEST_VERSION);
     }
 
     @Test
     @DisplayName("subscribe invoke with DataDApp")
     void subscribeInvokeWithDataDApp() {
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, payments);
-        txSender.invokeSenderWithPayment();
+        txSender.invokeSenderWithPayment(LATEST_VERSION);
         String txId = txSender.getInvokeScriptId();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        prepareInvoke(dAppAccount, testData);
         assertionsCheck(txId, getTxIndex());
     }
 
     private void assertionsCheck(String txId, int txIndex) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(invokeFee, callerPublicKey, txId, 0),
-                () -> checkPaymentsSubscribe(txIndex, 0, payment, ""),
-                () -> checkMainMetadata(txIndex),
+                () -> checkInvokeSubscribeTransaction(invokeFee, callerPublicKey, txId, 0, dAppPKHash),
+                () -> checkPaymentsSubscribe(txIndex, 0, payment, WAVES_STRING_ID),
+                () -> checkMainMetadata(txIndex, dAppAddressString, dAppFunctionName),
                 () -> checkArgumentsMetadata(txIndex, 0, INTEGER, intVal),
                 () -> checkArgumentsMetadata(txIndex, 1, BINARY_BASE64, binVal),
                 () -> checkArgumentsMetadata(txIndex, 2, BOOLEAN, boolArg),

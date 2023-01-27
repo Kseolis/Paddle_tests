@@ -13,7 +13,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     @Test
     @DisplayName("Check getBlockUpdateRange response for Issue transaction")
     void getBlockUpdateRangeIssueTransactionTest() {
-        setHeights(heightsList);
+        heightCalculation(heightsList);
         String address = senderAddress.toString();
         String pk = senderPublicKey.toString();
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
@@ -26,7 +26,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     @Test
     @DisplayName("Check getBlockUpdateRange response for Transfer transaction")
     void getBlockUpdateRangeTransferTransactionTest() {
-        setHeights(heightsList);
+        heightCalculation(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
         handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, transferTxId.toString());
         int index = handler.getTxIndex();
@@ -42,7 +42,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     @Test
     @DisplayName("Check getBlockUpdateRange response for Burn transaction")
     void getBlockUpdateRangeBurnTransactionTest() {
-        setHeights(heightsList);
+        heightCalculation(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
         handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, burnTxId.toString());
         int index = handler.getTxIndex();
@@ -53,7 +53,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     @Test
     @DisplayName("Check getBlockUpdateRange response for Reissue transaction")
     void getBlockUpdateRangeReissueTransactionTest() {
-        setHeights(heightsList);
+        heightCalculation(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
         handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, reissueTxId.toString());
         int index = handler.getTxIndex();
@@ -64,7 +64,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     @Test
     @DisplayName("Check getBlockUpdateRange response for Exchange transaction")
     void getBlockUpdateRangeExchangeTransactionTest() {
-        setHeights(heightsList);
+        heightCalculation(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
         handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, exchangeTxId.toString());
         int index = handler.getTxIndex();
@@ -76,7 +76,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     @Test
     @DisplayName("Check getBlockUpdateRange response for Lease transaction")
     void getBlockUpdateRangeLeaseTransactionTest() {
-        setHeights(heightsList);
+        heightCalculation(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
         handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, leaseTxId.toString());
         int index = handler.getTxIndex();
@@ -87,7 +87,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     @Test
     @DisplayName("Check getBlockUpdateRange response for LeaseCancel transaction")
     void getBlockUpdateRangeLeaseCancelTransactionTest() {
-        setHeights(heightsList);
+        heightCalculation(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
         handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, leaseCancelTxId.toString());
         int index = handler.getTxIndex();
@@ -98,7 +98,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     @Test
     @DisplayName("Check getBlockUpdateRange response for Alias transaction")
     void getBlockUpdateRangeAliasTransactionTest() {
-        setHeights(heightsList);
+        heightCalculation(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
         handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, aliasTxId.toString());
         GrpcAliasCheckers grpcAliasCheckers = new GrpcAliasCheckers(
@@ -113,7 +113,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     @Test
     @DisplayName("Check getBlockUpdateRange response for MassTransfer transaction")
     void getBlockUpdateRangeMassTransferTransactionTest() {
-        setHeights(heightsList);
+        heightCalculation(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
         handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, massTransferTxId.toString());
         int index = handler.getTxIndex();
@@ -124,7 +124,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     @Test
     @DisplayName("Check getBlockUpdateRange response for Data transaction")
     void getBlockUpdateRangeDataTransactionTest() {
-        setHeights(heightsList);
+        heightCalculation(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
         handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, dataTxId);
         int index = handler.getTxIndex();
@@ -135,7 +135,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     @Test
     @DisplayName("Check getBlockUpdateRange response for SetScript transaction")
     void getBlockUpdateRangeSetScriptTransactionTest() {
-        setHeights(heightsList);
+        heightCalculation(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
         handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, setScriptTxId);
         int index = handler.getTxIndex();
@@ -146,7 +146,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     @Test
     @DisplayName("Check getBlockUpdateRange response for SponsorFee transaction")
     void getBlockUpdateRangeSponsorFeeTransactionTest() {
-        setHeights(heightsList);
+        heightCalculation(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
         handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, sponsorFeeTxId);
         int index = handler.getTxIndex();
@@ -157,7 +157,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     @Test
     @DisplayName("Check getBlockUpdateRange response for SetAssetScript transaction")
     void getBlockUpdateRangeSetAssetScriptTransactionTest() {
-        setHeights(heightsList);
+        heightCalculation(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
         handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, setAssetScriptTxId);
         int index = handler.getTxIndex();
@@ -168,7 +168,7 @@ class GetBlockUpdatesRangeTest extends BaseGetBlockUpdateTest {
     @Test
     @DisplayName("Checking for an getBlockUpdateRange response for an update asset info transaction")
     void getBlockUpdateRangeForUpdateAssetInfoTransactionTest() {
-        setHeights(heightsList);
+        heightCalculation(heightsList);
         GetBlockUpdatesRangeHandler handler = new GetBlockUpdatesRangeHandler();
         handler.getBlockUpdateRangeResponseHandler(CHANNEL, fromHeight, toHeight, updateAssetInfoTxId);
         int index = handler.getTxIndex();

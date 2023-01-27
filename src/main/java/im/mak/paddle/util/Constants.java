@@ -17,6 +17,7 @@ public class Constants {
     public static final long MIN_FEE_FOR_SET_SCRIPT = 1_000_000L;
     public static final long EXTRA_FEE_FOR_SET_SCRIPT = 4_000_000L;
     public static final long ONE_WAVES = 100_000_000L;
+    public static final long FIVE_WAVES = 500_000_000L;
 
     public static final long MIN_FEE_FOR_EXCHANGE = 300_000L;
     public static final long EXCHANGE_FEE_FOR_SMART_ASSETS = EXTRA_FEE * 2;

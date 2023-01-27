@@ -13,6 +13,7 @@ import com.wavesplatform.transactions.exchange.Order;
 import com.wavesplatform.wavesj.exceptions.NodeException;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
+import im.mak.paddle.helpers.EthereumTestAccounts;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.*;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTx;
@@ -24,7 +25,6 @@ import java.util.List;
 
 import static com.wavesplatform.transactions.TransferTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
-import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
 import static im.mak.paddle.helpers.Randomizer.*;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
@@ -96,6 +96,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     protected static AssetId assetIdForSponsorFee;
     protected static SponsorFeeTransactionSender sponsorFeeTx;
     protected static String sponsorFeeTxId;
+    protected static EthereumTestAccounts ethereumTestAccounts;
     protected static Address ethSenderAddress;
     protected static EthereumTransferTransactionSender ethTx;
     protected static String ethTxId;
@@ -167,7 +168,8 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
                 },
                 () -> {
                     try {
-                        ethSenderAddress = getEthInstance().getSenderAddress();
+                        ethereumTestAccounts = new EthereumTestAccounts();
+                        ethSenderAddress = ethereumTestAccounts.getTransferSenderAddress();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -324,7 +326,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
     }
 
     private static void ethereumSetUp() throws IOException, NodeException {
-        ethTx = new EthereumTransferTransactionSender(ethSenderAddress, recipient.address(), wavesAmount, MIN_FEE);
+        ethTx = new EthereumTransferTransactionSender(ethereumTestAccounts, recipient.address(), wavesAmount, MIN_FEE);
         ethTx.sendingAnEthereumTransferTransaction();
         ethTxId = ethTx.getEthTxId().toString();
         checkHeight();
@@ -358,7 +360,7 @@ public class BaseGetBlockUpdateTest extends BaseGrpcTest {
         }
     }
 
-    protected void setHeights(List<Integer> heightsList) {
+    protected void heightCalculation(List<Integer> heightsList) {
         if (heightsList.size() == 1) {
             fromHeight = heightsList.get(0);
             toHeight = heightsList.get(0);

@@ -1,5 +1,6 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests;
 
+import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.transactions.account.Address;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
@@ -25,7 +26,6 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -34,6 +34,7 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
     private PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
     private DAppCall dAppCall;
+    private String dAppFunctionName;
     private Account caller;
     private Address callerAddress;
     private String callerAddressStr;
@@ -43,6 +44,7 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
     private Account assetDAppAccount;
     private Address assetDAppAddress;
     private String assetDAppAddressStr;
+    private String assetDAppPKHash;
     private long wavesAccDAppBalanceBeforeTx;
     private long wavesAccDAppBalanceAfterTx;
     private long assetAccDAppBalanceBeforeTx;
@@ -68,10 +70,10 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
     void before() {
         testData = new PrepareInvokeTestsData();
         testData.prepareDataForScriptTransferTests();
-        setVersion(LATEST_VERSION);
         async(
                 () -> {
                     dAppCall = testData.getDAppCall();
+                    dAppFunctionName = dAppCall.getFunction().name();
                     invokeFee = testData.getInvokeFee();
                 },
                 () -> {
@@ -89,6 +91,7 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
                     assetDAppAccount = testData.getAssetDAppAccount();
                     assetDAppAddress = assetDAppAccount.address();
                     assetDAppAddressStr = testData.getAssetDAppAddress();
+                    assetDAppPKHash = Base58.encode(assetDAppAccount.address().publicKeyHash());
                 },
                 () -> {
                     assetId = testData.getAssetId();
@@ -128,19 +131,18 @@ public class SubscribeInvokeScriptTransferGrpcTest extends BaseGrpcTest {
     @DisplayName("subscribe invoke with ScriptTransfer")
     void subscribeInvokeWithScriptTransfer() {
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, assetDAppAccount, dAppCall);
-        txSender.invokeSender();
+        txSender.invokeSender(LATEST_VERSION);
         String txId = txSender.getInvokeScriptId();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        prepareInvoke(assetDAppAccount, testData);
         assertionsCheck(txId, getTxIndex());
     }
 
     private void assertionsCheck(String txId, int txIndex) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(invokeFee, callerPK, txId, txIndex),
+                () -> checkInvokeSubscribeTransaction(invokeFee, callerPK, txId, txIndex, assetDAppPKHash),
 
-                () -> checkMainMetadata(txIndex),
+                () -> checkMainMetadata(txIndex, assetDAppAddressStr, dAppFunctionName),
                 () -> checkArgumentsMetadata(txIndex, 0, BINARY_BASE58, assetIdStr),
                 () -> checkArgumentsMetadata(txIndex, 1, BINARY_BASE58, dAppAddressStr),
                 () -> checkIssueAssetMetadata(txIndex, 0, issueAssetData),

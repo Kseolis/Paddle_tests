@@ -8,7 +8,7 @@ import com.wavesplatform.wavesj.exceptions.NodeException;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.dapp.DAppCall;
-import im.mak.paddle.helpers.EthereumTestUser;
+import im.mak.paddle.helpers.EthereumTestAccounts;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.EthereumInvokeTransactionSender;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTx;
@@ -19,17 +19,14 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.List;
 
-import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.ethereum_invoke_transaction_checkers.EthereumInvokeMetadataAssertions.*;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateAssets;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
 import static im.mak.paddle.helpers.ConstructorRideFunctions.getIssueAssetData;
-import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.waves_transactions_handlers.WavesTransactionsHandler.getTxId;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class SubscribeEthereumInvokeReissueGrpcTest extends BaseGrpcTest {
     private PrepareInvokeTestsData testData;
     private InvokeCalculationsBalancesAfterTx calcBalances;
-    private EthereumTestUser ethInstance;
+    private EthereumTestAccounts ethereumTestAccounts;
     private Address senderAddress;
     private String senderAddressString;
     private long senderWavesBalanceBeforeTx;
@@ -62,7 +59,6 @@ public class SubscribeEthereumInvokeReissueGrpcTest extends BaseGrpcTest {
     void before() {
         testData = new PrepareInvokeTestsData();
         testData.prepareDataForReissueTests();
-        setVersion(LATEST_VERSION);
         async(
                 () -> {
                     dAppCall = testData.getDAppCall();
@@ -71,11 +67,11 @@ public class SubscribeEthereumInvokeReissueGrpcTest extends BaseGrpcTest {
                 },
                 () -> {
                     try {
-                        ethInstance = getEthInstance();
+                        ethereumTestAccounts = new EthereumTestAccounts();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    senderAddress = ethInstance.getSenderAddress();
+                    senderAddress = ethereumTestAccounts.getSenderAddress();
                     senderAddressString = senderAddress.toString();
                     node().faucet().transfer(senderAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
                 },
@@ -115,12 +111,11 @@ public class SubscribeEthereumInvokeReissueGrpcTest extends BaseGrpcTest {
     @Test
     @DisplayName("subscribe ethereum invoke with Reissue")
     void subscribeInvokeWithReissue() throws NodeException, IOException {
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCallFunction);
         String txId = txSender.getEthTxId().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        prepareInvoke(assetDAppAccount, testData);
         assertionsCheck(txSender, getTxIndex());
     }
 

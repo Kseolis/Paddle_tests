@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import static com.wavesplatform.transactions.ReissueTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.helpers.Randomizer.getRandomInt;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
@@ -24,6 +25,7 @@ public class ReissueTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     private int assetQuantity;
     private int assetDecimals;
     private Account sender;
+    private Account senderSmart;
     private String assetName;
     private String assetDescription;
 
@@ -36,7 +38,8 @@ public class ReissueTransactionSubscriptionGrpcTest extends BaseGrpcTest {
                     assetName = getRandomInt(1, 900000) + "asset";
                     assetDescription = assetName + "test";
                 },
-                () -> sender = new Account(DEFAULT_FAUCET)
+                () -> sender = new Account(DEFAULT_FAUCET),
+                () -> senderSmart = new Account(DEFAULT_FAUCET)
         );
     }
 
@@ -73,7 +76,7 @@ public class ReissueTransactionSubscriptionGrpcTest extends BaseGrpcTest {
     @Test
     @DisplayName("Check subscription on reissue smart asset transaction")
     void subscribeTestForReissueSmartAsset() {
-        IssueTransaction issueTx = sender.issue(i -> i
+        IssueTransaction issueTx = senderSmart.issue(i -> i
                 .name(assetName)
                 .quantity(assetQuantity)
                 .description(assetDescription)
@@ -85,14 +88,14 @@ public class ReissueTransactionSubscriptionGrpcTest extends BaseGrpcTest {
         amount = Amount.of(getRandomInt(100, 10000000), assetId);
         quantityAfterReissue = assetQuantity + amount.value();
 
-        ReissueTransactionSender txSender = new ReissueTransactionSender(sender, amount, assetId);
+        ReissueTransactionSender txSender = new ReissueTransactionSender(senderSmart, amount, assetId);
         txSender.reissueTransactionSender(SUM_FEE, LATEST_VERSION);
         String txId = txSender.getTxInfo().tx().id().toString();
 
         height = node().getHeight();
 
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        GrpcReissueCheckers grpcReissueCheckers = new GrpcReissueCheckers(0, sender, txSender, issueTx);
+        GrpcReissueCheckers grpcReissueCheckers = new GrpcReissueCheckers(getTxIndex(), senderSmart, txSender, issueTx);
         grpcReissueCheckers.checkReissueSubscribe(
                 assetQuantity,
                 quantityAfterReissue,

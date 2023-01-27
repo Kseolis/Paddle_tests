@@ -8,7 +8,7 @@ import com.wavesplatform.wavesj.exceptions.NodeException;
 import im.mak.paddle.Account;
 import im.mak.paddle.blockchain_updates.BaseGrpcTest;
 import im.mak.paddle.dapp.DAppCall;
-import im.mak.paddle.helpers.EthereumTestUser;
+import im.mak.paddle.helpers.EthereumTestAccounts;
 import im.mak.paddle.helpers.PrepareInvokeTestsData;
 import im.mak.paddle.helpers.transaction_senders.EthereumInvokeTransactionSender;
 import im.mak.paddle.helpers.transaction_senders.invoke.InvokeCalculationsBalancesAfterTx;
@@ -19,23 +19,20 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.List;
 
-import static com.wavesplatform.transactions.InvokeScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.ethereum_invoke_transaction_checkers.EthereumInvokeMetadataAssertions.*;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateBalance;
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeStateUpdateAssertions.checkStateUpdateDataEntries;
-import static im.mak.paddle.helpers.EthereumTestUser.getEthInstance;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.subscribe_handlers.transactions_handlers.waves_transactions_handlers.WavesTransactionsHandler.getTxId;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SubscribeEthereumInvokeDataGrpcTest extends BaseGrpcTest {
-    private EthereumTestUser ethInstance;
+    private EthereumTestAccounts ethereumTestAccounts;
     private Address senderAddress;
     private String senderAddressString;
     private PrepareInvokeTestsData testData;
@@ -73,16 +70,14 @@ public class SubscribeEthereumInvokeDataGrpcTest extends BaseGrpcTest {
                     binVal = String.valueOf(testData.getBase64String());
                     boolArg = String.valueOf(testData.getBoolArg());
                     strVal = testData.getStringArg();
-
-                    setVersion(LATEST_VERSION);
                 },
                 () -> {
                     try {
-                        ethInstance = getEthInstance();
+                        ethereumTestAccounts = new EthereumTestAccounts();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    senderAddress = ethInstance.getSenderAddress();
+                    senderAddress = ethereumTestAccounts.getSenderAddress();
                     senderAddressString = senderAddress.toString();
                     node().faucet().transfer(senderAddress, DEFAULT_FAUCET, AssetId.WAVES, i -> i.additionalFee(0));
                 }
@@ -94,16 +89,15 @@ public class SubscribeEthereumInvokeDataGrpcTest extends BaseGrpcTest {
     @Test
     @DisplayName("subscribe ethereum invoke with DataDApp")
     void subscribeInvokeWithDataDApp() throws NodeException, IOException {
-        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, invokeFee);
+        EthereumInvokeTransactionSender txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, invokeFee, ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCallFunction);
         String txId = txSender.getEthTxId().toString();
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        prepareInvoke(dAppAccount, testData);
-        assertionsCheck(txSender, getTxIndex());
+        checkersAssertionsDataInvoke(txSender, getTxIndex());
     }
 
-    private void assertionsCheck(EthereumInvokeTransactionSender txSender, int txIndex) {
+    private void checkersAssertionsDataInvoke(EthereumInvokeTransactionSender txSender, int txIndex) {
         assertAll(
                 () -> assertThat(getTxId(txIndex)).isEqualTo(txSender.getEthTx().id().toString()),
                 () -> checkEthereumMainMetadata(txSender, txIndex, senderAddressString),
@@ -129,15 +123,15 @@ public class SubscribeEthereumInvokeDataGrpcTest extends BaseGrpcTest {
                         calcBalances.getCallerBalanceWavesAfterTransaction()),
                 () -> checkStateUpdateBalance(txIndex,
                         1,
-                        getDAppAccountAddress(),
+                        dAppAddressString,
                         WAVES_STRING_ID,
                         calcBalances.getDAppBalanceWavesBeforeTransaction(),
                         calcBalances.getDAppBalanceWavesAfterTransaction()),
 
-                () -> checkStateUpdateDataEntries(txIndex, 0, getDAppAccountAddress(), DATA_ENTRY_INT, intVal),
-                () -> checkStateUpdateDataEntries(txIndex, 1, getDAppAccountAddress(), DATA_ENTRY_BYTE, binVal),
-                () -> checkStateUpdateDataEntries(txIndex, 2, getDAppAccountAddress(), DATA_ENTRY_BOOL, boolArg),
-                () -> checkStateUpdateDataEntries(txIndex, 3, getDAppAccountAddress(), DATA_ENTRY_STR, strVal)
+                () -> checkStateUpdateDataEntries(txIndex, 0, dAppAddressString, DATA_ENTRY_INT, intVal),
+                () -> checkStateUpdateDataEntries(txIndex, 1, dAppAddressString, DATA_ENTRY_BYTE, binVal),
+                () -> checkStateUpdateDataEntries(txIndex, 2, dAppAddressString, DATA_ENTRY_BOOL, boolArg),
+                () -> checkStateUpdateDataEntries(txIndex, 3, dAppAddressString, DATA_ENTRY_STR, strVal)
         );
     }
 }

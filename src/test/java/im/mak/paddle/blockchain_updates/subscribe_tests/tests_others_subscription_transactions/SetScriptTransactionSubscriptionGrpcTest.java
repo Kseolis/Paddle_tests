@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import static com.wavesplatform.transactions.SetScriptTransaction.LATEST_VERSION;
 import static im.mak.paddle.Node.node;
+import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.DEFAULT_FAUCET;
@@ -37,7 +38,7 @@ public class SetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        GrpcSetScriptCheckers grpcSetScriptCheckers = new GrpcSetScriptCheckers(0, txSender);
+        GrpcSetScriptCheckers grpcSetScriptCheckers = new GrpcSetScriptCheckers(getTxIndex(), txSender);
         grpcSetScriptCheckers.checkSetScriptGrpc();
     }
 
@@ -54,7 +55,7 @@ public class SetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
-        GrpcSetScriptCheckers grpcSetScriptCheckers = new GrpcSetScriptCheckers(0, txSender);
+        GrpcSetScriptCheckers grpcSetScriptCheckers = new GrpcSetScriptCheckers(getTxIndex(), txSender);
         grpcSetScriptCheckers.checkSetScriptGrpc();
     }
 
@@ -71,7 +72,7 @@ public class SetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        GrpcSetScriptCheckers grpcSetScriptCheckers = new GrpcSetScriptCheckers(0, txSender);
+        GrpcSetScriptCheckers grpcSetScriptCheckers = new GrpcSetScriptCheckers(getTxIndex(), txSender);
         grpcSetScriptCheckers.checkSetScriptGrpc();
     }
 
@@ -88,7 +89,7 @@ public class SetScriptTransactionSubscriptionGrpcTest extends BaseGrpcTest {
 
         height = node().getHeight();
         subscribeResponseHandler(CHANNEL, height, height, txId);
-        GrpcSetScriptCheckers grpcSetScriptCheckers = new GrpcSetScriptCheckers(0, txSender);
+        GrpcSetScriptCheckers grpcSetScriptCheckers = new GrpcSetScriptCheckers(getTxIndex(), txSender);
         grpcSetScriptCheckers.checkSetScriptGrpc();
     }
 }

@@ -225,7 +225,6 @@ public class InvokeCalculationsBalancesAfterTx {
 
     public void balancesEthereumAfterCallerScriptTransfer(Address caller, Address dApp, Address acc, List<Amount> amounts, AssetId id) {
         prepareThreeAccBalances(caller, dApp, acc, id);
-
         if (!amounts.isEmpty()) {
             amounts.forEach(
                     a -> {

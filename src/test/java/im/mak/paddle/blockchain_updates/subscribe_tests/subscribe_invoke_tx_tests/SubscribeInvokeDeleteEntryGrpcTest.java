@@ -1,5 +1,6 @@
 package im.mak.paddle.blockchain_updates.subscribe_tests.subscribe_invoke_tx_tests;
 
+import com.wavesplatform.crypto.base.Base58;
 import com.wavesplatform.transactions.account.Address;
 import com.wavesplatform.transactions.common.Amount;
 import com.wavesplatform.transactions.common.AssetId;
@@ -25,7 +26,6 @@ import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_tran
 import static im.mak.paddle.blockchain_updates.transactions_checkers.invoke_transactions_checkers.InvokeTransactionAssertions.checkPaymentsSubscribe;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.getTxIndex;
 import static im.mak.paddle.helpers.blockchain_updates_handlers.SubscribeHandler.subscribeResponseHandler;
-import static im.mak.paddle.helpers.transaction_senders.BaseTransactionSender.setVersion;
 import static im.mak.paddle.util.Async.async;
 import static im.mak.paddle.util.Constants.*;
 import static im.mak.paddle.util.Constants.WAVES_STRING_ID;
@@ -38,33 +38,40 @@ public class SubscribeInvokeDeleteEntryGrpcTest extends BaseGrpcTest {
     private String intValueAfter;
     private AssetId assetId;
     private DAppCall dAppCall;
+    private String dAppFunctionName;
     private Account caller;
     private Address callerAddress;
     private Account dAppAccount;
     private Address dAppAddress;
+    private String dAppAddressStr;
+    private String dAppPKHash;
     private List<Amount> payments;
     private long payment;
 
     @BeforeEach
     void before() {
+        testData = new PrepareInvokeTestsData();
+        testData.prepareDataForDeleteEntryTests();
         async(
+                () -> calcBalances = new InvokeCalculationsBalancesAfterTx(testData),
                 () -> {
-                    testData = new PrepareInvokeTestsData();
-                    testData.prepareDataForDeleteEntryTests();
-                    calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-                    assetId = testData.getAssetId();
-                    dAppCall = testData.getDAppCall();
+                    dAppAccount = testData.getDAppAccount();
+                    dAppPKHash = Base58.encode(dAppAccount.address().publicKeyHash());
+                    dAppAddress = dAppAccount.address();
+                    dAppAddressStr = dAppAddress.toString();
+                },
+                () -> {
                     caller = testData.getCallerAccount();
                     callerAddress = caller.address();
-                    dAppAccount = testData.getDAppAccount();
-                    dAppAddress = dAppAccount.address();
-                    payments = testData.getPayments();
-                    payment = testData.getWavesAmount().value();
-                    intVal = String.valueOf(testData.getIntArg());
                 },
+                () -> payments = testData.getPayments(),
+                () -> payment = testData.getWavesAmount().value(),
+                () -> dAppCall = testData.getDAppCall(),
+                () -> dAppFunctionName = testData.getDAppCall().getFunction().name(),
+                () -> assetId = testData.getAssetId(),
+                () -> intVal = String.valueOf(testData.getIntArg()),
                 () -> intValueAfter = String.valueOf(0),
-                () -> fromHeight = node().getHeight(),
-                () -> setVersion(LATEST_VERSION)
+                () -> fromHeight = node().getHeight()
         );
     }
 
@@ -73,20 +80,19 @@ public class SubscribeInvokeDeleteEntryGrpcTest extends BaseGrpcTest {
     void subscribeInvokeWithDeleteEntry() {
         calcBalances.balancesAfterPaymentInvoke(callerAddress, dAppAddress, payments, assetId);
         InvokeScriptTransactionSender txSender = new InvokeScriptTransactionSender(caller, dAppAccount, dAppCall, payments);
-        txSender.invokeSenderWithPayment();
+        txSender.invokeSenderWithPayment(LATEST_VERSION);
         String txId = txSender.getInvokeScriptId();
         toHeight = node().getHeight();
         subscribeResponseHandler(CHANNEL, fromHeight, toHeight, txId);
-        prepareInvoke(dAppAccount, testData);
         assertionsCheck(getTxIndex(), txId);
     }
 
     private void assertionsCheck(int txIndex, String txId) {
         assertAll(
-                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId, 0),
+                () -> checkInvokeSubscribeTransaction(testData.getInvokeFee(), testData.getCallerPublicKey(), txId, txIndex, dAppPKHash),
                 () -> checkPaymentsSubscribe(txIndex, 0, payment, ""),
 
-                () -> checkMainMetadata(txIndex),
+                () -> checkMainMetadata(txIndex, dAppAddressStr, dAppFunctionName),
                 () -> checkArgumentsMetadata(txIndex, 0, INTEGER, intVal),
                 () -> checkPaymentMetadata(txIndex, 0, null, payment),
                 () -> checkDataMetadata(txIndex, 0, INTEGER, DATA_ENTRY_INT, intVal),
@@ -100,12 +106,12 @@ public class SubscribeInvokeDeleteEntryGrpcTest extends BaseGrpcTest {
 
                 () -> checkStateUpdateBalance(txIndex,
                         1,
-                        getDAppAccountAddress(),
+                        dAppAddressStr,
                         "",
                         calcBalances.getDAppBalanceWavesBeforeTransaction(),
                         calcBalances.getDAppBalanceWavesAfterTransaction()),
 
-                () -> checkStateUpdateDataEntries(txIndex, 0, getDAppAccountAddress(), DATA_ENTRY_INT, intValueAfter)
+                () -> checkStateUpdateDataEntries(txIndex, 0, dAppAddressStr, DATA_ENTRY_INT, intValueAfter)
         );
     }
 }

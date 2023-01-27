@@ -17,23 +17,23 @@ public class Calculations {
 
     private static long transactionCommission;
 
-    public static void calculateBalancesAfterExchange(Account from, Account to, Order buy, long amount, int decimals) {
+    public static void calculateBalancesAfterExchange(Account sender, Account recipient, Order buy, long amount, int decimals) {
         amountAssetId = buy.assetPair().left();
         priceAssetId = buy.assetPair().right();
 
-        buyerBalanceAfterTransactionAmountAsset = from.getBalance(amountAssetId) + amount;
-        sellerBalanceAfterTransactionAmountAsset = to.getBalance(amountAssetId) - amount;
+        buyerBalanceAfterTransactionAmountAsset = sender.getBalance(amountAssetId) + amount;
+        sellerBalanceAfterTransactionAmountAsset = recipient.getBalance(amountAssetId) - amount;
 
         if (amountAssetId.isWaves()) {
-            sellerBalanceAfterTransactionAmountAsset = to.getBalance(amountAssetId) - amount - MIN_FEE_FOR_EXCHANGE;
+            sellerBalanceAfterTransactionAmountAsset = recipient.getBalance(amountAssetId) - amount - MIN_FEE_FOR_EXCHANGE;
         }
 
         if (!amountAssetId.isWaves() || !priceAssetId.isWaves()) {
             long amountOrderNormalize = buy.amount().value();
             long priceOrderNormalize = buy.price().value();
             double spendAmount = amountOrderNormalize * priceOrderNormalize * (Math.pow(10, -decimals));
-            buyerBalanceAfterTransactionPriceAsset = from.getBalance(priceAssetId) - (long) spendAmount;
-            sellerBalanceAfterTransactionPriceAsset = to.getBalance(priceAssetId) + (long) spendAmount;
+            buyerBalanceAfterTransactionPriceAsset = sender.getBalance(priceAssetId) - (long) spendAmount;
+            sellerBalanceAfterTransactionPriceAsset = recipient.getBalance(priceAssetId) + (long) spendAmount;
         }
     }
 

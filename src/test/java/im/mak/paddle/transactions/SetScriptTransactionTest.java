@@ -60,7 +60,7 @@ public class SetScriptTransactionTest {
     }
 
     @Test
-    @DisplayName("set script transaction SNDLIB V5")
+    @DisplayName("set script transaction STDLIB V5")
     void setScriptTransactionLibV5() {
         for (int v = 1; v <= LATEST_VERSION; v++) {
             Base64String setScript = node().compileScript(SCRIPT_PERMITTING_OPERATIONS).script();

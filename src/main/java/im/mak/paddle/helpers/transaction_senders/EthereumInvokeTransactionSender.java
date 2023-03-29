@@ -10,6 +10,7 @@ import im.mak.paddle.helpers.EthereumTestAccounts;
 import org.web3j.crypto.ECKeyPair;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static im.mak.paddle.Node.node;
@@ -17,8 +18,8 @@ import static com.wavesplatform.transactions.EthereumTransaction.DEFAULT_GAS_PRI
 
 public class EthereumInvokeTransactionSender extends BaseTransactionSender {
     private final Address recipientAddress;
-    private final List<Amount> payments;
     private final EthereumTestAccounts sender;
+    private final List<Amount> payments;
     private EthereumTransaction ethTx;
     private Id ethTxId;
     private long timestamp;
@@ -29,6 +30,14 @@ public class EthereumInvokeTransactionSender extends BaseTransactionSender {
         this.payments = payments;
         this.ethInvokeFee = ethInvokeFee;
         this.sender = sender;
+    }
+
+    public EthereumInvokeTransactionSender(Address recipientAddress, long ethInvokeFee, EthereumTestAccounts sender) throws IOException {
+        this.recipientAddress = recipientAddress;
+        this.ethInvokeFee = ethInvokeFee;
+        this.sender = sender;
+        payments = new ArrayList<>();
+        payments.add(Amount.of(0));
     }
 
     public void sendingAnEthereumInvokeTransaction(Function function) throws NodeException, IOException {
@@ -49,10 +58,6 @@ public class EthereumInvokeTransactionSender extends BaseTransactionSender {
         return recipientAddress;
     }
 
-    public List<Amount> getPayments() {
-        return payments;
-    }
-
     public EthereumTransaction getEthTx() {
         return ethTx;
     }
@@ -63,6 +68,9 @@ public class EthereumInvokeTransactionSender extends BaseTransactionSender {
 
     public long getTimestamp() {
         return timestamp;
+    }
+    public List<Amount> getEmptyPayment() {
+        return payments;
     }
 
     public long getEthInvokeFee() {

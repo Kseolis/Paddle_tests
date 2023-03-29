@@ -18,7 +18,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.wavesplatform.transactions.common.AssetId.WAVES;
@@ -39,7 +38,7 @@ public class EthereumInvokeTransactionTest {
     private Address dAppAddress;
     private Address otherDAppAddress;
     private AssetId assetId;
-    private List<Amount> payments = new ArrayList<>();
+    private List<Amount> payments;
     private DAppCall dAppCall;
     private Invocation payload;
     private InvokeCalculationsBalancesAfterTx calcBalances;
@@ -90,7 +89,7 @@ public class EthereumInvokeTransactionTest {
         txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         payload = (Invocation) txSender.getEthTx().payload();
-        assertAll(this::checkEthereumInvoke, this::checkBalancesAfterTx, () -> thirdAccountBalanceCheck(dAppAddress));
+        assertAll(() -> checkEthereumInvoke(payments), this::checkBalancesAfterTx, () -> thirdAccountBalanceCheck(dAppAddress));
     }
 
     @Test
@@ -106,7 +105,7 @@ public class EthereumInvokeTransactionTest {
         txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, SUM_FEE, ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         payload = (Invocation) txSender.getEthTx().payload();
-        assertAll(this::checkEthereumInvoke, this::checkBalancesAfterTx);
+        assertAll(() -> checkEthereumInvoke(payments), this::checkBalancesAfterTx);
     }
 
     @Test
@@ -122,7 +121,7 @@ public class EthereumInvokeTransactionTest {
         txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, SUM_FEE, ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         payload = (Invocation) txSender.getEthTx().payload();
-        assertAll(this::checkEthereumInvoke, this::checkBalancesAfterTx);
+        assertAll(() -> checkEthereumInvoke(payments), this::checkBalancesAfterTx);
     }
 
     @Test
@@ -131,15 +130,14 @@ public class EthereumInvokeTransactionTest {
         testData.prepareDataForBurnTests();
         invokeFee = testData.getInvokeFee();
         dAppCall = testData.getDAppCall();
-        payments.add(Amount.of(0));
         assetDAppAccount.transfer(senderAddress, Amount.of(10_000_000L, assetId));
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
         calcBalances.balancesAfterBurnAssetInvoke(senderAddress, assetDAppAddress, testData.getOtherAmounts(), assetId);
 
-        txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestAccounts);
+        txSender = new EthereumInvokeTransactionSender(assetDAppAddress, invokeFee, ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         payload = (Invocation) txSender.getEthTx().payload();
-        assertAll(this::checkEthereumInvoke, this::checkBalancesAfterTx);
+        assertAll(() -> checkEthereumInvoke(txSender.getEmptyPayment()), this::checkBalancesAfterTx);
     }
 
     @Test
@@ -156,7 +154,7 @@ public class EthereumInvokeTransactionTest {
         txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         payload = (Invocation) txSender.getEthTx().payload();
-        assertAll(this::checkEthereumInvoke, this::checkBalancesAfterTx);
+        assertAll(() -> checkEthereumInvoke(payments), this::checkBalancesAfterTx);
     }
 
     @Test
@@ -172,7 +170,7 @@ public class EthereumInvokeTransactionTest {
         txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, SUM_FEE, ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         payload = (Invocation) txSender.getEthTx().payload();
-        assertAll(this::checkEthereumInvoke, this::checkBalancesAfterTx);
+        assertAll(() -> checkEthereumInvoke(payments), this::checkBalancesAfterTx);
     }
 
     @Test
@@ -188,7 +186,7 @@ public class EthereumInvokeTransactionTest {
         txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, SUM_FEE, ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         payload = (Invocation) txSender.getEthTx().payload();
-        assertAll(this::checkEthereumInvoke, this::checkBalancesAfterTx);
+        assertAll(() -> checkEthereumInvoke(payments), this::checkBalancesAfterTx);
     }
 
     @Test
@@ -197,15 +195,15 @@ public class EthereumInvokeTransactionTest {
         testData.prepareDataForSponsorFeeTests();
         invokeFee = testData.getInvokeFee();
         dAppCall = testData.getDAppCall();
-        payments.add(Amount.of(0));
+        payments = testData.getPayments();
         assetDAppAccount.transfer(senderAddress, Amount.of(10_000_000L, assetId));
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
         calcBalances.balancesAfterPaymentInvoke(senderAddress, assetDAppAddress, payments, assetId);
 
-        txSender = new EthereumInvokeTransactionSender(assetDAppAddress, payments, invokeFee, ethereumTestAccounts);
+        txSender = new EthereumInvokeTransactionSender(assetDAppAddress, invokeFee, ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         payload = (Invocation) txSender.getEthTx().payload();
-        assertAll(this::checkEthereumInvoke, this::checkBalancesAfterTx);
+        assertAll(() -> checkEthereumInvoke(txSender.getEmptyPayment()), this::checkBalancesAfterTx);
     }
 
     @Test
@@ -222,7 +220,7 @@ public class EthereumInvokeTransactionTest {
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         payload = (Invocation) txSender.getEthTx().payload();
         assertAll(
-                this::checkEthereumInvoke,
+                () -> checkEthereumInvoke(payments),
                 this::checkBalancesAfterTx,
                 () -> thirdAccountBalanceCheck(assetDAppAddress)
         );
@@ -232,17 +230,24 @@ public class EthereumInvokeTransactionTest {
     @DisplayName("Ethereum invoke double nested for i.caller")
     void ethereumInvokeDoubleNestedForCaller() throws NodeException, IOException {
         testData.prepareDataForDoubleNestedTest(SUM_FEE, "i.caller", "i.caller");
+
         invokeFee = testData.getInvokeFee();
         dAppCall = testData.getDAppCall();
-        payments.add(Amount.of(0));
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        calcBalances.balancesAfterDoubleNestedForCaller(senderAddress, dAppAddress, otherDAppAddress, assetDAppAddress, testData.getOtherAmounts(), assetId);
+        calcBalances.balancesAfterDoubleNestedForCaller(
+                senderAddress,
+                dAppAddress,
+                otherDAppAddress,
+                assetDAppAddress,
+                testData.getOtherAmounts(),
+                assetId
+        );
 
-        txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, SUM_FEE, ethereumTestAccounts);
+        txSender = new EthereumInvokeTransactionSender(dAppAddress, SUM_FEE, ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         payload = (Invocation) txSender.getEthTx().payload();
         assertAll(
-                this::checkEthereumInvoke,
+                () -> checkEthereumInvoke(txSender.getEmptyPayment()),
                 this::checkBalancesAfterTx,
                 () -> thirdAccountBalanceCheck(assetDAppAddress),
                 () -> fourthAccountBalanceCheck(otherDAppAddress)
@@ -255,22 +260,28 @@ public class EthereumInvokeTransactionTest {
         testData.prepareDataForDoubleNestedTest(SUM_FEE, "i.originCaller", "i.originCaller");
         invokeFee = testData.getInvokeFee();
         dAppCall = testData.getDAppCall();
-        payments.add(Amount.of(0));
         calcBalances = new InvokeCalculationsBalancesAfterTx(testData);
-        calcBalances.balancesAfterDoubleNestedForOriginCaller(senderAddress, dAppAddress, otherDAppAddress, assetDAppAddress, testData.getOtherAmounts(), assetId);
+        calcBalances.balancesAfterDoubleNestedForOriginCaller(
+                senderAddress,
+                dAppAddress,
+                otherDAppAddress,
+                assetDAppAddress,
+                testData.getOtherAmounts(),
+                assetId
+        );
 
-        txSender = new EthereumInvokeTransactionSender(dAppAddress, payments, SUM_FEE, ethereumTestAccounts);
+        txSender = new EthereumInvokeTransactionSender(dAppAddress, SUM_FEE, ethereumTestAccounts);
         txSender.sendingAnEthereumInvokeTransaction(dAppCall.getFunction());
         payload = (Invocation) txSender.getEthTx().payload();
         assertAll(
-                this::checkEthereumInvoke,
+                () -> checkEthereumInvoke(txSender.getEmptyPayment()),
                 this::checkBalancesAfterTx,
                 () -> thirdAccountBalanceCheck(assetDAppAddress),
                 () -> fourthAccountBalanceCheck(otherDAppAddress)
         );
     }
 
-    private void checkEthereumInvoke() {
+    private void checkEthereumInvoke(List<Amount> payments) {
         assertAll(
                 () -> assertThat(txSender.getTxInfo().applicationStatus()).isEqualTo(SUCCEEDED),
                 () -> assertThat(txSender.getEthTx().chainId()).isEqualTo(node().chainId()),

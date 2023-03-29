@@ -15,7 +15,7 @@ public class BaseGrpcTest {
     public static final long CHAIN_ID = node().chainId();
 
     protected final Channel CHANNEL = ManagedChannelBuilder
-            .forAddress(dockerGRPCAddress, dockerGRPCPort)
+            .forAddress(node().conf().grpcUrl, node().conf().grpcPort)
             .usePlaintext()
             .build();
 }

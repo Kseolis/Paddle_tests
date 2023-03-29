@@ -17,7 +17,7 @@ import static im.mak.paddle.util.ScriptUtil.fromFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-class IssueTransactionTest {
+public class IssueTransactionTest {
     private static Account normalAccount;
     private static Account dAppAccount;
 

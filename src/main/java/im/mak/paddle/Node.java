@@ -32,11 +32,6 @@ import static java.util.Collections.singletonList;
 
 @SuppressWarnings("WeakerAccess")
 public class Node extends com.wavesplatform.wavesj.Node {
-
-    public static final String dockerGRPCAddress = "0.0.0.0";
-    public static final int dockerGRPCPort = 6888;
-    public static final String devNetGRPCAddress = "devnet1-htz-nbg1-3.wavesnodes.com";
-    public static final int devNetGRPCPort = 6881;
     private static Node instance;
 
     public static Node node() {
@@ -80,11 +75,16 @@ public class Node extends com.wavesplatform.wavesj.Node {
 
                 URL apiUrl = new URL(conf.apiUrl);
                 int port = apiUrl.getPort() <= 0 ? 80 : apiUrl.getPort();
+                String portStr = String.valueOf(port);
+
+                String grpcUrl = conf.grpcUrl;
+                String grpcPort = String.valueOf(conf.grpcPort);
+
                 Map<String, List<PortBinding>> portBindings = new HashMap<>();
-                portBindings.put("6863", singletonList(PortBinding
-                        .of("0.0.0.0", port)));
-                portBindings.put(String.valueOf(dockerGRPCPort), singletonList(PortBinding
-                        .of("0.0.0.0", dockerGRPCPort)));
+                portBindings.put(portStr, singletonList(PortBinding
+                        .of(grpcUrl, port)));
+                portBindings.put(grpcPort, singletonList(PortBinding
+                        .of(grpcUrl, grpcPort)));
 
                 File configPath = new File("src/main/resources/docker");
                 HostConfig hostConfig = HostConfig.builder()
@@ -99,7 +99,7 @@ public class Node extends com.wavesplatform.wavesj.Node {
                         .hostConfig(hostConfig)
                         .image(conf.dockerImage)
                         .env("WAVES_LOG_LEVEL=TRACE")
-                        .exposedPorts("6863", String.valueOf(dockerGRPCPort))
+                        .exposedPorts(portStr, grpcPort)
                         .build();
 
                 containerId = docker.createContainer(containerConfig).id();

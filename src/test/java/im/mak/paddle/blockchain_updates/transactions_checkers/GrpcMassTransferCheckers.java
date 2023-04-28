@@ -52,27 +52,28 @@ public class GrpcMassTransferCheckers {
 
     private void checkBalances(long amountValue, long balanceBefore) {
         for (int i = 0; i < accountList.size(); i++) {
-            assertThat(getRecipientAmountFromMassTransfer(txIndex, i)).isEqualTo(amountValue);
-            assertThat(getRecipientPublicKeyHashFromMassTransfer(txIndex, i)).isEqualTo(publicKeyHashFromList(i));
-            assertThat(getMassTransferFromTransactionMetadata(txIndex, i)).isEqualTo(accountAddressFromList(i));
+            long recipientAmount = getRecipientAmountFromMassTransfer(txIndex, i);
+            String publicKeyHash = publicKeyHashFromList(i);
+            String accountAddress = accountAddressFromList(i);
+            String addressFromBalance = getAddress(txIndex, i);
+            String assetFromBalance = getAssetIdAmountAfter(txIndex, i);
 
-            for (int j = 0; j < accountList.size(); j++) {
+            assertThat(recipientAmount).isEqualTo(amountValue);
+            assertThat(getRecipientPublicKeyHashFromMassTransfer(txIndex, i)).isEqualTo(publicKeyHash);
+            assertThat(getMassTransferFromTransactionMetadata(txIndex, i)).isEqualTo(accountAddress);
 
-                final String addressFromBalance = getAddress(txIndex, i);
-                final String assetFromBalance = getAssetIdAmountAfter(txIndex, i);
 
-                if (accountAddressFromList(j).equals(addressFromBalance)) {
-                    assertThat(getAmountBefore(txIndex, i)).isEqualTo(0);
-                    assertThat(getAmountAfter(txIndex, i)).isEqualTo(amountValue);
-                }
+            if (accountAddress.equals(addressFromBalance)) {
+                assertThat(getAmountBefore(txIndex, i)).isEqualTo(0);
+                assertThat(getAmountAfter(txIndex, i)).isEqualTo(amountValue);
+            }
 
-                if (senderAddress.equals(addressFromBalance) && txSender.getAssetId().equals(assetFromBalance)) {
-                    assertThat(getAmountBefore(txIndex, i)).isEqualTo(txSender.getSenderBalanceBeforeMassTransfer());
-                    assertThat(getAmountAfter(txIndex, i)).isEqualTo(txSender.getSenderBalanceAfterMassTransfer());
-                } else if (!txSender.getAssetId().equals(assetFromBalance)) {
-                    assertThat(getAmountBefore(txIndex, i)).isEqualTo(balanceBefore);
-                    assertThat(getAmountAfter(txIndex, i)).isEqualTo(txSender.getSenderWavesBalanceAfterMassTransfer());
-                }
+            if (senderAddress.equals(addressFromBalance) && txSender.getAssetId().equals(assetFromBalance)) {
+                assertThat(getAmountBefore(txIndex, i)).isEqualTo(txSender.getSenderBalanceBeforeMassTransfer());
+                assertThat(getAmountAfter(txIndex, i)).isEqualTo(txSender.getSenderBalanceAfterMassTransfer());
+            } else if (!txSender.getAssetId().equals(assetFromBalance)) {
+                assertThat(getAmountBefore(txIndex, i)).isEqualTo(balanceBefore);
+                assertThat(getAmountAfter(txIndex, i)).isEqualTo(txSender.getSenderWavesBalanceAfterMassTransfer());
             }
         }
     }
